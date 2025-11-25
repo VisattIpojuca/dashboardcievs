@@ -4,30 +4,30 @@ import plotly.express as px
 import plotly.graph_objects as go
 import unicodedata
 
-# ----------------------------------------------------
+# ------------------------------------------------------
 # CONFIGURAÇÃO DA PÁGINA
-# ----------------------------------------------------
+# ------------------------------------------------------
 st.set_page_config(
     page_title="Saúde do Trabalhador",
     page_icon="👷",
     layout="wide"
 )
 
-st.title("👷 Saúde do Trabalhador - Análise de Acidentes de Trabalho")
-st.caption("Fonte: Vigilância em Saúde do Trabalhador - Ipojuca")
+st.title("👷 Saúde do Trabalhador – Análise dos Acidentes de Trabalho")
+st.caption("Fonte: Vigilância em Saúde do Trabalhador – Ipojuca")
 
-# ----------------------------------------------------
-# FUNÇÃO PARA PADRONIZAR NOMES DE COLUNAS
-# ----------------------------------------------------
+# ------------------------------------------------------
+# FUNÇÃO PARA LIMPAR NOMES DE COLUNAS
+# ------------------------------------------------------
 def limpar_coluna(col):
     col = str(col)
     col = unicodedata.normalize("NFKD", col).encode("ascii", "ignore").decode("utf-8")
     col = col.strip().upper().replace(" ", "_").replace("-", "_").replace("/", "_")
     return col
 
-# ----------------------------------------------------
+# ------------------------------------------------------
 # CARREGAR BASE REAL DO GOOGLE SHEETS
-# ----------------------------------------------------
+# ------------------------------------------------------
 @st.cache_data
 def carregar_dados():
     url = "https://docs.google.com/spreadsheets/d/1Guru662qCn9bX8iZhckcbRu2nG8my4Eu5l5JK5yTNik/export?format=csv"
@@ -40,10 +40,9 @@ def carregar_dados():
 
     df.columns = [limpar_coluna(c) for c in df.columns]
 
-    # Converte colunas de data
-    for coluna in ["DATA", "DATA_ACIDENTE", "DATA_NOTIFICACAO"]:
-        if coluna in df.columns:
-            df[coluna] = pd.to_datetime(df[coluna], errors="coerce")
+    # Coluna oficial de data
+    if "DATA_DE_OCORRENCIA" in df.columns:
+        df["DATA_DE_OCORRENCIA"] = pd.to_datetime(df["DATA_DE_OCORRENCIA"], errors="coerce")
 
     return df
 
@@ -53,9 +52,9 @@ if df.empty:
     st.warning("A base está vazia.")
     st.stop()
 
-# ----------------------------------------------------
-# FILTROS AVANÇADOS
-# ----------------------------------------------------
+# ------------------------------------------------------
+# FILTROS
+# ------------------------------------------------------
 st.sidebar.header("Filtros")
 
 df_filtrado = df.copy()
@@ -70,7 +69,6 @@ def criar_filtro(coluna, label=None, ordenar=False):
             return df_filtrado[df_filtrado[coluna].isin(selecao)]
     return df_filtrado
 
-# 🔥 Filtros solicitados
 df_filtrado = criar_filtro("SEMANA_EPIDEMIOLOGICA", "Semana Epidemiológica", ordenar=True)
 df_filtrado = criar_filtro("IDADE", "Idade", ordenar=True)
 df_filtrado = criar_filtro("SEXO", "Sexo")
@@ -85,71 +83,129 @@ if df_filtrado.empty:
     st.warning("Nenhum dado encontrado com os filtros aplicados.")
     st.stop()
 
-# ----------------------------------------------------
+# ------------------------------------------------------
 # INDICADORES PRINCIPAIS
-# ----------------------------------------------------
+# ------------------------------------------------------
 st.header("📊 Indicadores Principais")
 
 col1, col2, col3, col4 = st.columns(4)
 
-# Total de registros filtrados
+# Total
 total = len(df_filtrado)
 
-setor_col = None
-for col in df.columns:
-    if "SETOR" in col:
-        setor_col = col
-
-if setor_col:
-    setor_mais = df_filtrado[setor_col].value_counts().idxmax()
+# Média semanal
+if "DATA_DE_OCORRENCIA" in df_filtrado.columns:
+    df_sem = df_filtrado.groupby(pd.Grouper(key="DATA_DE_OCORRENCIA", freq="W")).size()
+    media_semanal = round(df_sem.mean(), 2)
 else:
-    setor_mais = "Não informado"
+    media_semanal = "—"
+
+# Ocupação mais afetada
+if "OCUPACAO" in df_filtrado.columns:
+    ocup_mais = df_filtrado["OCUPACAO"].value_counts().idxmax()
+else:
+    ocup_mais = "Não informado"
+
+# Óbitos
+if "EVOLUCAO_DO_CASO" in df_filtrado.columns:
+    obitos = df_filtrado["EVOLUCAO_DO_CASO"].astype(str).str.contains("ÓBITO", case=False).sum()
+else:
+    obitos = 0
 
 with col1:
-    st.metric("Registros", total)
+    st.metric("Total de Registros", total)
 
 with col2:
-    if "DATA" in df_filtrado.columns:
-        df_por_dia = df_filtrado.groupby("DATA").size()
-        st.metric("Média Diária", round(df_por_dia.mean(), 2))
-    else:
-        st.metric("Média Diária", "—")
+    st.metric("Média Semanal", media_semanal)
 
 with col3:
-    st.metric("Setor com mais notificações", setor_mais)
+    st.metric("Ocupação mais acometida", ocup_mais)
 
 with col4:
-    if "EVOLUCAO_DO_CASO" in df_filtrado.columns:
-        obitos = (df_filtrado["EVOLUCAO_DO_CASO"].astype(str).str.contains("ÓBITO", case=False)).sum()
-        st.metric("Óbitos", obitos)
-    else:
-        st.metric("Óbitos", "—")
+    st.metric("Óbitos", obitos)
 
-# ----------------------------------------------------
-# GRÁFICO TEMPORAL
-# ----------------------------------------------------
+# ------------------------------------------------------
+# EVOLUÇÃO TEMPORAL
+# ------------------------------------------------------
 st.header("📈 Evolução Temporal dos Acidentes")
 
-if "DATA" in df_filtrado.columns:
-    df_temp = df_filtrado.groupby("DATA").size().reset_index(name="Casos")
+if "DATA_DE_OCORRENCIA" in df_filtrado.columns:
+    df_temp = df_filtrado.groupby("DATA_DE_OCORRENCIA").size().reset_index(name="Casos")
 
-    fig = px.line(
+    fig_temp = px.line(
         df_temp,
-        x="DATA",
+        x="DATA_DE_OCORRENCIA",
         y="Casos",
         markers=True,
-        title="Casos ao Longo do Tempo"
+        title="Evolução dos Acidentes (Data de ocorrência)"
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig_temp, use_container_width=True)
 else:
-    st.info("⚠ A base não contém coluna de DATA para análise temporal.")
+    st.info("⚠ A base não possui coluna DATA_DE_OCORRENCIA.")
 
-# ----------------------------------------------------
-# ANÁLISE POR BAIRRO
-# ----------------------------------------------------
+# ------------------------------------------------------
+# GRÁFICOS DE PERFIL (IDADE, SEXO, RAÇA/COR, ESCOLARIDADE)
+# ------------------------------------------------------
+
+st.header("👥 Perfil dos Trabalhadores Notificados")
+
+colA, colB = st.columns(2)
+
+# Sexo
+if "SEXO" in df_filtrado.columns:
+    fig_sexo = px.pie(
+        df_filtrado,
+        names="SEXO",
+        title="Distribuição por Sexo"
+    )
+    colA.plotly_chart(fig_sexo, use_container_width=True)
+
+# Idade
+if "IDADE" in df_filtrado.columns:
+    fig_idade = px.histogram(
+        df_filtrado,
+        x="IDADE",
+        nbins=20,
+        title="Distribuição de Idade"
+    )
+    colB.plotly_chart(fig_idade, use_container_width=True)
+
+# Raça/cor
+if "RACA_COR" in df_filtrado.columns:
+    st.subheader("📊 Raça/Cor")
+    fig_raca = px.bar(
+        df_filtrado["RACA_COR"].value_counts().reset_index(),
+        x="index",
+        y="RACA_COR",
+        labels={"index": "Raça/Cor", "RACA_COR": "Casos"},
+        color="RACA_COR",
+        title="Distribuição por Raça/Cor"
+    )
+    st.plotly_chart(fig_raca, use_container_width=True)
+
+# Escolaridade
+if "ESCOLARIDADE" in df_filtrado.columns:
+    st.subheader("🎓 Escolaridade")
+    fig_esc = px.bar(
+        df_filtrado["ESCOLARIDADE"].value_counts().reset_index(),
+        x="index",
+        y="ESCOLARIDADE",
+        labels={"index": "Escolaridade", "ESCOLARIDADE": "Casos"},
+        color="ESCOLARIDADE",
+        title="Distribuição por Escolaridade"
+    )
+    st.plotly_chart(fig_esc, use_container_width=True)
+
+# ------------------------------------------------------
+# BAIRRO E EVOLUÇÃO DO CASO
+# ------------------------------------------------------
+
+st.header("📍 Local e Evolução")
+
+colC, colD = st.columns(2)
+
+# Bairro
 if "BAIRRO_OCORRENCIA" in df_filtrado.columns:
-    st.header("📍 Distribuição por Bairro")
-
     df_bairro = df_filtrado["BAIRRO_OCORRENCIA"].value_counts().reset_index()
     df_bairro.columns = ["Bairro", "Casos"]
 
@@ -157,36 +213,30 @@ if "BAIRRO_OCORRENCIA" in df_filtrado.columns:
         df_bairro,
         x="Bairro",
         y="Casos",
-        title="Casos por Bairro",
-        color="Casos",
-        color_continuous_scale="Reds"
+        title="Casos por Bairro de Ocorrência",
+        color="Casos"
     )
-    st.plotly_chart(fig_bairro, use_container_width=True)
+    colC.plotly_chart(fig_bairro, use_container_width=True)
 
-# ----------------------------------------------------
-# ANÁLISE POR OCUPAÇÃO
-# ----------------------------------------------------
-if "OCUPACAO" in df_filtrado.columns:
-    st.header("🛠 Ocupações mais afetadas")
+# Evolução
+if "EVOLUCAO_DO_CASO" in df_filtrado.columns:
+    df_evo = df_filtrado["EVOLUCAO_DO_CASO"].value_counts().reset_index()
+    df_evo.columns = ["Evolução", "Casos"]
 
-    df_ocup = df_filtrado["OCUPACAO"].value_counts().reset_index()
-    df_ocup.columns = ["Ocupação", "Casos"]
-
-    fig_ocup = px.bar(
-        df_ocup,
-        x="Ocupação",
+    fig_evo = px.bar(
+        df_evo,
+        x="Evolução",
         y="Casos",
-        title="Casos por Ocupação",
-        color="Casos",
-        color_continuous_scale="Blues"
+        title="Evolução dos Casos",
+        color="Casos"
     )
-    st.plotly_chart(fig_ocup, use_container_width=True)
+    colD.plotly_chart(fig_evo, use_container_width=True)
 
-# ----------------------------------------------------
+# ------------------------------------------------------
 # TABELA FINAL
-# ----------------------------------------------------
+# ------------------------------------------------------
 st.header("📋 Base Filtrada")
 st.dataframe(df_filtrado, use_container_width=True)
 
 st.markdown("---")
-st.caption("Painel de Saúde do Trabalhador - Ipojuca")
+st.caption("Painel de Saúde do Trabalhador – Ipojuca")
