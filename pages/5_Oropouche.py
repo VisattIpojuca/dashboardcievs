@@ -134,9 +134,10 @@ fig_mes = px.bar(
 )
 st.plotly_chart(fig_mes, use_container_width=True)
 
-# Pie de Gestantes
+# Distribuição de gestantes
 if COL_GESTANTE:
     st.subheader("🤰 Distribuição de Gestantes")
+
     fig_gest = px.pie(
         df_filtrado,
         names=COL_GESTANTE,
@@ -147,6 +148,7 @@ if COL_GESTANTE:
 # Classificação por mês
 if COL_CLASSIFICACAO:
     st.subheader("📊 Classificação por Mês")
+
     fig_class_mes = px.histogram(
         df_filtrado,
         x="MES",
@@ -156,9 +158,10 @@ if COL_CLASSIFICACAO:
     )
     st.plotly_chart(fig_class_mes, use_container_width=True)
 
-# Localidade vs Classificação
+# Localidade x Classificação
 if COL_LOCALIDADE and COL_CLASSIFICACAO:
     st.subheader("📍 Classificação por Localidade")
+
     fig_lc = px.histogram(
         df_filtrado,
         x=COL_LOCALIDADE,
