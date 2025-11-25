@@ -10,12 +10,12 @@ import unicodedata
 # CONFIGURAÇÃO DA PÁGINA
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Dashboard por Localidade",
+    page_title="Programa de Controle da Esquistossomose",
     page_icon="📍",
     layout="wide"
 )
 
-st.title("📍 Dashboard – Análise por Localidade")
+st.title("📍 Programa de Controle da Esquistossomose – Análise por Localidade")
 
 # ---------------------------------------------------------
 # FUNÇÕES AUXILIARES
@@ -187,4 +187,8 @@ st.header("📋 Dados Filtrados")
 st.dataframe(df_filtrado, use_container_width=True)
 
 st.markdown("---")
-st.caption("Dashboard por Localidade • Vigilância em Saúde Ipojuca")
+st.caption("Dashboard por PCE • Vigilância em Saúde Ipojuca")
+
+st.caption("Desenvolvido por Maviael Barros.")
+st.markdown("---")
+st.caption("Painel de Dengue • Versão 1.0")
