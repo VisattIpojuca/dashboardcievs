@@ -31,10 +31,7 @@ def normalize(text):
 
 
 def detectar_coluna_similar(df, termos_busca):
-    """
-    Busca uma coluna compatível por similaridade.
-    Ex: EVOLUÇÃO DO CASO → EVOLUCAO_DO_CASO → casa com 'EVOLU', 'CASO'.
-    """
+    """Busca uma coluna compatível por similaridade aproximada."""
     colunas_norm = {normalize(c): c for c in df.columns}
 
     for col_norm, col_original in colunas_norm.items():
@@ -46,12 +43,30 @@ def detectar_coluna_similar(df, termos_busca):
 
 
 def contar_obitos(df, coluna):
-    """Conta óbitos pela coluna de evolução detectando várias formas de escrita."""
+    """Identifica óbitos com ultra segurança: similaridade + texto exato."""
     if coluna not in df.columns:
         return 0
 
-    padrao = r"(OBIT|MORT|FALEC)"
-    return df[coluna].astype(str).str.contains(padrao, case=False, na=False).sum()
+    PADROES = [
+        r"OBIT",
+        r"ÓBIT",
+        r"MORT",
+        r"FALEC",
+        r"OBITO",
+        r"ÓBITO",
+        r"OBITOS",
+        r"ÓBITOS",
+        r"ÓBITO POR ACIDENTE DE TRABALHO GRAVE",
+        r"OBITO POR ACIDENTE DE TRABALHO GRAVE"
+    ]
+
+    texto = df[coluna].astype(str)
+
+    total = 0
+    for padrao in PADROES:
+        total += texto.str.contains(padrao, case=False, na=False).sum()
+
+    return total
 
 
 # ----------------------------------------------------------
@@ -67,7 +82,6 @@ def carregar_dados():
         st.error("❌ Não foi possível carregar a base de dados.")
         st.stop()
 
-    # Normalizar nomes das colunas
     df.columns = [normalize(c) for c in df.columns]
     df.columns = [c.replace("__", "_") for c in df.columns]
     df.columns = [c.replace("_", " ") for c in df.columns]
@@ -81,21 +95,21 @@ df = carregar_dados()
 # DETECÇÃO AUTOMÁTICA DE COLUNAS
 # ----------------------------------------------------------
 
-# Coluna de data
+# Data
 COL_DATA = detectar_coluna_similar(df, ["DATA", "OCORR"])
 
-# Converter data
 df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
 
-# Demais colunas
+# Demais campos
 COL_SEXO = detectar_coluna_similar(df, ["SEXO"])
 COL_IDADE = detectar_coluna_similar(df, ["IDADE"])
-COL_RACA = detectar_coluna_similar(df, ["RACA", "COR"])
+COL_RACA = detectar_coluna_similar(df, ["RACA", "RAÇA", "COR"])
 COL_ESCOLARIDADE = detectar_coluna_similar(df, ["ESCOLAR"])
 COL_BAIRRO = detectar_coluna_similar(df, ["BAIRRO"])
 COL_OCUPACAO = detectar_coluna_similar(df, ["OCUP"])
 COL_SITUACAO_TRAB = detectar_coluna_similar(df, ["SITUACAO", "MERCADO"])
 COL_EVOL = detectar_coluna_similar(df, ["EVOL", "CASO", "DESFECHO"])
+
 
 # ----------------------------------------------------------
 # FILTROS
@@ -105,7 +119,7 @@ st.sidebar.header("Filtros")
 
 df_filtrado = df.copy()
 
-# Intervalo de datas
+# Datas
 min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
 
 data_ini, data_fim = st.sidebar.date_input(
@@ -120,7 +134,8 @@ df_filtrado = df_filtrado[
     (df_filtrado[COL_DATA] <= pd.to_datetime(data_fim))
 ]
 
-# Função para filtros
+
+# Função de filtro
 def add_filtro(nome, coluna):
     global df_filtrado
     if coluna and coluna in df_filtrado.columns:
@@ -143,6 +158,7 @@ if df_filtrado.empty:
     st.warning("Nenhum dado encontrado com os filtros selecionados.")
     st.stop()
 
+
 # ----------------------------------------------------------
 # INDICADORES PRINCIPAIS
 # ----------------------------------------------------------
@@ -152,7 +168,6 @@ st.header("📊 Indicadores Principais")
 total = len(df_filtrado)
 obitos = contar_obitos(df_filtrado, COL_EVOL)
 
-# Ocupação mais afetada
 if COL_OCUPACAO:
     top_ocup = df_filtrado[COL_OCUPACAO].value_counts().idxmax()
 else:
@@ -164,51 +179,94 @@ col1.metric("Total de Acidentes", total)
 col2.metric("Óbitos", obitos)
 col3.metric("Ocupação mais afetada", top_ocup)
 
+
 # ----------------------------------------------------------
 # GRÁFICOS
 # ----------------------------------------------------------
 
 st.header("📈 Distribuições de Atributos")
 
-# Idade
-if COL_IDADE:
-    fig = px.histogram(df_filtrado, x=COL_IDADE, title="Distribuição por Idade")
-    st.plotly_chart(fig, use_container_width=True)
-
-# Sexo
+# ----------------------
+# GRÁFICO DE SEXO - PIZZA
+# ----------------------
 if COL_SEXO:
     df_sx = df_filtrado[COL_SEXO].value_counts().reset_index()
     df_sx.columns = ["SEXO", "QTD"]
-    fig = px.bar(df_sx, x="SEXO", y="QTD", title="Distribuição por Sexo")
+
+    fig = px.pie(
+        df_sx,
+        names="SEXO",
+        values="QTD",
+        title="Distribuição por Sexo",
+        hole=0.3
+    )
     st.plotly_chart(fig, use_container_width=True)
 
-# Raça/Cor
-if COL_RACA:
-    df_rc = df_filtrado[COL_RACA].value_counts().reset_index()
-    df_rc.columns = ["RACA_COR", "QTD"]
-    fig = px.bar(df_rc, x="RACA_COR", y="QTD", title="Distribuição por Raça/Cor")
+
+# ----------------------
+# GRÁFICO RAÇA/COR X SEXO (AGRUPADO)
+# ----------------------
+if COL_RACA and COL_SEXO:
+    df_cross = (
+        df_filtrado
+        .groupby([COL_RACA, COL_SEXO])
+        .size()
+        .reset_index(name="QTD")
+    )
+
+    fig = px.bar(
+        df_cross,
+        x=COL_RACA,
+        y="QTD",
+        color=COL_SEXO,
+        barmode="group",
+        title="Raça/Cor por Sexo"
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 
-# Escolaridade
+
+# ----------------------
+# IDADE
+# ----------------------
+if COL_IDADE:
+    fig = px.histogram(
+        df_filtrado,
+        x=COL_IDADE,
+        title="Distribuição por Idade"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+# ----------------------
+# ESCOLARIDADE
+# ----------------------
 if COL_ESCOLARIDADE:
     df_es = df_filtrado[COL_ESCOLARIDADE].value_counts().reset_index()
     df_es.columns = ["ESCOLARIDADE", "QTD"]
     fig = px.bar(df_es, x="ESCOLARIDADE", y="QTD", title="Escolaridade")
     st.plotly_chart(fig, use_container_width=True)
 
-# Bairro
+
+# ----------------------
+# BAIRRO
+# ----------------------
 if COL_BAIRRO:
     df_b = df_filtrado[COL_BAIRRO].value_counts().reset_index()
     df_b.columns = ["BAIRRO", "QTD"]
     fig = px.bar(df_b.head(20), x="BAIRRO", y="QTD", title="Top 20 Bairros")
     st.plotly_chart(fig, use_container_width=True)
 
-# Evolução
+
+# ----------------------
+# EVOLUÇÃO DO CASO
+# ----------------------
 if COL_EVOL:
     df_ev = df_filtrado[COL_EVOL].value_counts().reset_index()
     df_ev.columns = ["EVOLUCAO", "QTD"]
     fig = px.bar(df_ev, x="EVOLUCAO", y="QTD", title="Evolução dos Casos")
     st.plotly_chart(fig, use_container_width=True)
+
 
 # ----------------------------------------------------------
 # TABELA FINAL
