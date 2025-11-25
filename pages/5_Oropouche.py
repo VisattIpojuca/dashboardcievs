@@ -241,7 +241,7 @@ else:
     st.warning("Coluna de mês (a partir da data de notificação) não encontrada.")
 
 # 2) Classificação por mês (linhas separadas por classificação)
-st.subheader("Classificação por Mês (Data da Notificação)")
+st.subheader("Classificação por Mês")
 
 if "MES_NOTIF" in df_filtrado.columns and COL_CLASSIFICACAO in df_filtrado.columns:
     class_mes = (
