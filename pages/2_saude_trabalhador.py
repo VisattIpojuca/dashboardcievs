@@ -36,8 +36,9 @@ def detectar_coluna_data(df):
         "DATA_DA_OCORRENCIA",
         "DATA_OCORRENCIA",
         "DT_OCORRENCIA",
-        "DATA",
-        "DATA_ACIDENTE"
+        "DATA_DA_OCORRÊNCIA",
+        "DATA_ACIDENTE",
+        "DATA_OCORRÊNCIA"
     ]
 
     cols_norm = {normalize(c): c for c in df.columns}
@@ -85,8 +86,6 @@ def carregar_dados():
 
     df.columns = [normalize(c) for c in df.columns]
     df.columns = [c.replace("__", "_") for c in df.columns]
-
-    # Restaurar alguns nomes mais amigáveis
     df.columns = [c.replace("_", " ") for c in df.columns]
 
     return df
@@ -109,19 +108,17 @@ COL_EVOL = detectar_coluna(df, ["EVOLUCAO", "EVOLUCAO DO CASO", "EVOLUÇÃO"])
 COL_OCUPACAO = detectar_coluna(df, ["OCUPACAO", "OCUPAÇÃO"])
 COL_SITUACAO_TRAB = detectar_coluna(df, ["SITUACAO_TRABALHO", "SITUACAO NO MERCADO", "SITUACAO_TRAB"])
 
-
-# Converter data
 df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
 
 # ----------------------------------------------------------
 # FILTROS
 # ----------------------------------------------------------
 
-st.sidebar.header("🔎 Filtros")
+st.sidebar.header("Filtros")
 
 df_filtrado = df.copy()
 
-# DATA — intervalo
+# Filtro de data
 min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
 data_ini, data_fim = st.sidebar.date_input(
     "Período",
@@ -135,15 +132,14 @@ df_filtrado = df_filtrado[
     (df_filtrado[COL_DATA] <= pd.to_datetime(data_fim))
 ]
 
-# Filtros específicos
-def add_filtro(nome, coluna):
+# Filtros dinâmicos
+def add_filtro(label, coluna):
     global df_filtrado
     if coluna and coluna in df_filtrado.columns:
         valores = sorted(df_filtrado[coluna].dropna().unique())
-        selecionados = st.sidebar.multiselect(nome, valores)
+        selecionados = st.sidebar.multiselect(label, valores)
         if selecionados:
             df_filtrado = df_filtrado[df_filtrado[coluna].isin(selecionados)]
-
 
 add_filtro("Sexo", COL_SEXO)
 add_filtro("Idade", COL_IDADE)
@@ -169,7 +165,10 @@ obitos = contar_obitos(df_filtrado, COL_EVOL)
 
 # Ocupação mais afetada
 if COL_OCUPACAO:
-    top_ocup = df_filtrado[COL_OCUPACAO].value_counts().idxmax()
+    try:
+        top_ocup = df_filtrado[COL_OCUPACAO].value_counts().idxmax()
+    except:
+        top_ocup = "Indefinido"
 else:
     top_ocup = "Indefinido"
 
@@ -192,19 +191,16 @@ if COL_IDADE:
 
 # Sexo
 if COL_SEXO:
-    fig = px.bar(
-        df_filtrado[COL_SEXO].value_counts().reset_index(),
-        x="index",
-        y=COL_SEXO,
-        title="Distribuição por Sexo"
-    )
+    df_sexo = df_filtrado[COL_SEXO].value_counts().reset_index()
+    df_sexo.columns = ["SEXO", "QTD"]
+    fig = px.bar(df_sexo, x="SEXO", y="QTD", title="Distribuição por Sexo")
     st.plotly_chart(fig, use_container_width=True)
 
 # Raça/Cor
 if COL_RACA:
     df_raca = df_filtrado[COL_RACA].value_counts().reset_index()
-    df_raca.columns = ["RACA", "QTD"]
-    fig = px.bar(df_raca, x="RACA", y="QTD", title="Distribuição por Raça/Cor")
+    df_raca.columns = ["RACA_COR", "QTD"]
+    fig = px.bar(df_raca, x="RACA_COR", y="QTD", title="Distribuição por Raça/Cor")
     st.plotly_chart(fig, use_container_width=True)
 
 # Escolaridade
@@ -235,6 +231,5 @@ if COL_EVOL:
 st.header("📋 Dados Filtrados")
 st.dataframe(df_filtrado, use_container_width=True)
 
-st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
-st.caption("Painel de Saúde do Trabalhador • Versão 1.0")
+st.caption("Painel de Saúde do Trabalhador • Desenvolvido com ❤️ para Ipojuca")
