@@ -37,16 +37,10 @@ def normalize(text):
     return (
         text.strip()
         .upper()
-        .replace("Á", "A")
-        .replace("À", "A")
-        .replace("Ã", "A")
-        .replace("Â", "A")
-        .replace("É", "E")
-        .replace("Ê", "E")
+        .replace("Á", "A").replace("À", "A").replace("Ã", "A").replace("Â", "A")
+        .replace("É", "E").replace("Ê", "E")
         .replace("Í", "I")
-        .replace("Ó", "O")
-        .replace("Õ", "O")
-        .replace("Ô", "O")
+        .replace("Ó", "O").replace("Õ", "O").replace("Ô", "O")
         .replace("Ú", "U")
         .replace("Ç", "C")
         .replace(" ", "_")
@@ -61,7 +55,8 @@ df.columns = [normalize(col) for col in df.columns]
 # -------------------------------------------
 colunas_sensiveis = [
     "NOME", "PACIENTE", "MAE", "MÃE", "NOME_DA_MAE",
-    "ENDERECO", "RUA", "TELEFONE", "CELULAR"
+    "ENDERECO", "RUA", "TELEFONE", "CELULAR",
+    "DATA_DE_NASCIMENTO", "NASCIMENTO", "DN"
 ]
 
 df = df[[col for col in df.columns if all(s not in col for s in colunas_sensiveis)]]
@@ -69,7 +64,6 @@ df = df[[col for col in df.columns if all(s not in col for s in colunas_sensivei
 # -------------------------------------------
 # IDENTIFICAR COLUNAS PRINCIPAIS
 # -------------------------------------------
-
 def encontrar_coluna(possiveis):
     for p in possiveis:
         p_norm = normalize(p)
@@ -80,7 +74,7 @@ def encontrar_coluna(possiveis):
 
 COL_LOCALIDADE = encontrar_coluna(["LOCALIDADE", "BAIRRO", "AREA"])
 COL_CLASSIFICACAO = encontrar_coluna(["CLASSIFICACAO", "STATUS", "TIPO"])
-COL_DATA = encontrar_coluna(["DATA", "DATA_DO_CASO", "NOTIFICACAO", "DATA_ENTRADA"])
+COL_DATA = encontrar_coluna(["DATA", "DATA_CASO", "DATA_DO_CASO", "NOTIFICACAO", "DATA_ENTRADA"])
 COL_GESTANTE = encontrar_coluna(["GESTANTE", "GRAVIDEZ", "GESTACAO"])
 
 # -------------------------------------------
@@ -95,7 +89,6 @@ else:
 # -------------------------------------------
 # FILTROS
 # -------------------------------------------
-
 st.sidebar.subheader("Filtros")
 
 localidades = sorted(df[COL_LOCALIDADE].dropna().unique()) if COL_LOCALIDADE else []
@@ -115,7 +108,6 @@ if f_classificacao:
 # -------------------------------------------
 # INDICADORES PRINCIPAIS
 # -------------------------------------------
-
 col1, col2 = st.columns(2)
 
 with col1:
@@ -130,6 +122,7 @@ with col2:
 
 # -------------------------------------------
 # GRÁFICOS
+# (MÊS continua sendo usado normalmente)
 # -------------------------------------------
 
 st.subheader("📈 Distribuição por Mês")
@@ -141,10 +134,9 @@ fig_mes = px.bar(
 )
 st.plotly_chart(fig_mes, use_container_width=True)
 
-# Distribuição de gestantes
+# Pie de Gestantes
 if COL_GESTANTE:
     st.subheader("🤰 Distribuição de Gestantes")
-
     fig_gest = px.pie(
         df_filtrado,
         names=COL_GESTANTE,
@@ -155,7 +147,6 @@ if COL_GESTANTE:
 # Classificação por mês
 if COL_CLASSIFICACAO:
     st.subheader("📊 Classificação por Mês")
-
     fig_class_mes = px.histogram(
         df_filtrado,
         x="MES",
@@ -165,10 +156,9 @@ if COL_CLASSIFICACAO:
     )
     st.plotly_chart(fig_class_mes, use_container_width=True)
 
-# Localidade x Classificação
+# Localidade vs Classificação
 if COL_LOCALIDADE and COL_CLASSIFICACAO:
     st.subheader("📍 Classificação por Localidade")
-
     fig_lc = px.histogram(
         df_filtrado,
         x=COL_LOCALIDADE,
@@ -179,11 +169,22 @@ if COL_LOCALIDADE and COL_CLASSIFICACAO:
     st.plotly_chart(fig_lc, use_container_width=True)
 
 # -------------------------------------------
-# TABELA FINAL
+# TABELA FINAL – OCULTANDO MES E NASCIMENTO
 # -------------------------------------------
+st.subheader("📋 Dados Filtrados")
 
-st.subheader("📋 Dados Filtrados (sem coluna MES)")
+df_exibicao = df_filtrado.drop(
+    columns=["MES"],
+    errors="ignore"
+)
 
-df_exibicao = df_filtrado.drop(columns=["MES"], errors="ignore")
+# também remove colunas de nascimento caso alguma passe
+df_exibicao = df_exibicao[
+    [col for col in df_exibicao.columns if "NASC" not in col.upper()]
+]
 
 st.dataframe(df_exibicao, use_container_width=True)
+
+st.caption("Desenvolvido por Maviael Barros.")
+st.markdown("---")
+st.caption("Painel de Oropouche • Versão 1.0")
