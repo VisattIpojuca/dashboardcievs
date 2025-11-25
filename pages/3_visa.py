@@ -1,5 +1,6 @@
-# pages/3_Indicadores_VISA.py
-# Painel VISA Ipojuca — Página de Indicadores SEM LOGIN
+# 3_visa.py
+# Painel VISA Ipojuca — Versão revisada e corrigida
+# Requisitos: streamlit, pandas, plotly, openpyxl
 
 import streamlit as st
 import pandas as pd
@@ -8,9 +9,10 @@ from datetime import datetime, timedelta
 import plotly.express as px
 
 # --------------------------------------------------------
-# TÍTULO DA PÁGINA
+# CONFIGURAÇÃO DA PÁGINA
 # --------------------------------------------------------
-st.title("📊 Indicadores - Vigilância Sanitária de Ipojuca")
+st.set_page_config(page_title="Painel VISA Ipojuca", layout="wide")
+st.title("📊 Painel de Produção – Vigilância Sanitária de Ipojuca")
 
 # --------------------------------------------------------
 # CONSTANTES
@@ -18,6 +20,11 @@ st.title("📊 Indicadores - Vigilância Sanitária de Ipojuca")
 GOOGLE_SHEETS_URL = (
     "https://docs.google.com/spreadsheets/d/1zsM8Zxdc-MnXSvV_OvOXiPoc1U4j-FOn/edit?usp=sharing"
 )
+
+# Usuário padrão (visualização simples)
+USERS = {
+    "default": {"role": "standard"},
+}
 
 NOME_MESES = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março",
@@ -27,24 +34,28 @@ NOME_MESES = {
 }
 
 # --------------------------------------------------------
-# FUNÇÕES AUXILIARES
+# HELPERS
 # --------------------------------------------------------
 
 def converter_para_csv(url: str) -> str | None:
+    """Converte URL de Google Sheets para CSV."""
     if not isinstance(url, str):
         return None
     partes = url.split("/d/")
     if len(partes) < 2:
         return None
     sheet_id = partes[1].split("/")[0]
+    if not sheet_id:
+        return None
     return f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
 
 
 @st.cache_data(ttl=600)
 def carregar_planilha_google(url_original: str) -> pd.DataFrame:
+    """Carrega planilha Google Sheets em CSV e normaliza colunas."""
     url_csv = converter_para_csv(url_original)
     if not url_csv:
-        st.error("URL inválida.")
+        st.error("URL do Google Sheets inválida.")
         return pd.DataFrame()
 
     try:
@@ -60,7 +71,6 @@ def carregar_planilha_google(url_original: str) -> pd.DataFrame:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], dayfirst=True, errors="coerce")
 
-    # Ano/Mês
     if "ENTRADA" in df.columns:
         df["ANO_ENTRADA"] = df["ENTRADA"].dt.year
         df["MES_ENTRADA"] = df["ENTRADA"].dt.month
@@ -68,7 +78,6 @@ def carregar_planilha_google(url_original: str) -> pd.DataFrame:
         df["ANO_ENTRADA"] = pd.NA
         df["MES_ENTRADA"] = pd.NA
 
-    # Normalização de texto
     if "SITUAÇÃO" in df.columns:
         df["SITUAÇÃO"] = df["SITUAÇÃO"].fillna("").astype(str).str.upper()
 
@@ -86,15 +95,19 @@ def detectar_coluna(df, candidatos):
 
 
 def gerar_excel_bytes(dfs: dict):
+    """Gera um arquivo Excel usando openpyxl (compatível com Streamlit Cloud)."""
     out = BytesIO()
     with pd.ExcelWriter(out, engine="openpyxl") as writer:
         for name, d in dfs.items():
-            sheet = str(name)[:31]
-            d.to_excel(writer, sheet_name=sheet, index=False)
+            sheet = str(name)[:31] if name else "Sheet"
+            try:
+                d.to_excel(writer, sheet_name=sheet, index=False)
+            except:
+                d.to_excel(writer, sheet_name=sheet[:28] + "_", index=False)
     return out.getvalue()
 
 # --------------------------------------------------------
-# CARREGAR DADOS
+# CARREGAMENTO DOS DADOS
 # --------------------------------------------------------
 
 df = carregar_planilha_google(GOOGLE_SHEETS_URL)
@@ -106,16 +119,22 @@ col_coord = detectar_coluna(df, ["COORDENAÇÃO", "COORDENACAO", "COORDENADORIA"
 col_territorio = detectar_coluna(df, ["TERRITÓRIO", "TERRITORIO", "TERRITORY", "TERR"])
 
 # --------------------------------------------------------
-# FILTROS (SEM LOGIN)
+# USUÁRIO PADRÃO AUTOMÁTICO
 # --------------------------------------------------------
 
-st.sidebar.header("📌 Filtros do Painel")
+st.session_state["user"] = "default"
+st.session_state["role"] = "standard"
+
+# --------------------------------------------------------
+# FILTROS
+# --------------------------------------------------------
+
+st.sidebar.header("Filtros")
 
 modo = st.sidebar.radio("Período:", ["Ano/Mês", "Intervalo de datas"])
 
-anos = sorted(df["ANO_ENTRADA"].dropna().unique())
+anos = sorted(df["ANO_ENTRADA"].dropna().unique()) if "ANO_ENTRADA" in df.columns else []
 ANO_ATUAL = datetime.now().year
-
 if not anos:
     anos = [ANO_ATUAL]
 
@@ -134,16 +153,16 @@ else:
     inicio = st.sidebar.date_input("Início", df["ENTRADA"].min().date())
     fim = st.sidebar.date_input("Fim", df["ENTRADA"].max().date())
 
-# Classificação
+# Classificação (risco)
 riscos = sorted(df["CLASSIFICAÇÃO"].dropna().unique()) if "CLASSIFICAÇÃO" in df.columns else []
 sel_risco = st.sidebar.multiselect("Classificação (Risco)", riscos, default=riscos)
 
-# Como usuário padrão não é admin, oculta filtros extras
+# Usuário padrão NÃO vê filtros avançados
 sel_ter = []
 sel_coord = []
 
 # --------------------------------------------------------
-# APLICAR FILTROS
+# APLICA FILTROS
 # --------------------------------------------------------
 
 filtro_df = df.copy()
@@ -154,7 +173,7 @@ else:
     filtro_df = filtro_df[(filtro_df["ENTRADA"].dt.date >= inicio) & (filtro_df["ENTRADA"].dt.date <= fim)]
 
 if sel_risco:
-    filtro_df = filtro_df[filtro_df["CLASSIFICAÇÃO"].isin(sel_risco)]
+    filtro_df = filtro_df[filtro_df["CLASSIFICÁÇÃO".replace("Á", "A")] .isin(sel_risco)]
 
 # --------------------------------------------------------
 # CÁLCULO DE INDICADORES
@@ -224,7 +243,7 @@ c2.metric("% Inspeções ≤30 dias", f"{p30}%")
 c3.metric("% Conclusões ≤90 dias", f"{p90}%")
 
 # --------------------------------------------------------
-# DOWNLOAD EXCEL (permitido mesmo sem login)
+# DOWNLOAD
 # --------------------------------------------------------
 
 st.download_button(
@@ -233,9 +252,8 @@ st.download_button(
     file_name="relatorio_visa.xlsx",
 )
 
-st.caption("Visualização pública")
+st.caption("Painel VISA Ipojuca – Acesso público")
 
 st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
 st.caption("Painel de Dengue • Versão 1.0")
-
