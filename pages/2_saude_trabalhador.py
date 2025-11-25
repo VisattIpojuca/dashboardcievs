@@ -20,7 +20,6 @@ st.title("👷 Saúde do Trabalhador – Painel Analítico")
 
 # ------------------------------------------------------------
 # FUNÇÃO UNIVERSAL PARA NORMALIZAR COLUNAS
-# Faz com que qualquer variação funcione
 # ------------------------------------------------------------
 def normalizar(texto):
     if not isinstance(texto, str):
@@ -48,14 +47,13 @@ def detectar_coluna(df, lista_chaves):
 
 
 # ------------------------------------------------------------
-# CARREGAR PLANILHA DIRETO DO GOOGLE SHEETS
+# CARREGAR PLANILHA – GOOGLE SHEETS
 # ------------------------------------------------------------
 @st.cache_data
 def carregar_dados():
     url = "https://docs.google.com/spreadsheets/d/1Guru662qCn9bX8iZhckcbRu2nG8my4Eu5l5JK5yTNik/export?format=csv"
     df = pd.read_csv(url, dtype=str)
 
-    # Converter números quando possível
     for col in df.columns:
         df[col] = df[col].replace("", np.nan)
 
@@ -70,7 +68,7 @@ if df is None or df.empty:
 
 
 # ------------------------------------------------------------
-# DETECTAR COLUNAS AUTOMATICAMENTE (TODAS)
+# DETECÇÃO DE TODAS AS COLUNAS IMPORTANTES
 # ------------------------------------------------------------
 COL_DATA      = detectar_coluna(df, ["DATAOCORRENCIA", "DATADEOCORRENCIA", "OCORRENCIA"])
 COL_SEXO      = detectar_coluna(df, ["SEXO"])
@@ -80,7 +78,9 @@ COL_ESCOL     = detectar_coluna(df, ["ESCOLARIDADE"])
 COL_OCUP      = detectar_coluna(df, ["OCUPACAO"])
 COL_SIT_MERC  = detectar_coluna(df, ["SITUACAO", "MERCADO"])
 COL_BAIRRO    = detectar_coluna(df, ["BAIRRO"])
-COL_EVOL      = detectar_coluna(df, ["EVOLUCAO"])
+COL_EVOL      = detectar_coluna(df, ["EVOLUCAO", "EVOL", "DESFECHO"])
+COL_OBITO     = detectar_coluna(df, ["OBITO", "MORTE", "FALEC", "ÓBITO"])
+
 
 # ------------------------------------------------------------
 # CONVERTER DATA
@@ -89,7 +89,7 @@ if COL_DATA:
     df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce", dayfirst=True)
     df["SEMANA"] = df[COL_DATA].dt.isocalendar().week
 else:
-    st.error("⚠ Não foi possível identificar a coluna de DATA DE OCORRÊNCIA.")
+    st.error("⚠ Não foi possível identificar a coluna de DATA DA OCORRÊNCIA.")
     st.stop()
 
 
@@ -98,7 +98,6 @@ else:
 # ------------------------------------------------------------
 st.sidebar.header("Filtros")
 
-# Criar filtros SOMENTE se a coluna existir
 def filtro(col, label):
     if col and col in df.columns:
         return st.sidebar.multiselect(
@@ -148,21 +147,34 @@ if f_semana:
 
 
 # ------------------------------------------------------------
-# INDICADORES PRINCIPAIS
+# INDICADORES PRINCIPAIS  (AGORA COM ÓBITOS)
 # ------------------------------------------------------------
 st.header("📊 Indicadores Principais")
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
 total = len(df_filtrado)
 
+# Média semanal
 media_semanal = df_filtrado.groupby("SEMANA").size().mean() if total > 0 else 0
 
+# Ocupação mais afetada
 ocupacao_top = (
     df_filtrado[COL_OCUP].mode().iloc[0]
     if COL_OCUP and df_filtrado[COL_OCUP].notna().any()
     else "Não informado"
 )
+
+# Número de óbitos
+def contar_obitos(df):
+    if COL_OBITO and COL_OBITO in df.columns:
+        # conta qualquer variação contendo indicativos de óbito
+        return df[COL_OBITO].str.contains("OBIT|MORT|FALEC", case=False, na=False).sum()
+    elif COL_EVOL and COL_EVOL in df.columns:
+        return df[COL_EVOL].str.contains("OBIT|MORT|FALEC", case=False, na=False).sum()
+    return 0
+
+total_obitos = contar_obitos(df_filtrado)
 
 with col1:
     st.metric("Total de Ocorrências", total)
@@ -173,9 +185,12 @@ with col2:
 with col3:
     st.metric("Ocupação mais afetada", ocupacao_top)
 
+with col4:
+    st.metric("Óbitos Registrados", total_obitos)
+
 
 # ------------------------------------------------------------
-# GRÁFICO TEMPORAL (SEMANA)
+# GRÁFICO TEMPORAL POR SEMANA
 # ------------------------------------------------------------
 st.header("📈 Ocorrências por Semana Epidemiológica")
 
@@ -194,7 +209,7 @@ st.plotly_chart(fig_tempo, use_container_width=True)
 
 
 # ------------------------------------------------------------
-# GRÁFICOS DEMOGRÁFICOS E SOCIAIS
+# FUNÇÃO PARA GRÁFICOS DE BARRAS
 # ------------------------------------------------------------
 def grafico_barras(col, titulo):
     if col and col in df_filtrado.columns:
@@ -203,6 +218,10 @@ def grafico_barras(col, titulo):
         fig = px.bar(df_plot, x=col, y="Quantidade", title=titulo)
         st.plotly_chart(fig, use_container_width=True)
 
+
+# ------------------------------------------------------------
+# GRÁFICOS DEMOGRÁFICOS
+# ------------------------------------------------------------
 st.header("📊 Distribuições")
 
 grafico_barras(COL_IDADE, "Distribuição por Idade")
@@ -214,7 +233,7 @@ grafico_barras(COL_EVOL, "Distribuição por Evolução do Caso")
 
 
 # ------------------------------------------------------------
-# TABELA COMPLETA
+# TABELA DETALHADA
 # ------------------------------------------------------------
 st.header("📋 Tabela Detalhada")
 
@@ -225,4 +244,4 @@ st.dataframe(df_filtrado, use_container_width=True)
 # FOOTER
 # ------------------------------------------------------------
 st.markdown("---")
-st.markdown("*Painel de Saúde do Trabalhador – Versão 2.0 (robusta)*")
+st.markdown("*Painel de Saúde do Trabalhador – Versão 1.0*")
