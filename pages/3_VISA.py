@@ -262,5 +262,6 @@ st.caption("Painel VISA Ipojuca – Acesso público")
 
 st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
-st.caption("Painel de Dengue • Versão 1.0")
+st.caption("Painel de Indicadores da Vigilância Sanitária • Versão 1.0")
+
 
