@@ -111,43 +111,80 @@ COL_SITUACAO_TRAB = detectar_coluna(df, ["SITUACAO_TRABALHO", "SITUACAO NO MERCA
 df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
 
 # ----------------------------------------------------------
+# CRIAÇÃO DA SEMANA EPIDEMIOLÓGICA
+# ----------------------------------------------------------
+df["SEMANA_EPI"] = df[COL_DATA].dt.isocalendar().week.astype(int)
+
+# ----------------------------------------------------------
 # FILTROS
 # ----------------------------------------------------------
+
 st.sidebar.header("Filtros")
 
 df_filtrado = df.copy()
 
-# Filtro de data
-min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
-data_ini, data_fim = st.sidebar.date_input(
-    "Período",
-    value=[min_d, max_d],
-    min_value=min_d,
-    max_value=max_d
-)
+# Filtro de Semana Epidemiológica
+semanas = sorted(df_filtrado["SEMANA_EPI"].dropna().unique())
+semana_sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
 
-df_filtrado = df_filtrado[
-    (df_filtrado[COL_DATA] >= pd.to_datetime(data_ini)) &
-    (df_filtrado[COL_DATA] <= pd.to_datetime(data_fim))
-]
+if semana_sel:
+    df_filtrado = df_filtrado[df_filtrado["SEMANA_EPI"].isin(semana_sel)]
 
-# Filtros dinâmicos
-def add_filtro(label, coluna):
-    global df_filtrado
-    if coluna and coluna in df_filtrado.columns:
-        valores = sorted(df_filtrado[coluna].dropna().unique())
-        selecionados = st.sidebar.multiselect(label, valores)
-        if selecionados:
-            df_filtrado = df_filtrado[df_filtrado[coluna].isin(selecionados)]
+# IDADE
+if COL_IDADE:
+    idades = sorted(df_filtrado[COL_IDADE].dropna().unique())
+    idade_sel = st.sidebar.multiselect("Idade", idades)
+    if idade_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_IDADE].isin(idade_sel)]
 
-add_filtro("Sexo", COL_SEXO)
-add_filtro("Idade", COL_IDADE)
-add_filtro("Raça/Cor", COL_RACA)
-add_filtro("Escolaridade", COL_ESCOLARIDADE)
-add_filtro("Ocupação", COL_OCUPACAO)
-add_filtro("Situação no Mercado de Trabalho", COL_SITUACAO_TRAB)
-add_filtro("Bairro de Ocorrência", COL_BAIRRO)
-add_filtro("Evolução do Caso", COL_EVOL)
+# SEXO
+if COL_SEXO:
+    sexos = sorted(df_filtrado[COL_SEXO].dropna().unique())
+    sexo_sel = st.sidebar.multiselect("Sexo", sexos)
+    if sexo_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_SEXO].isin(sexo_sel)]
+
+# RAÇA/COR
+if COL_RACA:
+    racas = sorted(df_filtrado[COL_RACA].dropna().unique())
+    raca_sel = st.sidebar.multiselect("Raça/Cor", racas)
+    if raca_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_RACA].isin(raca_sel)]
+
+# ESCOLARIDADE
+if COL_ESCOLARIDADE:
+    escs = sorted(df_filtrado[COL_ESCOLARIDADE].dropna().unique())
+    esc_sel = st.sidebar.multiselect("Escolaridade", escs)
+    if esc_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_ESCOLARIDADE].isin(esc_sel)]
+
+# OCUPAÇÃO
+if COL_OCUPACAO:
+    ocup = sorted(df_filtrado[COL_OCUPACAO].dropna().unique())
+    ocup_sel = st.sidebar.multiselect("Ocupação", ocup)
+    if ocup_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_OCUPACAO].isin(ocup_sel)]
+
+# SITUAÇÃO NO MERCADO DE TRABALHO
+if COL_SITUACAO_TRAB:
+    sit = sorted(df_filtrado[COL_SITUACAO_TRAB].dropna().unique())
+    sit_sel = st.sidebar.multiselect("Situação no Mercado de Trabalho", sit)
+    if sit_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_SITUACAO_TRAB].isin(sit_sel)]
+
+# BAIRRO DE OCORRÊNCIA
+if COL_BAIRRO:
+    bairros = sorted(df_filtrado[COL_BAIRRO].dropna().unique())
+    bairro_sel = st.sidebar.multiselect("Bairro de Ocorrência", bairros)
+    if bairro_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_BAIRRO].isin(bairro_sel)]
+
+# EVOLUÇÃO DO CASO
+if COL_EVOL:
+    evols = sorted(df_filtrado[COL_EVOL].dropna().unique())
+    evol_sel = st.sidebar.multiselect("Evolução do Caso", evols)
+    if evol_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_EVOL].isin(evol_sel)]
 
 if df_filtrado.empty:
     st.warning("Nenhum dado encontrado com os filtros selecionados.")
