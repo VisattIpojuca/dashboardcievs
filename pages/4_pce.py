@@ -180,11 +180,44 @@ if COL_DATA:
     st.plotly_chart(fig, use_container_width=True)
 
 # ---------------------------------------------------------
-# TABELA FINAL
+# TABELA FINAL – APENAS AS COLUNAS ESPECIFICADAS
 # ---------------------------------------------------------
 
 st.header("📋 Dados Filtrados")
-st.dataframe(df_filtrado, use_container_width=True)
+
+# Detectar automaticamente colunas equivalentes
+mapa_colunas = {
+    "LOCALIDADE": ["LOCALIDADE", "BAIRRO", "AREA", "TERRITORIO"],
+    "EXAMES": ["EXAMES", "TOTAL_EXAMES", "N_EXAMES"],
+    "A TRATAR": ["A_TRATAR", "A TRATAR", "N_A_TRATAR"],
+    "TRATADOS": ["TRATADOS", "N_TRATADOS"],
+    "POSITIVOS": ["POSITIVOS", "CASOS_POSITIVOS", "TESTES_POSITIVOS"],
+    "POP. TRAB": ["POP_TRAB", "POP. TRAB", "POP_TRABALHADORES", "POP TRAB"]
+}
+
+def encontrar_coluna(df, lista_nomes):
+    """Retorna a coluna presente no DataFrame dentre as opções possíveis."""
+    lista_normalizada = [normalize(c) for c in df.columns]
+
+    for nome in lista_nomes:
+        nome_norm = normalize(nome)
+        for i, col_df in enumerate(df.columns):
+            if normalize(col_df) == nome_norm:
+                return col_df
+    return None
+
+# Selecionar apenas as colunas desejadas
+colunas_finais = []
+
+for alvo, candidatos in mapa_colunas.items():
+    coluna_encontrada = encontrar_coluna(df_filtrado, candidates if (candidates := candidatos) else [])
+    if coluna_encontrada:
+        colunas_finais.append(coluna_encontrada)
+
+# Garantir que só as colunas desejadas apareçam
+df_visivel = df_filtrado[colunas_finais].copy()
+
+st.dataframe(df_visivel, use_container_width=True)
 
 st.markdown("---")
 st.caption("Dashboard por PCE • Vigilância em Saúde Ipojuca")
