@@ -21,52 +21,44 @@ st.title("👷 Saúde do Trabalhador - Análise de Acidentes de Trabalho")
 # ----------------------------------------------------------
 
 def normalize(text):
-    """Remove acentos, espaços e deixa tudo padronizado."""
     if pd.isna(text):
         return ""
     text = str(text)
     text = unicodedata.normalize("NFKD", text)
-    text = "".join([c for c in text if not unicodedata.combining(c)])
+    text = "".join(c for c in text if not unicodedata.combining(c))
     return text.replace(" ", "_").upper()
 
 
-def detectar_coluna_similar(df, termos_busca):
-    """Busca uma coluna compatível por similaridade aproximada."""
-    colunas_norm = {normalize(c): c for c in df.columns}
-
-    for col_norm, col_original in colunas_norm.items():
-        for termo in termos_busca:
-            if termo in col_norm:
-                return col_original
-
+def detectar_coluna(df, termos):
+    cols_norm = {normalize(c): c for c in df.columns}
+    for alvo in termos:
+        for col_norm, original in cols_norm.items():
+            if alvo in col_norm:
+                return original
     return None
 
 
 def contar_obitos(df, coluna):
-    """Identifica óbitos com ultra segurança: similaridade + texto exato."""
     if coluna not in df.columns:
         return 0
-
-    PADROES = [
-        r"OBIT",
-        r"ÓBIT",
-        r"MORT",
-        r"FALEC",
-        r"OBITO",
-        r"ÓBITO",
-        r"OBITOS",
-        r"ÓBITOS",
-        r"ÓBITO POR ACIDENTE DE TRABALHO GRAVE",
-        r"OBITO POR ACIDENTE DE TRABALHO GRAVE"
+    
+    padrões = [
+        "ÓBITO POR ACIDENTE DE TRABALHO GRAVE",
+        "OBITO POR ACIDENTE DE TRABALHO GRAVE",
+        "ÓBITO",
+        "OBITO",
+        "MORTE",
+        "FALEC"
     ]
-
-    texto = df[coluna].astype(str)
-
-    total = 0
-    for padrao in PADROES:
-        total += texto.str.contains(padrao, case=False, na=False).sum()
-
-    return total
+    
+    serie = df[coluna].astype(str).str.upper()
+    
+    resultados = pd.DataFrame({
+        p: serie.str.contains(p, case=False, na=False)
+        for p in padrões
+    })
+    
+    return resultados.any(axis=1).sum()
 
 
 # ----------------------------------------------------------
@@ -75,51 +67,43 @@ def contar_obitos(df, coluna):
 @st.cache_data
 def carregar_dados():
     url = "https://docs.google.com/spreadsheets/d/1Guru662qCn9bX8iZhckcbRu2nG8my4Eu5l5JK5yTNik/export?format=csv"
-
-    try:
-        df = pd.read_csv(url, dtype=str)
-    except:
-        st.error("❌ Não foi possível carregar a base de dados.")
-        st.stop()
-
+    df = pd.read_csv(url, dtype=str)
+    
     df.columns = [normalize(c) for c in df.columns]
     df.columns = [c.replace("__", "_") for c in df.columns]
     df.columns = [c.replace("_", " ") for c in df.columns]
-
+    
     return df
-
 
 df = carregar_dados()
 
 # ----------------------------------------------------------
-# DETECÇÃO AUTOMÁTICA DE COLUNAS
+# IDENTIFICAR COLUNAS IMPORTANTES
 # ----------------------------------------------------------
-
-# Data
-COL_DATA = detectar_coluna_similar(df, ["DATA", "OCORR"])
-
+COL_DATA = detectar_coluna(df, ["DATA", "OCORR"])
 df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
 
-# Demais campos
-COL_SEXO = detectar_coluna_similar(df, ["SEXO"])
-COL_IDADE = detectar_coluna_similar(df, ["IDADE"])
-COL_RACA = detectar_coluna_similar(df, ["RACA", "RAÇA", "COR"])
-COL_ESCOLARIDADE = detectar_coluna_similar(df, ["ESCOLAR"])
-COL_BAIRRO = detectar_coluna_similar(df, ["BAIRRO"])
-COL_OCUPACAO = detectar_coluna_similar(df, ["OCUP"])
-COL_SITUACAO_TRAB = detectar_coluna_similar(df, ["SITUACAO", "MERCADO"])
-COL_EVOL = detectar_coluna_similar(df, ["EVOL", "CASO", "DESFECHO"])
+COL_SEXO = detectar_coluna(df, ["SEXO"])
+COL_IDADE = detectar_coluna(df, ["IDADE"])
+COL_RACA = detectar_coluna(df, ["RACA", "RAÇA", "COR"])
+COL_ESCOLARIDADE = detectar_coluna(df, ["ESCOLAR"])
+COL_BAIRRO = detectar_coluna(df, ["BAIRRO"])
+COL_OCUPACAO = detectar_coluna(df, ["OCUP"])
+COL_SITUACAO = detectar_coluna(df, ["SITUACAO", "MERCADO"])
+COL_EVOL = detectar_coluna(df, ["EVOL", "CASO", "DESFECHO"])
 
+# 🔥 NOVO: Semana Epidemiológica
+COL_SEMANA = detectar_coluna(df, [
+    "SEMANA", "EPID", "SE", "SEMANA_EPIDEMIOLOGICA", "SEM EPID"
+])
 
 # ----------------------------------------------------------
 # FILTROS
 # ----------------------------------------------------------
 
 st.sidebar.header("Filtros")
-
 df_filtrado = df.copy()
 
-# Datas
 min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
 
 data_ini, data_fim = st.sidebar.date_input(
@@ -134,33 +118,37 @@ df_filtrado = df_filtrado[
     (df_filtrado[COL_DATA] <= pd.to_datetime(data_fim))
 ]
 
+# 🔥 Filtro de Semana Epidemiológica
+if COL_SEMANA:
+    semanas = sorted(df[COL_SEMANA].dropna().unique())
+    semanas_sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
+    if semanas_sel:
+        df_filtrado = df_filtrado[df_filtrado[COL_SEMANA].isin(semanas_sel)]
 
-# Função de filtro
-def add_filtro(nome, coluna):
+# Função para filtros gerais
+def add_filtro(label, coluna):
     global df_filtrado
-    if coluna and coluna in df_filtrado.columns:
-        valores = sorted(df_filtrado[coluna].dropna().unique())
-        selecionados = st.sidebar.multiselect(nome, valores)
-        if selecionados:
-            df_filtrado = df_filtrado[df_filtrado[coluna].isin(selecionados)]
-
+    if coluna:
+        opcoes = sorted(df[coluna].dropna().unique())
+        escolhidos = st.sidebar.multiselect(label, opcoes)
+        if escolhidos:
+            df_filtrado = df_filtrado[df_filtrado[coluna].isin(escolhidos)]
 
 add_filtro("Sexo", COL_SEXO)
 add_filtro("Idade", COL_IDADE)
 add_filtro("Raça/Cor", COL_RACA)
 add_filtro("Escolaridade", COL_ESCOLARIDADE)
 add_filtro("Ocupação", COL_OCUPACAO)
-add_filtro("Situação no Mercado de Trabalho", COL_SITUACAO_TRAB)
+add_filtro("Situação no Mercado de Trabalho", COL_SITUACAO)
 add_filtro("Bairro de Ocorrência", COL_BAIRRO)
 add_filtro("Evolução do Caso", COL_EVOL)
 
 if df_filtrado.empty:
-    st.warning("Nenhum dado encontrado com os filtros selecionados.")
+    st.warning("Nenhum dado encontrado.")
     st.stop()
 
-
 # ----------------------------------------------------------
-# INDICADORES PRINCIPAIS
+# INDICADORES
 # ----------------------------------------------------------
 
 st.header("📊 Indicadores Principais")
@@ -168,108 +156,62 @@ st.header("📊 Indicadores Principais")
 total = len(df_filtrado)
 obitos = contar_obitos(df_filtrado, COL_EVOL)
 
-if COL_OCUPACAO:
-    top_ocup = df_filtrado[COL_OCUPACAO].value_counts().idxmax()
-else:
-    top_ocup = "Indefinido"
+top_ocup = df_filtrado[COL_OCUPACAO].value_counts().idxmax() if COL_OCUPACAO else "Indefinido"
 
-col1, col2, col3 = st.columns(3)
-
-col1.metric("Total de Acidentes", total)
-col2.metric("Óbitos", obitos)
-col3.metric("Ocupação mais afetada", top_ocup)
-
+c1, c2, c3 = st.columns(3)
+c1.metric("Total de Acidentes", total)
+c2.metric("Óbitos", obitos)
+c3.metric("Ocupação mais afetada", top_ocup)
 
 # ----------------------------------------------------------
 # GRÁFICOS
 # ----------------------------------------------------------
 
-st.header("📈 Distribuições de Atributos")
+st.header("📈 Distribuições")
 
-# ----------------------
-# GRÁFICO DE SEXO - PIZZA
-# ----------------------
+# Sexo
 if COL_SEXO:
-    df_sx = df_filtrado[COL_SEXO].value_counts().reset_index()
-    df_sx.columns = ["SEXO", "QTD"]
-
-    fig = px.pie(
-        df_sx,
-        names="SEXO",
-        values="QTD",
-        title="Distribuição por Sexo",
-        hole=0.3
-    )
+    ds = df_filtrado[COL_SEXO].value_counts().reset_index()
+    ds.columns = ["SEXO", "QTD"]
+    fig = px.pie(ds, names="SEXO", values="QTD", title="Distribuição por Sexo", hole=0.3)
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ----------------------
-# GRÁFICO RAÇA/COR X SEXO (AGRUPADO)
-# ----------------------
+# Raça/cor x sexo
 if COL_RACA and COL_SEXO:
-    df_cross = (
-        df_filtrado
-        .groupby([COL_RACA, COL_SEXO])
-        .size()
-        .reset_index(name="QTD")
-    )
-
-    fig = px.bar(
-        df_cross,
-        x=COL_RACA,
-        y="QTD",
-        color=COL_SEXO,
-        barmode="group",
-        title="Raça/Cor por Sexo"
-    )
-
+    d = df[[COL_RACA, COL_SEXO]].dropna()
+    d = d.groupby([COL_RACA, COL_SEXO]).size().reset_index(name="QTD")
+    fig = px.bar(d, x=COL_RACA, y="QTD", color=COL_SEXO, barmode="group",
+                 title="Raça/Cor por Sexo")
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ----------------------
-# IDADE
-# ----------------------
+# Idade
 if COL_IDADE:
-    fig = px.histogram(
-        df_filtrado,
-        x=COL_IDADE,
-        title="Distribuição por Idade"
-    )
+    fig = px.histogram(df_filtrado, x=COL_IDADE, title="Distribuição por Idade")
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ----------------------
-# ESCOLARIDADE
-# ----------------------
+# Escolaridade
 if COL_ESCOLARIDADE:
-    df_es = df_filtrado[COL_ESCOLARIDADE].value_counts().reset_index()
-    df_es.columns = ["ESCOLARIDADE", "QTD"]
-    fig = px.bar(df_es, x="ESCOLARIDADE", y="QTD", title="Escolaridade")
+    df_esc = df_filtrado[COL_ESCOLARIDADE].value_counts().reset_index()
+    df_esc.columns = ["ESCOLARIDADE", "QTD"]
+    fig = px.bar(df_esc, x="ESCOLARIDADE", y="QTD", title="Escolaridade")
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ----------------------
-# BAIRRO
-# ----------------------
+# Bairro
 if COL_BAIRRO:
-    df_b = df_filtrado[COL_BAIRRO].value_counts().reset_index()
-    df_b.columns = ["BAIRRO", "QTD"]
-    fig = px.bar(df_b.head(20), x="BAIRRO", y="QTD", title="Top 20 Bairros")
+    df_bairro = df_filtrado[COL_BAIRRO].value_counts().reset_index()
+    df_bairro.columns = ["BAIRRO", "QTD"]
+    fig = px.bar(df_bairro.head(20), x="BAIRRO", y="QTD", title="Top 20 Bairros")
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ----------------------
-# EVOLUÇÃO DO CASO
-# ----------------------
+# Evolução do caso
 if COL_EVOL:
     df_ev = df_filtrado[COL_EVOL].value_counts().reset_index()
     df_ev.columns = ["EVOLUCAO", "QTD"]
     fig = px.bar(df_ev, x="EVOLUCAO", y="QTD", title="Evolução dos Casos")
     st.plotly_chart(fig, use_container_width=True)
 
-
 # ----------------------------------------------------------
-# TABELA FINAL
+# TABELA
 # ----------------------------------------------------------
 
 st.header("📋 Dados Filtrados")
