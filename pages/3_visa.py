@@ -243,17 +243,24 @@ c2.metric("% Inspeções ≤30 dias", f"{p30}%")
 c3.metric("% Conclusões ≤90 dias", f"{p90}%")
 
 # --------------------------------------------------------
-# DOWNLOAD
+# DOWNLOAD SEGURO (SEM ERRO NA TELA)
 # --------------------------------------------------------
 
-st.download_button(
-    "📥 Baixar Excel",
-    data=gerar_excel_bytes({"dados_filtrados": filtro_df, "tabela": tabela}),
-    file_name="relatorio_visa.xlsx",
-)
+try:
+    excel_bytes = gerar_excel_bytes({"dados_filtrados": filtro_df, "tabela": tabela})
+
+    st.download_button(
+        "📥 Baixar Excel",
+        data=excel_bytes,
+        file_name="relatorio_visa.xlsx",
+    )
+
+except Exception:
+    st.info("📁 O download do Excel não está disponível neste ambiente.")
 
 st.caption("Painel VISA Ipojuca – Acesso público")
 
 st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
 st.caption("Painel de Dengue • Versão 1.0")
+
