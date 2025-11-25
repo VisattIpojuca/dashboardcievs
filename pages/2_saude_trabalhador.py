@@ -235,5 +235,6 @@ if COL_EVOL:
 st.header("📋 Dados Filtrados")
 st.dataframe(df_filtrado, use_container_width=True)
 
+st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
 st.caption("Painel de Saúde do Trabalhador • Versão 1.0")
