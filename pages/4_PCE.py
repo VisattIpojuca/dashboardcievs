@@ -222,6 +222,7 @@ st.dataframe(df_visivel, use_container_width=True)
 st.markdown("---")
 st.caption("Dashboard por PCE • Vigilância em Saúde Ipojuca")
 
-st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
+
 st.caption("Painel do Programa de Controle da Esquistossomose • Versão 1.0")
+st.caption("Desenvolvido por Maviael Barros.")
