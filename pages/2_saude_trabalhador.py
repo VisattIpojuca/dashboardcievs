@@ -113,47 +113,54 @@ df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
 # ----------------------------------------------------------
 # FILTROS
 # ----------------------------------------------------------
-
 st.sidebar.header("Filtros")
 
-df_filtrado = df.copy()
+def filtro(col, label):
+    if col and col in df.columns:
+        return st.sidebar.multiselect(
+            label,
+            options=sorted(df[col].dropna().unique().tolist()),
+            default=None
+        )
+    return None
 
-# Filtro de data
-min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
-data_ini, data_fim = st.sidebar.date_input(
-    "Período",
-    value=[min_d, max_d],
-    min_value=min_d,
-    max_value=max_d
+
+filtro_sexo   = filtro(COL_SEXO, "Sexo")
+filtro_idade  = filtro(COL_IDADE, "Idade")
+filtro_raca   = filtro(COL_RACA, "Raça/Cor")
+filtro_escol  = filtro(COL_ESCOL, "Escolaridade")
+filtro_ocup   = filtro(COL_OCUP, "Ocupação")
+filtro_sit    = filtro(COL_SIT_MERC, "Situação no Mercado de Trabalho")
+filtro_bairro = filtro(COL_BAIRRO, "Bairro de Ocorrência")
+filtro_evol   = filtro(COL_EVOL, "Evolução do Caso")
+
+f_semana = st.sidebar.multiselect(
+    "Semana Epidemiológica",
+    options=sorted(df["SEMANA"].dropna().unique().tolist())
 )
 
-df_filtrado = df_filtrado[
-    (df_filtrado[COL_DATA] >= pd.to_datetime(data_ini)) &
-    (df_filtrado[COL_DATA] <= pd.to_datetime(data_fim))
-]
 
-# Filtros dinâmicos
-def add_filtro(label, coluna):
-    global df_filtrado
-    if coluna and coluna in df_filtrado.columns:
-        valores = sorted(df_filtrado[coluna].dropna().unique())
-        selecionados = st.sidebar.multiselect(label, valores)
-        if selecionados:
-            df_filtrado = df_filtrado[df_filtrado[coluna].isin(selecionados)]
+# ------------------------------------------------------------
+# APLICAR FILTROS
+# ------------------------------------------------------------
+df_filtrado = df.copy()
 
-add_filtro("Sexo", COL_SEXO)
-add_filtro("Idade", COL_IDADE)
-add_filtro("Raça/Cor", COL_RACA)
-add_filtro("Escolaridade", COL_ESCOLARIDADE)
-add_filtro("Ocupação", COL_OCUPACAO)
-add_filtro("Situação no Mercado de Trabalho", COL_SITUACAO_TRAB)
-add_filtro("Bairro de Ocorrência", COL_BAIRRO)
-add_filtro("Evolução do Caso", COL_EVOL)
+def aplicar(df, coluna, valores):
+    if coluna and coluna in df.columns and valores:
+        return df[df[coluna].isin(valores)]
+    return df
 
-if df_filtrado.empty:
-    st.warning("Nenhum dado encontrado com os filtros selecionados.")
-    st.stop()
+df_filtrado = aplicar(df_filtrado, COL_SEXO, filtro_sexo)
+df_filtrado = aplicar(df_filtrado, COL_IDADE, filtro_idade)
+df_filtrado = aplicar(df_filtrado, COL_RACA, filtro_raca)
+df_filtrado = aplicar(df_filtrado, COL_ESCOL, filtro_escol)
+df_filtrado = aplicar(df_filtrado, COL_OCUP, filtro_ocup)
+df_filtrado = aplicar(df_filtrado, COL_SIT_MERC, filtro_sit)
+df_filtrado = aplicar(df_filtrado, COL_BAIRRO, filtro_bairro)
+df_filtrado = aplicar(df_filtrado, COL_EVOL, filtro_evol)
 
+if f_semana:
+    df_filtrado = df_filtrado[df_filtrado["SEMANA"].isin(f_semana)]
 # ----------------------------------------------------------
 # INDICADORES PRINCIPAIS
 # ----------------------------------------------------------
