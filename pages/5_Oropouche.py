@@ -7,12 +7,12 @@ import plotly.express as px
 # CONFIGURAÇÃO DA PÁGINA
 # -------------------------------------------
 st.set_page_config(
-    page_title="Gestação - Dashboard",
-    page_icon="👶",
+    page_title="Oropouche - Dashboard",
+    page_icon="🦟",
     layout="wide"
 )
 
-st.title("👶 Dashboard de Gestação - Vigilância em Saúde")
+st.title("👶 Dashboard de Oropouche - Vigilância em Saúde")
 st.markdown("Monitoramento de gestantes por localidade, classificação e período.")
 
 # -------------------------------------------
@@ -170,7 +170,7 @@ if COL_CLASSIFICACAO:
 
 # Localidade x Classificação
 if COL_LOCALIDADE and COL_CLASSIFICACAO:
-    st.subheader("📍 Localidade × Classificação")
+    st.subheader("📍 Classificação e Localidade")
 
     fig_lc = px.histogram(
         df_filtrado,
@@ -185,6 +185,6 @@ if COL_LOCALIDADE and COL_CLASSIFICACAO:
 # TABELA FINAL
 # -------------------------------------------
 
-st.subheader("📋 Dados Filtrados (somente colunas permitidas)")
+st.subheader("📋 Dados Filtrados")
 
 st.dataframe(df_filtrado, use_container_width=True)
