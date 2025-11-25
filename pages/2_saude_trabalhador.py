@@ -117,7 +117,7 @@ df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
 # FILTROS
 # ----------------------------------------------------------
 
-st.sidebar.header("Filtros")
+st.sidebar.header("🔎 Filtros")
 
 df_filtrado = df.copy()
 
