@@ -231,6 +231,6 @@ st.download_button(
     mime="text/csv"
 )
 
-st.caption("Desenvolvido pelo CIEVS Ipojuca.")
+st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
 st.caption("Painel de Dengue • Versão 1.0")
