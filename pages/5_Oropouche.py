@@ -212,10 +212,10 @@ else:
 # ---------------------------
 # GRÁFICOS (usando MES_NOTIF — Data da Notificação)
 # ---------------------------
-st.markdown("## 📈 Séries Temporais (Data da Notificação)")
+st.markdown("## 📈 Séries Temporais")
 
 # 1) Casos por mês (linha)
-st.subheader("Casos por Mês (Data da Notificação)")
+st.subheader("Casos por Mês")
 
 if "MES_NOTIF" in df_filtrado.columns:
     series = (
@@ -232,7 +232,7 @@ if "MES_NOTIF" in df_filtrado.columns:
         x="MES_NOTIF",
         y="CASOS",
         markers=True,
-        title="Evolução mensal dos casos (Data da Notificação)",
+        title="Evolução mensal dos casos ",
         labels={"MES_NOTIF": "Mês (YYYY-MM)", "CASOS": "Casos"}
     )
     fig_mes.update_layout(xaxis=dict(tickangle=-45))
@@ -256,7 +256,7 @@ if "MES_NOTIF" in df_filtrado.columns and COL_CLASSIFICACAO in df_filtrado.colum
         y="CASOS",
         color=COL_CLASSIFICACAO,
         markers=True,
-        title="Classificação por Mês (Data da Notificação)",
+        title="Classificação por Mês",
         labels={"MES_NOTIF": "Mês (YYYY-MM)", "CASOS": "Casos"}
     )
     fig_class.update_layout(xaxis=dict(tickangle=-45))
@@ -266,7 +266,7 @@ else:
 
 # 3) Distribuição por Localidade (barras agrupadas por classificação)
 if COL_LOCALIDADE and COL_CLASSIFICACAO and COL_LOCALIDADE in df_filtrado.columns:
-    st.subheader("Distribuição por Localidade (por classificação)")
+    st.subheader("Distribuição por Localidade")
     loc_summary = (
         df_filtrado
         .groupby([COL_LOCALIDADE, COL_CLASSIFICACAO])
@@ -294,7 +294,7 @@ if COL_SEXO and COL_SEXO in df_filtrado.columns:
 
 # 5) Raça/Cor x Sexo (cruzamento)
 if COL_RACA and COL_SEXO and COL_RACA in df_filtrado.columns and COL_SEXO in df_filtrado.columns:
-    st.subheader("Raça/Cor por Sexo (distribuição)")
+    st.subheader("Raça/Cor por Sexo")
     cruz = df_filtrado.groupby([COL_RACA, COL_SEXO]).size().reset_index(name="QTD")
     fig_raca_sexo = px.bar(
         cruz,
@@ -309,7 +309,7 @@ if COL_RACA and COL_SEXO and COL_RACA in df_filtrado.columns and COL_SEXO in df_
 # ---------------------------
 # TABELA FINAL: ocultar MES_NOTIF e colunas sensíveis (já removidas antes)
 # ---------------------------
-st.markdown("## 📋 Dados Filtrados (visíveis)")
+st.markdown("## 📋 Dados Filtrados")
 
 # colunas a ocultar explicitamente
 ocultar = ["MES_NOTIF", "SE_SEMANA"]
