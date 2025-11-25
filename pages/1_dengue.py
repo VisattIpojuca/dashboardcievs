@@ -1,219 +1,315 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime
+import unicodedata # Módulo essencial para lidar com acentos/caracteres ocultos
 
-# Configuração da página
-st.set_page_config(
-    page_title="Dengue - Análise",
-    page_icon="🦟",
-    layout="wide"
-)
+# ========== CONFIGURAÇÃO GERAL ==========
+st.set_page_config(page_title="🦟 Dengue Ipojuca", layout="wide")
 
-st.title("🦟 Análise de Casos de Dengue")
+st.title("🦟 Dashboard Vigilância das Arboviroses (Dengue)")
+st.caption("Fonte: Grência de Promoção, Prevenção e Vigilância Epidemiológica 📊🗺️")
 
-# Função para gerar dados de exemplo
-@st.cache_data
-def gerar_dados_exemplo():
-    """Gera dados de exemplo para demonstração"""
-    np.random.seed(42)
-
-    # Gerar datas
-    data_inicio = datetime(2023, 1, 1)
-    datas = [data_inicio + timedelta(days=x) for x in range(365)]
-
-    # Gerar casos com sazonalidade
-    casos = []
-    for i, data in enumerate(datas):
-        # Mais casos no verão (meses 1-3 e 12)
-        mes = data.month
-        if mes in [1, 2, 3, 12]:
-            base = 50
-        elif mes in [4, 5, 11]:
-            base = 30
-        else:
-            base = 10
-
-        # Adicionar variação aleatória
-        caso = max(0, int(base + np.random.normal(0, 10)))
-        casos.append(caso)
-
-    df = pd.DataFrame({
-        'data': datas,
-        'casos': casos,
-        'mes': [d.month for d in datas],
-        'ano': [d.year for d in datas]
-    })
-
-    # Adicionar dados por região
-    regioes = ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro']
-    df_regioes = pd.DataFrame({
-        'regiao': regioes,
-        'casos': np.random.randint(100, 500, len(regioes)),
-        'populacao': np.random.randint(50000, 150000, len(regioes))
-    })
-    df_regioes['incidencia'] = (df_regioes['casos'] / df_regioes['populacao'] * 100000).round(2)
-
-    return df, df_regioes
-
-# Carregar dados
-df_temporal, df_regioes = gerar_dados_exemplo()
-
-# Sidebar com filtros
-st.sidebar.header("Filtros")
-
-# Filtro de período
-periodo = st.sidebar.selectbox(
-    "Período de análise",
-    ["Último mês", "Últimos 3 meses", "Últimos 6 meses", "Ano completo"]
-)
-
-# Mapear período para dias
-periodo_dias = {
-    "Último mês": 30,
-    "Últimos 3 meses": 90,
-    "Últimos 6 meses": 180,
-    "Ano completo": 365
+# Dicionário FINAL para padronizar nomes de colunas no DataFrame LIMPO.
+FINAL_RENAME_MAP = {
+    'SEMANA_EPIDEMIOLOGICA': 'SEMANA_EPIDEMIOLOGICA',
+    'SEMANA_EPIDEMIOLOGICA_2': 'SEMANA_EPIDEMIOLOGICA',
+    'DATA_NOTIFICACAO': 'DATA_NOTIFICACAO',
+    'DATA_DE_NOTIFICACAO': 'DATA_NOTIFICACAO',
+    'DATA_PRIMEIRO_SINTOMAS': 'DATA_SINTOMAS',
+    'DATA_PRIMEIROS_SINTOMAS': 'DATA_SINTOMAS',
+    'FA': 'FAIXA_ETARIA', 
+    'BAIRRO_RESIDENCIA': 'BAIRRO',
+    'EVOLUCAO_DO_CASO': 'EVOLUCAO',
+    'CLASSIFICACAO': 'CLASSIFICACAO_FINAL',
+    'RACA_COR': 'RACA_COR',
+    'ESCOLARIDADE': 'ESCOLARIDADE',
+    'DISTRITO': 'DISTRITO'
 }
 
-dias = periodo_dias[periodo]
-df_filtrado = df_temporal.tail(dias)
+# CHAVE DE ORDENAÇÃO MANUAL PARA O NOVO PADRÃO DE FAIXA ETÁRIA
+ORDEM_FAIXA_ETARIA = [
+    '1 a 4 anos', '5 a 9 anos', '10 a 14 anos', '15 a 19 anos', 
+    '20 a 39 anos', '40 a 59 anos', '60 anos ou mais', 'IGNORADO'
+]
 
-# Métricas principais
-st.header("📊 Indicadores Principais")
+# DICIONÁRIO PARA AGRUPAR E PADRONIZAR AS FAIXAS ETÁRIAS ANTIGAS PARA AS NOVAS
+MAPEAMENTO_FAIXA_ETARIA = {
+    '0 a 4': '1 a 4 anos', '1 a 4': '1 a 4 anos', '5 a 9': '5 a 9 anos', 
+    '10 a 14': '10 a 14 anos', '15 a 19': '15 a 19 anos',
+    '20 a 29': '20 a 39 anos', '30 a 39': '20 a 39 anos',
+    '40 a 49': '40 a 59 anos', '50 a 59': '40 a 59 anos',
+    '60 a 69': '60 anos ou mais', '70 a 79': '60 anos ou mais', 
+    '80 ou mais': '60 anos ou mais', 'IGNORADO': 'IGNORADO',
+}
 
-col1, col2, col3, col4 = st.columns(4)
+# FUNÇÃO DE LIMPEZA DE COLUNAS: CORREÇÃO DEFINITIVA COM UNICODE NORMALIZATION
+def limpar_nome_coluna(col):
+    col_normalized = unicodedata.normalize('NFKD', col).encode('ascii', 'ignore').decode('utf-8')
+    col_limpa = col_normalized.strip().upper().replace(' ', '_').replace('/', '_').replace('-', '_')
+    return col_limpa
 
-total_casos = df_filtrado['casos'].sum()
-media_diaria = df_filtrado['casos'].mean()
-max_casos = df_filtrado['casos'].max()
-tendencia = "↑" if df_filtrado['casos'].tail(7).mean() > df_filtrado['casos'].head(7).mean() else "↓"
 
-with col1:
-    st.metric("Total de Casos", f"{total_casos:,}", delta=f"{tendencia}")
+# ========= FUNÇÃO DE CARREGAR DADOS (FLUXO ROBUSTO) =========
+@st.cache_data
+def carregar_dados():
+    url = "https://docs.google.com/spreadsheets/d/1bdHetdGEXLgXv7A2aGvOaItKxiAuyg0Ip0UER1BjjOg/export?format=csv"
+    
+    try:
+        df = pd.read_csv(url)
+    except Exception as e:
+        st.error(f"❌ Erro de conexão. Verifique o compartilhamento da planilha.")
+        st.stop()
+        
+    
+    # --- Passo 1: Limpeza Universal de Nomes de Colunas ---
+    df.columns = [limpar_nome_coluna(col) for col in df.columns] 
 
-with col2:
-    st.metric("Média Diária", f"{media_diaria:.1f}")
+    # --- Passo 2: Padronização Final de Nomes ---
+    rename_dict = {}
+    for k_limpo, v_final in FINAL_RENAME_MAP.items():
+        if k_limpo in df.columns:
+            rename_dict[k_limpo] = v_final
+            
+    df.rename(columns=rename_dict, inplace=True)
+    
+    # --- Passo 3: Limpeza de Colunas Duplicadas ---
+    df = df.loc[:,~df.columns.duplicated()].copy()
 
-with col3:
-    st.metric("Pico de Casos", f"{max_casos}")
 
-with col4:
-    if len(df_filtrado) >= 60:
-        variacao = ((df_filtrado['casos'].tail(30).sum() / df_filtrado['casos'].head(30).sum() - 1) * 100)
-    else:
-        variacao = 0
-    st.metric("Variação Mensal", f"{variacao:.1f}%", delta=f"{variacao:.1f}%")
+    # --- PADRONIZAÇÃO E AGRUPAMENTO DA FAIXA ETÁRIA ---
+    if 'FAIXA_ETARIA' in df.columns:
+        df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].astype(str).str.strip()
+        df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].replace(MAPEAMENTO_FAIXA_ETARIA)
+        df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].fillna('IGNORADO')
+        
+    # Converter datas
+    for col in ['DATA_NOTIFICACAO', 'DATA_SINTOMAS']:
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col], errors="coerce")
 
-# Gráfico temporal
-st.header("📈 Evolução Temporal")
+    return df
 
-fig_temporal = px.line(
-    df_filtrado,
-    x='data',
-    y='casos',
-    title='Casos de Dengue ao Longo do Tempo',
-    labels={'data': 'Data', 'casos': 'Número de Casos'}
-)
+df = carregar_dados()
 
-fig_temporal.update_traces(line_color='#FF6B6B', line_width=2)
-fig_temporal.update_layout(
-    hovermode='x unified',
-    plot_bgcolor='rgba(0,0,0,0)',
-    paper_bgcolor='rgba(0,0,0,0)',
-)
+if df.empty:
+    st.warning("O DataFrame está vazio.")
+    st.stop()
 
-st.plotly_chart(fig_temporal, use_container_width=True)
 
-# Análise por região
-st.header("🗺️ Análise por Região")
+# ========= FILTROS NA BARRA LATERAL (FAIXA ETÁRIA ORDENADA) =========
+st.sidebar.header("🔎 Filtros")
 
-col1, col2 = st.columns(2)
+df_filtrado = df.copy() 
 
-with col1:
-    # Gráfico de barras - casos por região
-    fig_barras = px.bar(
-        df_regioes.sort_values('casos', ascending=False),
-        x='regiao',
-        y='casos',
-        title='Casos por Região',
-        labels={'regiao': 'Região', 'casos': 'Número de Casos'},
-        color='casos',
-        color_continuous_scale='Reds'
+# FILTRO CLASSIFICAÇÃO FINAL (NO TOPO)
+if 'CLASSIFICACAO_FINAL' in df_filtrado.columns:
+    classificacoes = st.sidebar.multiselect("Classificação Final", df['CLASSIFICACAO_FINAL'].dropna().unique())
+    if classificacoes:
+        df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(classificacoes)]
+        
+# FILTRO DE SEMANA EPIDEMIOLÓGICA (AGORA ESTÁVEL)
+if 'SEMANA_EPIDEMIOLOGICA' in df_filtrado.columns: 
+    semanas = st.sidebar.multiselect("Semana Epidemiológica", sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique()))
+    if semanas:
+        df_filtrado = df_filtrado[df_filtrado['SEMANA_EPIDEMIOLOGICA'].isin(semanas)]
+else:
+    st.sidebar.warning("Coluna 'Semana Epidemiológica' não encontrada. Verifique o nome na planilha.")
+
+
+if 'SEXO' in df_filtrado.columns:
+    sexos = st.sidebar.multiselect("Sexo", df['SEXO'].dropna().unique())
+    if sexos:
+        df_filtrado = df_filtrado[df_filtrado['SEXO'].isin(sexos)]
+
+# Ordenação da Faixa Etária
+if 'FAIXA_ETARIA' in df_filtrado.columns:
+    faixas_presentes = df['FAIXA_ETARIA'].dropna().unique().tolist()
+    faixas_ordenadas = [f for f in ORDEM_FAIXA_ETARIA if f in faixas_presentes]
+    faixas = st.sidebar.multiselect("Faixa Etária", faixas_ordenadas) 
+    if faixas:
+        df_filtrado = df_filtrado[df_filtrado['FAIXA_ETARIA'].isin(faixas)]
+
+# FILTRO DE EVOLUÇÃO DO CASO 
+if 'EVOLUCAO' in df_filtrado.columns:
+    evolucoes = st.sidebar.multiselect("Evolução do Caso", df['EVOLUCAO'].dropna().unique())
+    if evolucoes:
+        df_filtrado = df_filtrado[df_filtrado['EVOLUCAO'].isin(evolucoes)]
+
+if 'ESCOLARIDADE' in df_filtrado.columns:
+    escolaridades = st.sidebar.multiselect("Escolaridade", df['ESCOLARIDADE'].dropna().unique())
+    if escolaridades:
+        df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(escolaridades)]
+
+if 'BAIRRO' in df_filtrado.columns:
+    bairros = st.sidebar.multiselect("Bairro", sorted(df['BAIRRO'].dropna().unique()))
+    if bairros:
+        df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(bairros)]
+        
+# Verifica se o DataFrame filtrado está vazio
+if df_filtrado.empty:
+    st.warning("Nenhum dado encontrado com os filtros selecionados.")
+    st.stop()
+
+
+# ========= INDICADORES PRINCIPAIS (CARDS) - TRECHO ALTERADO PARA ALINHAMENTO E LÓGICA =========
+st.header("Resumo dos Indicadores")
+
+confirmados = 0 
+obitos = 0
+descartados = 0 
+
+# ALTERAÇÃO: Reduzido para 4 colunas (col0 a col3) para remover o espaço vazio inicial
+col0, col1, col2, col3 = st.columns(4) 
+
+total_filtrado = len(df_filtrado)
+# ALTERAÇÃO: Métrica movida para a primeira coluna (col0)
+col0.metric("Notificações no período", total_filtrado) 
+
+if 'CLASSIFICACAO_FINAL' in df_filtrado.columns:
+    
+    CLASSIFICACOES_CONFIRMADO = ["DENGUE", "DENGUE COM SINAIS DE ALARME"]
+    classificacao_upper = df_filtrado['CLASSIFICACAO_FINAL'].astype(str).str.upper().str.strip()
+    
+    confirmados = classificacao_upper.isin(CLASSIFICACOES_CONFIRMADO).sum()
+    descartados = (classificacao_upper == "DESCARTADO").sum()
+    
+    # Métricas movidas para col1 e col2
+    col1.metric("Confirmados", confirmados)
+    col2.metric("Descartados", descartados) 
+
+if 'EVOLUCAO' in df_filtrado.columns:
+    obitos = (df_filtrado['EVOLUCAO'].astype(str).str.upper().str.contains("ÓBITO", na=False)).sum()
+
+if confirmados > 0:
+    letalidade = (obitos / confirmados) * 100
+    # Métrica movida para col3
+    col3.metric("Taxa de Letalidade (%)", f"{letalidade:.2f}% ({obitos} óbitos)")
+else:
+    col3.metric("Taxa de Letalidade (%)", "N/A")
+
+
+# ========= GRÁFICOS =========
+
+st.subheader("📈 Análise Temporal e Geográfica")
+col_graf1, col_graf2 = st.columns(2)
+
+# --- 1. Casos por Semana Epidemiológica ---
+if 'SEMANA_EPIDEMIOLOGICA' in df_filtrado.columns:
+    df_semanal = df_filtrado.groupby("SEMANA_EPIDEMIOLOGICA").size().reset_index(name="Casos")
+    fig_sem = px.line(
+        df_semanal, 
+        x="SEMANA_EPIDEMIOLOGICA", 
+        y="Casos", 
+        markers=True,
+        title="Casos por Semana Epidemiológica"
     )
-    fig_barras.update_layout(showlegend=False)
-    st.plotly_chart(fig_barras, use_container_width=True)
+    col_graf1.plotly_chart(fig_sem, use_container_width=True)
 
-with col2:
-    # Gráfico de pizza - distribuição percentual
-    fig_pizza = px.pie(
-        df_regioes,
-        values='casos',
-        names='regiao',
-        title='Distribuição Percentual de Casos'
+# --- 2. Distribuição por Distrito ---
+if 'DISTRITO' in df_filtrado.columns:
+    df_distrito = df_filtrado['DISTRITO'].value_counts().reset_index()
+    df_distrito.columns = ['Distrito', 'Casos'] 
+    
+    fig_distrito = px.bar(
+        df_distrito, 
+        x='Distrito', 
+        y='Casos',
+        title="Distribuição de Casos por Distrito"
     )
-    st.plotly_chart(fig_pizza, use_container_width=True)
+    col_graf2.plotly_chart(fig_distrito, use_container_width=True)
 
-# Tabela de incidência
-st.header("📋 Taxa de Incidência por Região")
-st.markdown("*Taxa de incidência por 100.000 habitantes*")
+# --- 3. Distribuição por Bairro ---
+st.subheader("🏘️ Distribuição das notificações por Bairro")
+if 'BAIRRO' in df_filtrado.columns:
+    df_bairro = df_filtrado['BAIRRO'].value_counts().reset_index()
+    df_bairro.columns = ['Bairro', 'Casos'] 
+    
+    fig_bairro = px.bar(
+        df_bairro.head(15), 
+        x='Bairro', 
+        y='Casos',
+        title="Top 15 Bairros por Casos Notificados"
+    )
+    st.plotly_chart(fig_bairro, use_container_width=True)
 
-df_regioes_display = df_regioes.sort_values('incidencia', ascending=False)
-df_regioes_display = df_regioes_display.rename(columns={
-    'regiao': 'Região',
-    'casos': 'Casos',
-    'populacao': 'População',
-    'incidencia': 'Incidência (por 100k hab.)'
-})
+# --- 4. Relação Raça/Cor vs. Escolaridade ---
+st.subheader("🎓 Perfil Social: Raça/Cor e Escolaridade")
+if 'RACA_COR' in df_filtrado.columns and 'ESCOLARIDADE' in df_filtrado.columns:
+    df_cruzado = df_filtrado.groupby(['RACA_COR', 'ESCOLARIDADE']).size().reset_index(name='Casos')
 
-st.dataframe(
-    df_regioes_display,
-    use_container_width=True,
-    hide_index=True
+    fig_cruzado = px.bar(
+        df_cruzado,
+        x='RACA_COR',
+        y='Casos',
+        color='ESCOLARIDADE',
+        barmode='group',
+        title='Casos por Raça/Cor e Escolaridade'
+    )
+    st.plotly_chart(fig_cruzado, use_container_width=True)
+
+
+# --- 5. Sintomas e Comorbidades Mais Frequentes ---
+st.subheader("🩺 Sintomas e Comorbidades")
+sintomas_e_comorbidades = [
+    "FEBRE", "MIALGIA", "CEFALEIA", "EXANTEMA", "VOMITO", "NAUSEA",
+    "DOR_COSTAS", "CONJUNTVITE", "ARTRITE", "ARTRALGIA", "PETEQUIAS",
+    "LEUCOPENIA", "LAÇO", "DOR_RETRO", "DIABETES", "HEMATOLOGICAS",
+    "HEPATOPATIAS", "RENAL", "HIPERTENSÃO", "ACIDO_PEPT", "AUTO_IMUNE"
+]
+
+presenca_data = []
+for s in sintomas_e_comorbidades:
+    s_limpa = limpar_nome_coluna(s)
+    
+    # Busca a coluna pelo nome limpo gerado pelo processo de limpeza geral
+    if s_limpa in df_filtrado.columns:
+        count = (df_filtrado[s_limpa].astype(str).str.upper().str.strip() == "SIM").sum()
+        if count > 0:
+            nome_display = s.replace('_', ' ').capitalize()
+            presenca_data.append({"Item": nome_display, "Casos": count})
+
+if presenca_data:
+    df_presenca = pd.DataFrame(presenca_data)
+    
+    fig_sintomas = px.bar(
+        df_presenca.sort_values(by="Casos", ascending=True), 
+        y="Item", 
+        x="Casos", 
+        orientation='h',
+        title="Frequência de Manifestações/Comorbidades (Resposta 'Sim')"
+    )
+    st.plotly_chart(fig_sintomas, use_container_width=True)
+else:
+    st.info("Nenhuma manifestação ou comorbidade 'SIM' encontrada no período filtrado.")
+
+
+# --- 6. Distribuição por Sexo e Faixa Etária (Ordenada) ---
+st.subheader("👥 Perfil Demográfico")
+if 'SEXO' in df_filtrado.columns and 'FAIXA_ETARIA' in df_filtrado.columns:
+    
+    faixas_presentes_no_grafico = df_filtrado['FAIXA_ETARIA'].dropna().unique().tolist()
+    faixas_para_grafico = [f for f in ORDEM_FAIXA_ETARIA if f in faixas_presentes_no_grafico]
+
+    fig_demog = px.histogram(
+        df_filtrado, 
+        x="FAIXA_ETARIA", 
+        color="SEXO", 
+        barmode="group",
+        title="Casos por Faixa Etária e Sexo"
+    )
+    # Define a ordem do eixo X do gráfico (usando a nova ordem padronizada)
+    fig_demog.update_xaxes(categoryorder='array', categoryarray=faixas_para_grafico)
+    
+    st.plotly_chart(fig_demog, use_container_width=True)
+
+
+# ========= DOWNLOAD DOS DADOS FILTRADOS =========
+st.download_button(
+    "📥 Baixar dados filtrados (CSV)",
+    data=df_filtrado.to_csv(index=False).encode("utf-8"),
+    file_name="dados_filtrados_epidemiologia.csv",
+    mime="text/csv"
 )
 
-# Análise mensal
-st.header("📅 Análise Mensal")
-
-df_mensal = df_temporal.groupby('mes')['casos'].sum().reset_index()
-meses_nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
-               'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-df_mensal['mes_nome'] = df_mensal['mes'].apply(lambda x: meses_nomes[x-1])
-
-fig_mensal = px.bar(
-    df_mensal,
-    x='mes_nome',
-    y='casos',
-    title='Distribuição de Casos por Mês',
-    labels={'mes_nome': 'Mês', 'casos': 'Total de Casos'},
-    color='casos',
-    color_continuous_scale='YlOrRd'
-)
-
-st.plotly_chart(fig_mensal, use_container_width=True)
-
-# Informações adicionais
-with st.expander("ℹ️ Informações sobre os dados"):
-    st.markdown("""
-    ### Sobre os dados
-
-    - **Fonte:** Dados de exemplo para demonstração
-    - **Período:** 2023
-    - **Atualização:** Dados simulados
-
-    ### Metodologia
-
-    - **Taxa de Incidência:** Calculada por 100.000 habitantes
-    - **Tendência:** Baseada na comparação entre primeira e última semana do período
-
-    ### Observações
-
-    - Os dados apresentados são fictícios e servem apenas para demonstração
-    - Em produção, conecte a fontes de dados reais (CSV, banco de dados, API)
-    """)
-
-# Footer
-st.markdown("---")
-st.markdown("*Painel de Monitoramento de Dengue - Versão 1.0*")
+st.caption("Desenvolvido pelo Cievs Ipojuca.")
