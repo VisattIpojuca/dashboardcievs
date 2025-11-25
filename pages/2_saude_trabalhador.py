@@ -20,27 +20,33 @@ def gerar_dados_acidentes():
     """Gera dados de exemplo de acidentes de trabalho"""
     np.random.seed(42)
 
-    # Setores
     setores = ['Construção Civil', 'Indústria', 'Comércio', 'Serviços', 'Agricultura']
-
-    # Tipos de acidente
     tipos = ['Queda', 'Corte', 'Queimadura', 'Esmagamento', 'Outros']
+    severidade = ['Leve', 'Moderado', 'Grave']
 
-    # Gerar dados temporais
     data_inicio = datetime(2023, 1, 1)
-    datas = [data_inicio + timedelta(days=x*7) for x in range(52)]  # Semanal
+    datas = [data_inicio + timedelta(days=x * 7) for x in range(52)]  # Semanal
 
     acidentes_semana = []
+    tipos_aleatorios = []
+    severidades = []
+    setores_aleatorios = []
+
     for data in datas:
         acidentes = max(5, int(np.random.normal(20, 5)))
         acidentes_semana.append(acidentes)
+        tipos_aleatorios.append(np.random.choice(tipos))
+        severidades.append(np.random.choice(severidade))
+        setores_aleatorios.append(np.random.choice(setores))
 
     df_temporal = pd.DataFrame({
         'data': datas,
-        'acidentes': acidentes_semana
+        'acidentes': acidentes_semana,
+        'tipo': tipos_aleatorios,
+        'severidade': severidades,
+        'setor': setores_aleatorios
     })
 
-    # Dados por setor
     df_setores = pd.DataFrame({
         'setor': setores,
         'acidentes': np.random.randint(50, 200, len(setores)),
@@ -48,7 +54,6 @@ def gerar_dados_acidentes():
     })
     df_setores['taxa'] = (df_setores['acidentes'] / df_setores['trabalhadores'] * 1000).round(2)
 
-    # Dados por tipo
     df_tipos = pd.DataFrame({
         'tipo': tipos,
         'quantidade': np.random.randint(30, 150, len(tipos))
@@ -56,60 +61,138 @@ def gerar_dados_acidentes():
 
     return df_temporal, df_setores, df_tipos
 
+
 # Carregar dados
 df_temporal, df_setores, df_tipos = gerar_dados_acidentes()
 
-# Sidebar
+# Sidebar — NOVOS FILTROS
 st.sidebar.header("Filtros")
 
+# FILTRO POR DATA
+min_date = df_temporal['data'].min()
+max_date = df_temporal['data'].max()
+
+intervalo_data = st.sidebar.date_input(
+    "Selecione o período",
+    value=(min_date, max_date),
+    min_value=min_date,
+    max_value=max_date
+)
+
+# FILTRO POR ANO
+df_temporal['ano'] = df_temporal['data'].dt.year
+anos = st.sidebar.multiselect(
+    "Ano",
+    options=sorted(df_temporal['ano'].unique()),
+    default=sorted(df_temporal['ano'].unique())
+)
+
+# FILTRO POR MÊS
+df_temporal['mes'] = df_temporal['data'].dt.month
+meses_nomes = {
+    1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+    5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+    9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+}
+df_temporal['mes_nome'] = df_temporal['mes'].map(meses_nomes)
+
+meses = st.sidebar.multiselect(
+    "Mês",
+    options=meses_nomes.values(),
+    default=list(meses_nomes.values())
+)
+
+# FILTRO POR SETOR
 setor_selecionado = st.sidebar.multiselect(
-    "Selecione os setores",
+    "Setor",
     options=df_setores['setor'].tolist(),
     default=df_setores['setor'].tolist()
 )
 
-# Métricas principais
+# FILTRO POR TIPO DE ACIDENTE
+tipos_selecionados = st.sidebar.multiselect(
+    "Tipo de acidente",
+    options=df_tipos['tipo'].tolist(),
+    default=df_tipos['tipo'].tolist()
+)
+
+# FILTRO POR SEVERIDADE (adicionado)
+severidade_sel = st.sidebar.multiselect(
+    "Severidade",
+    options=df_temporal['severidade'].unique(),
+    default=df_temporal['severidade'].unique()
+)
+
+# FILTRO POR INTERVALO DE ACIDENTES NOS SETORES
+min_ac = int(df_setores['acidentes'].min())
+max_ac = int(df_setores['acidentes'].max())
+
+intervalo_acidentes = st.sidebar.slider(
+    "Acidentes por setor (intervalo)",
+    min_value=min_ac,
+    max_value=max_ac,
+    value=(min_ac, max_ac)
+)
+
+# Aplicando filtros ao df temporal
+df_filt = df_temporal.copy()
+
+# Filtros aplicados
+df_filt = df_filt[
+    (df_filt['data'] >= pd.to_datetime(intervalo_data[0])) &
+    (df_filt['data'] <= pd.to_datetime(intervalo_data[1])) &
+    (df_filt['ano'].isin(anos)) &
+    (df_filt['mes_nome'].isin(meses)) &
+    (df_filt['severidade'].isin(severidade_sel)) &
+    (df_filt['tipo'].isin(tipos_selecionados)) &
+    (df_filt['setor'].isin(setor_selecionado))
+]
+
+# Filtro no df_setores
+df_setores_filtrado = df_setores[
+    (df_setores['setor'].isin(setor_selecionado)) &
+    (df_setores['acidentes'].between(intervalo_acidentes[0], intervalo_acidentes[1]))
+]
+
+# ===============================
+# Indicadores principais
+# ===============================
 st.header("📊 Indicadores Principais")
 
 col1, col2, col3, col4 = st.columns(4)
 
-total_acidentes = df_temporal['acidentes'].sum()
-media_semanal = df_temporal['acidentes'].mean()
-setor_maior = df_setores.loc[df_setores['acidentes'].idxmax(), 'setor']
-taxa_media = df_setores['taxa'].mean()
+total_acidentes = df_filt['acidentes'].sum()
+media_semanal = df_filt['acidentes'].mean()
+setor_maior = df_setores_filtrado.loc[df_setores_filtrado['acidentes'].idxmax(), 'setor'] \
+    if not df_setores_filtrado.empty else "—"
+taxa_media = df_setores_filtrado['taxa'].mean() if not df_setores_filtrado.empty else 0
 
-with col1:
-    st.metric("Total de Acidentes", f"{total_acidentes:,}")
+col1.metric("Total de Acidentes", f"{total_acidentes:,}")
+col2.metric("Média Semanal", f"{media_semanal:.1f}")
+col3.metric("Setor com Mais Acidentes", setor_maior)
+col4.metric("Taxa Média", f"{taxa_media:.2f}‰")
 
-with col2:
-    st.metric("Média Semanal", f"{media_semanal:.1f}")
-
-with col3:
-    st.metric("Setor com Mais Acidentes", setor_maior)
-
-with col4:
-    st.metric("Taxa Média", f"{taxa_media:.2f}‰")
-
+# ===============================
 # Gráfico temporal
+# ===============================
 st.header("📈 Evolução de Acidentes")
 
 fig_temporal = go.Figure()
 
 fig_temporal.add_trace(go.Scatter(
-    x=df_temporal['data'],
-    y=df_temporal['acidentes'],
+    x=df_filt['data'],
+    y=df_filt['acidentes'],
     mode='lines+markers',
     name='Acidentes',
     line=dict(color='#FF6B6B', width=2),
     marker=dict(size=6)
 ))
 
-# Adicionar média móvel
-df_temporal['media_movel'] = df_temporal['acidentes'].rolling(window=4).mean()
+df_filt['media_movel'] = df_filt['acidentes'].rolling(window=4).mean()
 
 fig_temporal.add_trace(go.Scatter(
-    x=df_temporal['data'],
-    y=df_temporal['media_movel'],
+    x=df_filt['data'],
+    y=df_filt['media_movel'],
     mode='lines',
     name='Média Móvel (4 semanas)',
     line=dict(color='#4ECDC4', width=2, dash='dash')
@@ -119,126 +202,66 @@ fig_temporal.update_layout(
     title='Acidentes de Trabalho ao Longo do Tempo',
     xaxis_title='Data',
     yaxis_title='Número de Acidentes',
-    hovermode='x unified',
-    plot_bgcolor='rgba(0,0,0,0)',
-    paper_bgcolor='rgba(0,0,0,0)',
+    hovermode='x unified'
 )
 
 st.plotly_chart(fig_temporal, use_container_width=True)
 
+# ===============================
 # Análise por setor
+# ===============================
 st.header("🏭 Análise por Setor")
-
-# Filtrar setores selecionados
-df_setores_filtrado = df_setores[df_setores['setor'].isin(setor_selecionado)]
 
 col1, col2 = st.columns(2)
 
 with col1:
-    # Gráfico de barras - acidentes por setor
     fig_setores = px.bar(
         df_setores_filtrado.sort_values('acidentes', ascending=True),
         y='setor',
         x='acidentes',
         orientation='h',
-        title='Acidentes por Setor',
-        labels={'setor': 'Setor', 'acidentes': 'Número de Acidentes'},
-        color='acidentes',
-        color_continuous_scale='Reds'
+        title='Acidentes por Setor'
     )
-    fig_setores.update_layout(showlegend=False)
     st.plotly_chart(fig_setores, use_container_width=True)
 
 with col2:
-    # Gráfico de taxa por setor
     fig_taxa = px.bar(
         df_setores_filtrado.sort_values('taxa', ascending=True),
         y='setor',
         x='taxa',
         orientation='h',
-        title='Taxa de Acidentes por 1000 Trabalhadores',
-        labels={'setor': 'Setor', 'taxa': 'Taxa (por 1000)'},
-        color='taxa',
-        color_continuous_scale='Oranges'
+        title='Taxa de Acidentes por 1000 Trabalhadores'
     )
-    fig_taxa.update_layout(showlegend=False)
     st.plotly_chart(fig_taxa, use_container_width=True)
 
-# Análise por tipo de acidente
+# ===============================
+# Tipos de Acidentes
+# ===============================
 st.header("🔍 Tipos de Acidentes")
 
-col1, col2 = st.columns([2, 1])
+fig_tipos = px.bar(
+    df_tipos[df_tipos['tipo'].isin(tipos_selecionados)],
+    x='tipo',
+    y='quantidade',
+    title='Distribuição por Tipo de Acidente'
+)
 
-with col1:
-    fig_tipos = px.bar(
-        df_tipos.sort_values('quantidade', ascending=False),
-        x='tipo',
-        y='quantidade',
-        title='Distribuição por Tipo de Acidente',
-        labels={'tipo': 'Tipo de Acidente', 'quantidade': 'Quantidade'},
-        color='quantidade',
-        color_continuous_scale='Blues'
-    )
-    fig_tipos.update_layout(showlegend=False)
-    st.plotly_chart(fig_tipos, use_container_width=True)
+st.plotly_chart(fig_tipos, use_container_width=True)
 
-with col2:
-    # Tabela de tipos
-    st.markdown("### Resumo")
-    df_tipos_display = df_tipos.sort_values('quantidade', ascending=False)
-    df_tipos_display['percentual'] = (df_tipos_display['quantidade'] / df_tipos_display['quantidade'].sum() * 100).round(1)
-    df_tipos_display = df_tipos_display.rename(columns={
-        'tipo': 'Tipo',
-        'quantidade': 'Qtd',
-        'percentual': '%'
-    })
-    st.dataframe(df_tipos_display, use_container_width=True, hide_index=True)
-
+# ===============================
 # Tabela detalhada por setor
+# ===============================
 st.header("📋 Detalhamento por Setor")
 
-df_setores_display = df_setores_filtrado.sort_values('acidentes', ascending=False)
-df_setores_display = df_setores_display.rename(columns={
+df_setores_display = df_setores_filtrado.rename(columns={
     'setor': 'Setor',
     'acidentes': 'Acidentes',
     'trabalhadores': 'Trabalhadores',
     'taxa': 'Taxa (por 1000)'
 })
 
-st.dataframe(
-    df_setores_display,
-    use_container_width=True,
-    hide_index=True
-)
-
-# Informações adicionais
-with st.expander("ℹ️ Informações sobre os dados"):
-    st.markdown("""
-    ### Sobre os dados
-
-    - **Fonte:** Dados de exemplo para demonstração
-    - **Período:** 2023 (dados semanais)
-    - **Atualização:** Dados simulados
-
-    ### Metodologia
-
-    - **Taxa de Acidentes:** Calculada por 1.000 trabalhadores
-    - **Média Móvel:** Calculada com janela de 4 semanas
-
-    ### Classificação de Acidentes
-
-    - **Queda:** Quedas de altura ou mesmo nível
-    - **Corte:** Ferimentos por objetos cortantes
-    - **Queimadura:** Queimaduras térmicas, químicas ou elétricas
-    - **Esmagamento:** Acidentes com prensagem ou esmagamento
-    - **Outros:** Demais tipos de acidentes
-
-    ### Observações
-
-    - Os dados apresentados são fictícios e servem apenas para demonstração
-    - Em produção, conecte a fontes de dados reais (SINAN, CAT, etc.)
-    """)
+st.dataframe(df_setores_display, use_container_width=True)
 
 # Footer
 st.markdown("---")
-st.markdown("*Painel de Saúde do Trabalhador - Versão 1.0*")
+st.markdown("*Painel de Saúde do Trabalhador - Versão 1.1*")
