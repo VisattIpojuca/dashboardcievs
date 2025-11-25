@@ -7,13 +7,13 @@ import plotly.express as px
 # CONFIGURAÇÃO DA PÁGINA
 # -------------------------------------------
 st.set_page_config(
-    page_title="Oropouche - Dashboard",
-    page_icon="🦟",
+    page_title="Gestação - Dashboard",
+    page_icon="👶",
     layout="wide"
 )
 
-st.title("🦟 Dashboard de Oropouche - Vigilância em Saúde")
-st.markdown("Monitoramento por localidade, classificação e período, com proteção de dados sensíveis.")
+st.title("👶 Dashboard de Gestação - Vigilância em Saúde")
+st.markdown("Monitoramento de gestantes por localidade, classificação e período.")
 
 # -------------------------------------------
 # FUNÇÃO PARA CARREGAR GOOGLE SHEETS
@@ -90,7 +90,7 @@ if COL_DATA:
     df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
     df["MES"] = df[COL_DATA].dt.to_period("M").astype(str)
 else:
-    df["MES"] = "SEM_DATA"
+    df["MES"] = "SEM DATA"
 
 # -------------------------------------------
 # FILTROS
@@ -116,7 +116,7 @@ if f_classificacao:
 # INDICADORES PRINCIPAIS
 # -------------------------------------------
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.metric("Total de Registros", len(df_filtrado))
@@ -127,6 +127,9 @@ with col2:
         st.metric("Gestantes Identificadas", total_gestantes)
     else:
         st.metric("Gestantes Identificadas", "-")
+
+with col3:
+    st.metric("Períodos Registrados", df_filtrado["MES"].nunique())
 
 # -------------------------------------------
 # GRÁFICOS
@@ -167,7 +170,7 @@ if COL_CLASSIFICACAO:
 
 # Localidade x Classificação
 if COL_LOCALIDADE and COL_CLASSIFICACAO:
-    st.subheader("📍 Classificação por Localidade")
+    st.subheader("📍 Localidade × Classificação")
 
     fig_lc = px.histogram(
         df_filtrado,
@@ -182,11 +185,9 @@ if COL_LOCALIDADE and COL_CLASSIFICACAO:
 # TABELA FINAL
 # -------------------------------------------
 
-st.subheader("📋 Dados Filtrados (sem coluna MES)")
+st.subheader("📋 Dados Filtrados (somente colunas permitidas)")
 
-df_exibicao = df_filtrado.drop(columns=["MES"], errors="ignore")
-
-st.dataframe(df_exibicao, use_container_width=True)
+st.dataframe(df_filtrado, use_container_width=True)
 
 st.markdown("---")
 
