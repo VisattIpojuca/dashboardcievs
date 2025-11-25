@@ -101,7 +101,7 @@ COL_SEMANA = detectar_coluna(df, [
 # FILTROS
 # ----------------------------------------------------------
 
-st.sidebar.header("Filtros")
+st.sidebar.header("🔎 Filtros")
 df_filtrado = df.copy()
 
 min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
@@ -120,10 +120,22 @@ df_filtrado = df_filtrado[
 
 # 🔥 Filtro de Semana Epidemiológica
 if COL_SEMANA:
-    semanas = sorted(df[COL_SEMANA].dropna().unique())
+    # Converter para numérico sempre que possível
+    semanas = df[COL_SEMANA].dropna().astype(str)
+
+    # Extrair apenas números das semanas
+    semanas = semanas.str.extract(r"(\d+)")[0].astype(int)
+
+    # Remover duplicados e ordenar
+    semanas = sorted(semanas.unique())
+
     semanas_sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
+
     if semanas_sel:
-        df_filtrado = df_filtrado[df_filtrado[COL_SEMANA].isin(semanas_sel)]
+        # Converter também no DataFrame filtrado para manter correspondência
+        semanas_df = df_filtrado[COL_SEMANA].astype(str).str.extract(r"(\d+)")[0].astype(float)
+
+        df_filtrado = df_filtrado[semanas_df.isin(semanas_sel)]
 
 # Função para filtros gerais
 def add_filtro(label, coluna):
