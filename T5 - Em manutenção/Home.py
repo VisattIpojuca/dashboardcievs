@@ -1,1 +1,0 @@
-print('Home placeholder')
