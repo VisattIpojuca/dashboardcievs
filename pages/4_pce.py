@@ -192,7 +192,7 @@ mapa_colunas = {
     "A TRATAR": ["A_TRATAR", "A TRATAR", "N_A_TRATAR"],
     "TRATADOS": ["TRATADOS", "N_TRATADOS"],
     "POSITIVOS": ["POSITIVOS", "CASOS_POSITIVOS", "TESTES_POSITIVOS"],
-    "POP. TRAB": ["POP_TRAB", "POP. TRAB", "POP_TRABALHADORES", "POP TRAB"]
+    "POP. TRAB": ["POP_TRAB", "POP. TRAB.", "POP_TRABALHADORES", "POP TRAB"]
 }
 
 def encontrar_coluna(df, lista_nomes):
