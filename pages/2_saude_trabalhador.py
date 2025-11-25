@@ -2,241 +2,227 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import numpy as np
 import unicodedata
+from datetime import datetime, timedelta
 
-# ------------------------------------------------------
-# CONFIGURAÇÃO DA PÁGINA
-# ------------------------------------------------------
+# ------------------------------------------------------------
+# CONFIGURAÇÃO DO PAINEL
+# ------------------------------------------------------------
 st.set_page_config(
     page_title="Saúde do Trabalhador",
     page_icon="👷",
     layout="wide"
 )
 
-st.title("👷 Saúde do Trabalhador – Análise dos Acidentes de Trabalho")
-st.caption("Fonte: Vigilância em Saúde do Trabalhador – Ipojuca")
+st.title("👷 Saúde do Trabalhador – Painel Analítico")
 
-# ------------------------------------------------------
-# FUNÇÃO PARA LIMPAR NOMES DE COLUNAS
-# ------------------------------------------------------
-def limpar_coluna(col):
-    col = str(col)
-    col = unicodedata.normalize("NFKD", col).encode("ascii", "ignore").decode("utf-8")
-    col = col.strip().upper().replace(" ", "_").replace("-", "_").replace("/", "_")
-    return col
 
-# ------------------------------------------------------
-# CARREGAR BASE REAL DO GOOGLE SHEETS
-# ------------------------------------------------------
+# ------------------------------------------------------------
+# FUNÇÃO UNIVERSAL PARA NORMALIZAR COLUNAS
+# Faz com que qualquer variação funcione
+# ------------------------------------------------------------
+def normalizar(texto):
+    if not isinstance(texto, str):
+        return ""
+    texto = texto.strip()
+    texto = texto.replace(" ", "")
+    texto = texto.replace("_", "")
+    texto = texto.upper()
+    texto = unicodedata.normalize("NFKD", texto)
+    texto = "".join([c for c in texto if not unicodedata.combining(c)])
+    return texto
+
+
+# ------------------------------------------------------------
+# FUNÇÃO PARA DETECTAR COLUNA POR PALAVRAS-CHAVE
+# ------------------------------------------------------------
+def detectar_coluna(df, lista_chaves):
+    colunas_norm = {normalizar(c): c for c in df.columns}
+
+    for col_norm, col_original in colunas_norm.items():
+        for chave in lista_chaves:
+            if chave in col_norm:
+                return col_original
+    return None
+
+
+# ------------------------------------------------------------
+# CARREGAR PLANILHA DIRETO DO GOOGLE SHEETS
+# ------------------------------------------------------------
 @st.cache_data
 def carregar_dados():
     url = "https://docs.google.com/spreadsheets/d/1Guru662qCn9bX8iZhckcbRu2nG8my4Eu5l5JK5yTNik/export?format=csv"
+    df = pd.read_csv(url, dtype=str)
 
-    try:
-        df = pd.read_csv(url)
-    except:
-        st.error("❌ Erro ao carregar a planilha. Verifique o link ou permissões.")
-        st.stop()
-
-    df.columns = [limpar_coluna(c) for c in df.columns]
-
-    # Coluna oficial de data
-    if "DATA_DE_OCORRENCIA" in df.columns:
-        df["DATA_DE_OCORRENCIA"] = pd.to_datetime(df["DATA_DE_OCORRENCIA"], errors="coerce")
+    # Converter números quando possível
+    for col in df.columns:
+        df[col] = df[col].replace("", np.nan)
 
     return df
 
+
 df = carregar_dados()
 
-if df.empty:
-    st.warning("A base está vazia.")
+if df is None or df.empty:
+    st.error("❌ Não foi possível carregar a base de dados.")
     st.stop()
 
-# ------------------------------------------------------
-# FILTROS
-# ------------------------------------------------------
+
+# ------------------------------------------------------------
+# DETECTAR COLUNAS AUTOMATICAMENTE (TODAS)
+# ------------------------------------------------------------
+COL_DATA      = detectar_coluna(df, ["DATAOCORRENCIA", "DATADEOCORRENCIA", "OCORRENCIA"])
+COL_SEXO      = detectar_coluna(df, ["SEXO"])
+COL_IDADE     = detectar_coluna(df, ["IDADE"])
+COL_RACA      = detectar_coluna(df, ["RACA", "COR", "RACACOR"])
+COL_ESCOL     = detectar_coluna(df, ["ESCOLARIDADE"])
+COL_OCUP      = detectar_coluna(df, ["OCUPACAO"])
+COL_SIT_MERC  = detectar_coluna(df, ["SITUACAO", "MERCADO"])
+COL_BAIRRO    = detectar_coluna(df, ["BAIRRO"])
+COL_EVOL      = detectar_coluna(df, ["EVOLUCAO"])
+
+# ------------------------------------------------------------
+# CONVERTER DATA
+# ------------------------------------------------------------
+if COL_DATA:
+    df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce", dayfirst=True)
+    df["SEMANA"] = df[COL_DATA].dt.isocalendar().week
+else:
+    st.error("⚠ Não foi possível identificar a coluna de DATA DE OCORRÊNCIA.")
+    st.stop()
+
+
+# ------------------------------------------------------------
+# SIDEBAR – FILTROS
+# ------------------------------------------------------------
 st.sidebar.header("Filtros")
 
+# Criar filtros SOMENTE se a coluna existir
+def filtro(col, label):
+    if col and col in df.columns:
+        return st.sidebar.multiselect(
+            label,
+            options=sorted(df[col].dropna().unique().tolist()),
+            default=None
+        )
+    return None
+
+
+filtro_sexo   = filtro(COL_SEXO, "Sexo")
+filtro_idade  = filtro(COL_IDADE, "Idade")
+filtro_raca   = filtro(COL_RACA, "Raça/Cor")
+filtro_escol  = filtro(COL_ESCOL, "Escolaridade")
+filtro_ocup   = filtro(COL_OCUP, "Ocupação")
+filtro_sit    = filtro(COL_SIT_MERC, "Situação no Mercado de Trabalho")
+filtro_bairro = filtro(COL_BAIRRO, "Bairro de Ocorrência")
+filtro_evol   = filtro(COL_EVOL, "Evolução do Caso")
+
+f_semana = st.sidebar.multiselect(
+    "Semana Epidemiológica",
+    options=sorted(df["SEMANA"].dropna().unique().tolist())
+)
+
+
+# ------------------------------------------------------------
+# APLICAR FILTROS
+# ------------------------------------------------------------
 df_filtrado = df.copy()
 
-def criar_filtro(coluna, label=None, ordenar=False):
-    if coluna in df_filtrado.columns:
-        opcoes = df_filtrado[coluna].dropna().unique().tolist()
-        if ordenar:
-            opcoes = sorted(opcoes)
-        selecao = st.sidebar.multiselect(label or coluna, opcoes)
-        if selecao:
-            return df_filtrado[df_filtrado[coluna].isin(selecao)]
-    return df_filtrado
+def aplicar(df, coluna, valores):
+    if coluna and coluna in df.columns and valores:
+        return df[df[coluna].isin(valores)]
+    return df
 
-df_filtrado = criar_filtro("SEMANA_EPIDEMIOLOGICA", "Semana Epidemiológica", ordenar=True)
-df_filtrado = criar_filtro("IDADE", "Idade", ordenar=True)
-df_filtrado = criar_filtro("SEXO", "Sexo")
-df_filtrado = criar_filtro("RACA_COR", "Raça/Cor", ordenar=True)
-df_filtrado = criar_filtro("ESCOLARIDADE", "Escolaridade", ordenar=True)
-df_filtrado = criar_filtro("OCUPACAO", "Ocupação", ordenar=True)
-df_filtrado = criar_filtro("SITUACAO_NO_MERCADO_DE_TRABALHO", "Situação no Mercado de Trabalho", ordenar=True)
-df_filtrado = criar_filtro("BAIRRO_OCORRENCIA", "Bairro de Ocorrência", ordenar=True)
-df_filtrado = criar_filtro("EVOLUCAO_DO_CASO", "Evolução do Caso", ordenar=True)
+df_filtrado = aplicar(df_filtrado, COL_SEXO, filtro_sexo)
+df_filtrado = aplicar(df_filtrado, COL_IDADE, filtro_idade)
+df_filtrado = aplicar(df_filtrado, COL_RACA, filtro_raca)
+df_filtrado = aplicar(df_filtrado, COL_ESCOL, filtro_escol)
+df_filtrado = aplicar(df_filtrado, COL_OCUP, filtro_ocup)
+df_filtrado = aplicar(df_filtrado, COL_SIT_MERC, filtro_sit)
+df_filtrado = aplicar(df_filtrado, COL_BAIRRO, filtro_bairro)
+df_filtrado = aplicar(df_filtrado, COL_EVOL, filtro_evol)
 
-if df_filtrado.empty:
-    st.warning("Nenhum dado encontrado com os filtros aplicados.")
-    st.stop()
+if f_semana:
+    df_filtrado = df_filtrado[df_filtrado["SEMANA"].isin(f_semana)]
 
-# ------------------------------------------------------
+
+# ------------------------------------------------------------
 # INDICADORES PRINCIPAIS
-# ------------------------------------------------------
+# ------------------------------------------------------------
 st.header("📊 Indicadores Principais")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
-# Total
 total = len(df_filtrado)
 
-# Média semanal
-if "DATA_DE_OCORRENCIA" in df_filtrado.columns:
-    df_sem = df_filtrado.groupby(pd.Grouper(key="DATA_DE_OCORRENCIA", freq="W")).size()
-    media_semanal = round(df_sem.mean(), 2)
-else:
-    media_semanal = "—"
+media_semanal = df_filtrado.groupby("SEMANA").size().mean() if total > 0 else 0
 
-# Ocupação mais afetada
-if "OCUPACAO" in df_filtrado.columns:
-    ocup_mais = df_filtrado["OCUPACAO"].value_counts().idxmax()
-else:
-    ocup_mais = "Não informado"
-
-# Óbitos
-if "EVOLUCAO_DO_CASO" in df_filtrado.columns:
-    obitos = df_filtrado["EVOLUCAO_DO_CASO"].astype(str).str.contains("ÓBITO", case=False).sum()
-else:
-    obitos = 0
+ocupacao_top = (
+    df_filtrado[COL_OCUP].mode().iloc[0]
+    if COL_OCUP and df_filtrado[COL_OCUP].notna().any()
+    else "Não informado"
+)
 
 with col1:
-    st.metric("Total de Registros", total)
+    st.metric("Total de Ocorrências", total)
 
 with col2:
-    st.metric("Média Semanal", media_semanal)
+    st.metric("Média Semanal", f"{media_semanal:.1f}")
 
 with col3:
-    st.metric("Ocupação mais acometida", ocup_mais)
+    st.metric("Ocupação mais afetada", ocupacao_top)
 
-with col4:
-    st.metric("Óbitos", obitos)
 
-# ------------------------------------------------------
-# EVOLUÇÃO TEMPORAL
-# ------------------------------------------------------
-st.header("📈 Evolução Temporal dos Acidentes")
+# ------------------------------------------------------------
+# GRÁFICO TEMPORAL (SEMANA)
+# ------------------------------------------------------------
+st.header("📈 Ocorrências por Semana Epidemiológica")
 
-if "DATA_DE_OCORRENCIA" in df_filtrado.columns:
-    df_temp = df_filtrado.groupby("DATA_DE_OCORRENCIA").size().reset_index(name="Casos")
+df_sem = df_filtrado.groupby("SEMANA").size().reset_index()
+df_sem.columns = ["Semana", "Ocorrências"]
 
-    fig_temp = px.line(
-        df_temp,
-        x="DATA_DE_OCORRENCIA",
-        y="Casos",
-        markers=True,
-        title="Evolução dos Acidentes (Data de ocorrência)"
-    )
-    st.plotly_chart(fig_temp, use_container_width=True)
-else:
-    st.info("⚠ A base não possui coluna DATA_DE_OCORRENCIA.")
+fig_tempo = px.line(
+    df_sem,
+    x="Semana",
+    y="Ocorrências",
+    markers=True,
+    title="Série Temporal por Semana Epidemiológica"
+)
 
-# ------------------------------------------------------
-# GRÁFICOS DE PERFIL (IDADE, SEXO, RAÇA/COR, ESCOLARIDADE)
-# ------------------------------------------------------
+st.plotly_chart(fig_tempo, use_container_width=True)
 
-st.header("👥 Perfil dos Trabalhadores Notificados")
 
-colA, colB = st.columns(2)
+# ------------------------------------------------------------
+# GRÁFICOS DEMOGRÁFICOS E SOCIAIS
+# ------------------------------------------------------------
+def grafico_barras(col, titulo):
+    if col and col in df_filtrado.columns:
+        df_plot = df_filtrado[col].value_counts().reset_index()
+        df_plot.columns = [col, "Quantidade"]
+        fig = px.bar(df_plot, x=col, y="Quantidade", title=titulo)
+        st.plotly_chart(fig, use_container_width=True)
 
-# Sexo
-if "SEXO" in df_filtrado.columns:
-    fig_sexo = px.pie(
-        df_filtrado,
-        names="SEXO",
-        title="Distribuição por Sexo"
-    )
-    colA.plotly_chart(fig_sexo, use_container_width=True)
+st.header("📊 Distribuições")
 
-# Idade
-if "IDADE" in df_filtrado.columns:
-    fig_idade = px.histogram(
-        df_filtrado,
-        x="IDADE",
-        nbins=20,
-        title="Distribuição de Idade"
-    )
-    colB.plotly_chart(fig_idade, use_container_width=True)
+grafico_barras(COL_IDADE, "Distribuição por Idade")
+grafico_barras(COL_SEXO, "Distribuição por Sexo")
+grafico_barras(COL_RACA, "Distribuição por Raça/Cor")
+grafico_barras(COL_ESCOL, "Distribuição por Escolaridade")
+grafico_barras(COL_BAIRRO, "Distribuição por Bairro de Ocorrência")
+grafico_barras(COL_EVOL, "Distribuição por Evolução do Caso")
 
-# Raça/cor
-if "RACA_COR" in df_filtrado.columns:
-    st.subheader("📊 Raça/Cor")
-    fig_raca = px.bar(
-        df_filtrado["RACA_COR"].value_counts().reset_index(),
-        x="index",
-        y="RACA_COR",
-        labels={"index": "Raça/Cor", "RACA_COR": "Casos"},
-        color="RACA_COR",
-        title="Distribuição por Raça/Cor"
-    )
-    st.plotly_chart(fig_raca, use_container_width=True)
 
-# Escolaridade
-if "ESCOLARIDADE" in df_filtrado.columns:
-    st.subheader("🎓 Escolaridade")
-    fig_esc = px.bar(
-        df_filtrado["ESCOLARIDADE"].value_counts().reset_index(),
-        x="index",
-        y="ESCOLARIDADE",
-        labels={"index": "Escolaridade", "ESCOLARIDADE": "Casos"},
-        color="ESCOLARIDADE",
-        title="Distribuição por Escolaridade"
-    )
-    st.plotly_chart(fig_esc, use_container_width=True)
+# ------------------------------------------------------------
+# TABELA COMPLETA
+# ------------------------------------------------------------
+st.header("📋 Tabela Detalhada")
 
-# ------------------------------------------------------
-# BAIRRO E EVOLUÇÃO DO CASO
-# ------------------------------------------------------
-
-st.header("📍 Local e Evolução")
-
-colC, colD = st.columns(2)
-
-# Bairro
-if "BAIRRO_OCORRENCIA" in df_filtrado.columns:
-    df_bairro = df_filtrado["BAIRRO_OCORRENCIA"].value_counts().reset_index()
-    df_bairro.columns = ["Bairro", "Casos"]
-
-    fig_bairro = px.bar(
-        df_bairro,
-        x="Bairro",
-        y="Casos",
-        title="Casos por Bairro de Ocorrência",
-        color="Casos"
-    )
-    colC.plotly_chart(fig_bairro, use_container_width=True)
-
-# Evolução
-if "EVOLUCAO_DO_CASO" in df_filtrado.columns:
-    df_evo = df_filtrado["EVOLUCAO_DO_CASO"].value_counts().reset_index()
-    df_evo.columns = ["Evolução", "Casos"]
-
-    fig_evo = px.bar(
-        df_evo,
-        x="Evolução",
-        y="Casos",
-        title="Evolução dos Casos",
-        color="Casos"
-    )
-    colD.plotly_chart(fig_evo, use_container_width=True)
-
-# ------------------------------------------------------
-# TABELA FINAL
-# ------------------------------------------------------
-st.header("📋 Base Filtrada")
 st.dataframe(df_filtrado, use_container_width=True)
 
+
+# ------------------------------------------------------------
+# FOOTER
+# ------------------------------------------------------------
 st.markdown("---")
-st.caption("Painel de Saúde do Trabalhador – Ipojuca")
+st.markdown("*Painel de Saúde do Trabalhador – Versão 2.0 (robusta)*")
