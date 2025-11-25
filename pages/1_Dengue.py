@@ -231,6 +231,7 @@ st.download_button(
     mime="text/csv"
 )
 
-st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
+
 st.caption("Painel de Dengue • Versão 1.0")
+st.caption("Desenvolvido por Maviael Barros.")
