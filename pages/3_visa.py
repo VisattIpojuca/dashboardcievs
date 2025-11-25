@@ -87,7 +87,7 @@ def detectar_coluna(df, candidatos):
 
 def gerar_excel_bytes(dfs: dict):
     out = BytesIO()
-    with pd.ExcelWriter(out, engine="xlsxwriter") as writer:
+    with pd.ExcelWriter(out, engine="openpyxl") as writer:
         for name, d in dfs.items():
             sheet = str(name)[:31]
             d.to_excel(writer, sheet_name=sheet, index=False)
@@ -238,3 +238,4 @@ st.caption("Visualização pública")
 st.caption("Desenvolvido por Maviael Barros.")
 st.markdown("---")
 st.caption("Painel de Dengue • Versão 1.0")
+
