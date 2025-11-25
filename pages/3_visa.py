@@ -1,5 +1,5 @@
 # pages/3_Indicadores_VISA.py
-# Painel VISA Ipojuca — Página de Indicadores (Multipages)
+# Painel VISA Ipojuca — Página de Indicadores SEM LOGIN
 
 import streamlit as st
 import pandas as pd
@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import plotly.express as px
 
 # --------------------------------------------------------
-# TÍTULO DA PÁGINA (sem set_page_config)
+# TÍTULO DA PÁGINA
 # --------------------------------------------------------
 st.title("📊 Indicadores - Vigilância Sanitária de Ipojuca")
 
@@ -19,11 +19,6 @@ GOOGLE_SHEETS_URL = (
     "https://docs.google.com/spreadsheets/d/1zsM8Zxdc-MnXSvV_OvOXiPoc1U4j-FOn/edit?usp=sharing"
 )
 
-USERS = {
-    "admin": {"password": "Ipojuca@2025*", "role": "admin"},
-    "antonio.reldismar": {"password": "Visa@2025", "role": "standard"},
-}
-
 NOME_MESES = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março",
     4: "Abril", 5: "Maio", 6: "Junho",
@@ -32,28 +27,24 @@ NOME_MESES = {
 }
 
 # --------------------------------------------------------
-# HELPERS
+# FUNÇÕES AUXILIARES
 # --------------------------------------------------------
 
 def converter_para_csv(url: str) -> str | None:
-    """Converte URL de Google Sheets para CSV."""
     if not isinstance(url, str):
         return None
     partes = url.split("/d/")
     if len(partes) < 2:
         return None
     sheet_id = partes[1].split("/")[0]
-    if not sheet_id:
-        return None
     return f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
 
 
 @st.cache_data(ttl=600)
 def carregar_planilha_google(url_original: str) -> pd.DataFrame:
-    """Carrega planilha Google Sheets em CSV e normaliza colunas."""
     url_csv = converter_para_csv(url_original)
     if not url_csv:
-        st.error("URL do Google Sheets inválida.")
+        st.error("URL inválida.")
         return pd.DataFrame()
 
     try:
@@ -77,7 +68,7 @@ def carregar_planilha_google(url_original: str) -> pd.DataFrame:
         df["ANO_ENTRADA"] = pd.NA
         df["MES_ENTRADA"] = pd.NA
 
-    # Correções de texto
+    # Normalização de texto
     if "SITUAÇÃO" in df.columns:
         df["SITUAÇÃO"] = df["SITUAÇÃO"].fillna("").astype(str).str.upper()
 
@@ -98,15 +89,12 @@ def gerar_excel_bytes(dfs: dict):
     out = BytesIO()
     with pd.ExcelWriter(out, engine="xlsxwriter") as writer:
         for name, d in dfs.items():
-            sheet = str(name)[:31] if name else "Sheet"
-            try:
-                d.to_excel(writer, sheet_name=sheet, index=False)
-            except:
-                d.to_excel(writer, sheet_name=sheet[:28] + "_", index=False)
+            sheet = str(name)[:31]
+            d.to_excel(writer, sheet_name=sheet, index=False)
     return out.getvalue()
 
 # --------------------------------------------------------
-# CARREGAMENTO DOS DADOS
+# CARREGAR DADOS
 # --------------------------------------------------------
 
 df = carregar_planilha_google(GOOGLE_SHEETS_URL)
@@ -118,23 +106,16 @@ col_coord = detectar_coluna(df, ["COORDENAÇÃO", "COORDENACAO", "COORDENADORIA"
 col_territorio = detectar_coluna(df, ["TERRITÓRIO", "TERRITORIO", "TERRITORY", "TERR"])
 
 # --------------------------------------------------------
-# LOGIN (reuso da session_state)
+# FILTROS (SEM LOGIN)
 # --------------------------------------------------------
 
-if "logged" not in st.session_state:
-    st.warning("Você precisa fazer login na página inicial.")
-    st.stop()
-
-# --------------------------------------------------------
-# FILTROS
-# --------------------------------------------------------
-
-st.sidebar.header(f"Usuário: {st.session_state['user']} ({st.session_state['role']})")
+st.sidebar.header("📌 Filtros do Painel")
 
 modo = st.sidebar.radio("Período:", ["Ano/Mês", "Intervalo de datas"])
 
-anos = sorted(df["ANO_ENTRADA"].dropna().unique()) if "ANO_ENTRADA" in df.columns else []
+anos = sorted(df["ANO_ENTRADA"].dropna().unique())
 ANO_ATUAL = datetime.now().year
+
 if not anos:
     anos = [ANO_ATUAL]
 
@@ -153,25 +134,16 @@ else:
     inicio = st.sidebar.date_input("Início", df["ENTRADA"].min().date())
     fim = st.sidebar.date_input("Fim", df["ENTRADA"].max().date())
 
-# Classificação (risco)
+# Classificação
 riscos = sorted(df["CLASSIFICAÇÃO"].dropna().unique()) if "CLASSIFICAÇÃO" in df.columns else []
 sel_risco = st.sidebar.multiselect("Classificação (Risco)", riscos, default=riscos)
 
-# Filtros admin
-if st.session_state["role"] == "admin" and col_territorio:
-    territorios = sorted(df[col_territorio].dropna().unique())
-    sel_ter = st.sidebar.multiselect("Território", territorios, default=territorios)
-else:
-    sel_ter = []
-
-if st.session_state["role"] == "admin" and col_coord:
-    coords = sorted(df[col_coord].dropna().unique())
-    sel_coord = st.sidebar.multiselect("Coordenação", coords, default=coords)
-else:
-    sel_coord = []
+# Como usuário padrão não é admin, oculta filtros extras
+sel_ter = []
+sel_coord = []
 
 # --------------------------------------------------------
-# APLICA FILTROS
+# APLICAR FILTROS
 # --------------------------------------------------------
 
 filtro_df = df.copy()
@@ -183,12 +155,6 @@ else:
 
 if sel_risco:
     filtro_df = filtro_df[filtro_df["CLASSIFICAÇÃO"].isin(sel_risco)]
-
-if sel_ter and col_territorio:
-    filtro_df = filtro_df[filtro_df[col_territorio].isin(sel_ter)]
-
-if sel_coord and col_coord:
-    filtro_df = filtro_df[filtro_df[col_coord].isin(sel_coord)]
 
 # --------------------------------------------------------
 # CÁLCULO DE INDICADORES
@@ -258,41 +224,17 @@ c2.metric("% Inspeções ≤30 dias", f"{p30}%")
 c3.metric("% Conclusões ≤90 dias", f"{p90}%")
 
 # --------------------------------------------------------
-# GRÁFICOS (ADMIN)
+# DOWNLOAD EXCEL (permitido mesmo sem login)
 # --------------------------------------------------------
 
-if st.session_state["role"] == "admin":
+st.download_button(
+    "📥 Baixar Excel",
+    data=gerar_excel_bytes({"dados_filtrados": filtro_df, "tabela": tabela}),
+    file_name="relatorio_visa.xlsx",
+)
 
-    st.subheader("📈 Produção por Coordenação e Território")
+st.caption("Visualização pública")
 
-    if col_coord:
-        g = filtro_df.groupby(col_coord).agg(
-            Realizou_30=("REALIZOU_30", "sum"),
-            Finalizou_90=("FINALIZOU_90", "sum"),
-        )
-        fig = px.bar(g, barmode="group", title="Coordenação")
-        st.plotly_chart(fig, use_container_width=True)
-
-    if col_territorio:
-        g = filtro_df.groupby(col_territorio).agg(
-            Realizou_30=("REALIZOU_30", "sum"),
-            Finalizou_90=("FINALIZADO_90", "sum") if "FINALIZADO_90" in df.columns else ("FINALIZOU_90", "sum"),
-        )
-        fig = px.bar(g, barmode="group", title="Território")
-        st.plotly_chart(fig, use_container_width=True)
-
-    st.subheader("⚠ Processos com atraso")
-
-    st.markdown("### Atraso na inspeção")
-    st.dataframe(filtro_df[filtro_df["REALIZOU_30"] == False])
-
-    st.markdown("### Atraso na conclusão")
-    st.dataframe(filtro_df[filtro_df["FINALIZOU_90"] == False])
-
-    st.download_button(
-        "📥 Baixar Excel",
-        data=gerar_excel_bytes({"dados_filtrados": filtro_df, "tabela": tabela}),
-        file_name="relatorio_visa.xlsx",
-    )
-
-st.caption(f"Usuário: {st.session_state['user']} | Perfil: {st.session_state['role']}")
+st.caption("Desenvolvido por Maviael Barros.")
+st.markdown("---")
+st.caption("Painel de Dengue • Versão 1.0")
