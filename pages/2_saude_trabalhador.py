@@ -191,19 +191,16 @@ if COL_IDADE:
 
 # Sexo
 if COL_SEXO:
-    fig = px.bar(
-        df_filtrado[COL_SEXO].value_counts().reset_index(),
-        x="index",
-        y=COL_SEXO,
-        title="Distribuição por Sexo"
-    )
+    df_sexo = df_filtrado[COL_SEXO].value_counts().reset_index()
+    df_sexo.columns = ["SEXO", "QTD"]
+    fig = px.bar(df_sexo, x="SEXO", y="QTD", title="Distribuição por Sexo")
     st.plotly_chart(fig, use_container_width=True)
 
 # Raça/Cor
 if COL_RACA:
     df_raca = df_filtrado[COL_RACA].value_counts().reset_index()
-    df_raca.columns = ["RACA", "QTD"]
-    fig = px.bar(df_raca, x="RACA", y="QTD", title="Distribuição por Raça/Cor")
+    df_raca.columns = ["RACA_COR", "QTD"]
+    fig = px.bar(df_raca, x="RACA_COR", y="QTD", title="Distribuição por Raça/Cor")
     st.plotly_chart(fig, use_container_width=True)
 
 # Escolaridade
@@ -226,7 +223,6 @@ if COL_EVOL:
     df_ev.columns = ["EVOLUCAO", "QTD"]
     fig = px.bar(df_ev, x="EVOLUCAO", y="QTD", title="Evolução dos Casos")
     st.plotly_chart(fig, use_container_width=True)
-
 # ----------------------------------------------------------
 # TABELA FINAL
 # ----------------------------------------------------------
