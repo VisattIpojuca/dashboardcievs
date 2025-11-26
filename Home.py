@@ -15,52 +15,6 @@ st.set_page_config(
 # ============================================================
 with st.sidebar:
 
-    # LOGO DO CIEVS NO TOPO
-    st.image(
-        "https://cievsipojuca.wordpress.com/wp-content/uploads/2022/01/cievs-ipojuca-sem-fundo.png?w=640",
-        width=160
-    )
-
-    st.markdown("## 📍 Navegação")
-    st.info("Use o menu acima para acessar os módulos do sistema.")
-
-    st.markdown("---")
-
-    # 🔎 BUSCADOR GLOBAL DO PAINEL
-    st.markdown("## 🔎 Buscar no Painel")
-
-    index_busca = {
-        "dengue": ("Módulo de Dengue", "1_Dengue"),
-        "arbovirose": ("Módulo de Dengue", "1_Dengue"),
-
-        "saúde do trabalhador": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
-        "acidente": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
-
-        "visa": ("Vigilância Sanitária", "3_VISA"),
-        "inspeção": ("Vigilância Sanitária", "3_VISA"),
-
-        "pce": ("Programa de Controle de Endemias", "4_PCE"),
-        "endemia": ("Programa de Controle de Endemias", "4_PCE"),
-
-        "oropouche": ("Oropouche", "5_Oropouche"),
-        "gestante": ("Oropouche", "5_Oropouche"),
-    }
-
-    termo = st.text_input("Digite um termo para pesquisar:")
-
-    if termo:
-        termo_low = termo.lower()
-        resultados = {k: v for k, v in index_busca.items() if termo_low in k}
-
-        if resultados:
-            st.markdown("### Resultados encontrados:")
-            for palavra, (titulo, modulo) in resultados.items():
-                st.markdown(f"🔗 **[{titulo}](./{modulo})** — encontrado em “{palavra}”")
-        else:
-            st.warning("Nenhum resultado encontrado para esse termo.")
-
-    st.markdown("---")
-
     # SEÇÃO SOBRE
     st.markdown("## 📘 Sobre este painel")
     st.markdown("""
