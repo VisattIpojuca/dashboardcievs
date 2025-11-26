@@ -26,30 +26,51 @@ st.markdown("""
     --branco: #FFFFFF;
 }
 
-/* ====== FUNDO GERAL (fixo, não muda no dark mode) ====== */
+/* ====== FORÇAR COR DO TEXTO (fixo em preto no modo claro/escuro) ====== */
+html, body, [data-testid="stAppViewContainer"], * {
+    color: #000000 !important;
+}
+
+/* Títulos (cor fixa) */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--verde-ipojuca) !important;
+}
+
+/* Parágrafos */
+p {
+    color: #000 !important;
+    text-align: justify !important;
+}
+
+/* Listas */
+li {
+    color: #000 !important;
+}
+
+/* Textos informativos */
+span, label, div, section {
+    color: #000 !important;
+}
+
+/* Inputs e seus textos */
+input, textarea, select {
+    color: #000 !important;
+}
+
+/* Botões */
+button, .stButton button {
+    color: #000 !important;
+}
+
+/* Links */
+a {
+    color: var(--azul-principal) !important;
+    font-weight: 600;
+}
+
+/* ====== FUNDO GERAL FIXO ====== */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
-}
-
-/* ====== TÍTULOS (cor fixa) ====== */
-h1, h2, h3, h4 {
-    color: var(--verde-ipojuca) !important;
-    font-weight: 800 !important;
-}
-
-/* ====== PARÁGRAFOS JUSTIFICADOS ====== */
-.block-container p {
-    text-align: justify !important;
-    font-size: 1.05rem;
-}
-
-/* ====== CARDS / BLOCOS ====== */
-.stMetric {
-    background-color: var(--branco) !important;
-    padding: 20px;
-    border-radius: 12px;
-    border-left: 6px solid var(--azul-principal);
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
 }
 
 /* ====== SIDEBAR FIXA ====== */
@@ -58,15 +79,24 @@ h1, h2, h3, h4 {
 }
 
 [data-testid="stSidebar"] * {
-    color: white !important;
+    color: #FFFFFF !important;
 }
 
+/* Links na sidebar */
 [data-testid="stSidebar"] a {
     color: #FFC20E !important;
-    font-weight: 600;
 }
 
-/* Logo em fundo branco */
+/* ====== CARDS ====== */
+.stMetric {
+    background-color: var(--branco) !important;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 6px solid var(--azul-principal);
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+}
+
+/* ====== QUADRO DA LOGO ====== */
 .sidebar-logo {
     background:white;
     padding:10px;
@@ -76,6 +106,7 @@ h1, h2, h3, h4 {
 
 </style>
 """, unsafe_allow_html=True)
+
 
 # ============================================================
 # SIDEBAR — LOGO DENTRO DE QUADRO BRANCO
