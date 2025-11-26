@@ -19,24 +19,29 @@ st.markdown("""
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@600;800&display=swap');
 
+/* ----- Fonte global ----- */
 html, body, [class*="css"] {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif !important;
 }
 
+/* ----- Títulos ----- */
 h1, h2, h3, .metric-label {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 700 !important;
 }
 
+/* ----- Forçar caixas claras mesmo no modo escuro ----- */
 .section-box {
-    background-color: #f7f9fc;
+    background-color: #FFFFFF !important;   /* Fundo sempre branco */
+    color: #000000 !important;              /* Texto sempre preto */
     padding: 25px;
     border-radius: 12px;
     border-left: 6px solid #003F8C;  /* Azul Ipojuca */
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.07);
     margin-bottom: 20px;
 }
 
+/* ----- Separador grande institucional ----- */
 .big-separator {
     height: 6px;
     background: linear-gradient(90deg, #003F8C, #FFC72C, #009364);
@@ -45,14 +50,15 @@ h1, h2, h3, .metric-label {
     margin-bottom: 25px;
 }
 
+/* ----- Links ----- */
 a {
     text-decoration: none;
     font-weight: 600;
-    color: #003F8C;
+    color: #003F8C !important;
 }
 
 a:hover {
-    color: #009364;
+    color: #009364 !important;
 }
 </style>
 """, unsafe_allow_html=True)
