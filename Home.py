@@ -59,7 +59,7 @@ h1, h2, h3, h4 {
 
 /* ====== CARDS / BLOCOS ====== */
 .stMetric {
-    background-color: var(--azul-secundario);
+    background-color: var(--branco);
     padding: 20px;
     border-radius: 12px;
     border-left: 6px solid var(--azul-principal);
@@ -69,14 +69,14 @@ h1, h2, h3, h4 {
 /* Dark mode cards */
 @media (prefers-color-scheme: dark) {
     .stMetric {
-        background-color: #1E1E1E !important;
+        background-color: #FFFFFF !important;
         border-left: 6px solid var(--azul-secundario) !important;
     }
 }
 
 /* ====== SIDEBAR ====== */
 [data-testid="stSidebar"] {
-    background: var(--azul-principal) !important;
+    background: var(--azul-secundario) !important;
 }
 
 [data-testid="stSidebar"] * {
