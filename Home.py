@@ -1,8 +1,8 @@
 import streamlit as st
 
-# ========================================================================
+# ============================================================
 # CONFIGURAÇÃO DA PÁGINA — precisa ser a primeira chamada!
-# ========================================================================
+# ============================================================
 st.set_page_config(
     page_title="Painel de Saúde Ipojuca",
     page_icon="🏥",
@@ -10,103 +10,93 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ========================================================================
-# CSS – Ajuste de modo escuro/claro e visual institucional
-# ========================================================================
-st.markdown(
-    """
-    <style>
-        /* Fundo transparente para blocos padrões */
-        .css-1r6slb0, .css-12ttj6m, .stApp {
-            background-color: transparent !important;
-        }
+# ============================================================
+# SIDEBAR — LOGO + BUSCADOR + SOBRE
+# ============================================================
+with st.sidebar:
 
-        /* Título principal */
-        .main-title {
-            font-size: 45px;
-            font-weight: 900;
-            color: var(--text-color);
-            margin-bottom: -5px;
-        }
+    # LOGO DO CIEVS NO TOPO
+    st.image(
+        "https://cievsipojuca.wordpress.com/wp-content/uploads/2022/01/cievs-ipojuca-sem-fundo.png?w=640",
+        width=160
+    )
 
-        .main-subtitle {
-            font-size: 22px;
-            margin-top: 5px;
-            color: var(--text-color-secondary);
-        }
+    st.markdown("## 📍 Navegação")
+    st.info("Use o menu acima para acessar os módulos do sistema.")
 
-        /* Cores adaptáveis ao modo claro/escuro */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --text-color: #ffffff;
-                --text-color-secondary: #cccccc;
-            }
-        }
-        @media (prefers-color-scheme: light) {
-            :root {
-                --text-color: #1a1a1a;
-                --text-color-secondary: #333333;
-            }
-        }
+    st.markdown("---")
 
-        /* Cartões de módulos */
-        .module-card {
-            padding: 25px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(0,0,0,0.1);
-            transition: 0.3s;
-        }
-        @media (prefers-color-scheme: dark) {
-            .module-card {
-                background: rgba(40, 40, 40, 0.6);
-                border: 1px solid rgba(255,255,255,0.1);
-            }
-        }
+    # 🔎 BUSCADOR GLOBAL DO PAINEL
+    st.markdown("## 🔎 Buscar no Painel")
 
-        .module-card:hover {
-            transform: scale(1.01);
-            border-color: #2a71d0;
-        }
+    index_busca = {
+        "dengue": ("Módulo de Dengue", "1_Dengue"),
+        "arbovirose": ("Módulo de Dengue", "1_Dengue"),
 
-        /* Links institucionais */
-        .inst-card {
-            padding: 20px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.75);
-            text-align: center;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-        @media (prefers-color-scheme: dark) {
-            .inst-card {
-                background: rgba(50,50,50,0.65);
-            }
-        }
-        .inst-card a {
-            font-size: 18px;
-            font-weight: bold;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+        "saúde do trabalhador": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
+        "acidente": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
 
-# ========================================================================
-# TÍTULO PRINCIPAL – ocupa toda a largura
-# ========================================================================
+        "visa": ("Vigilância Sanitária", "3_VISA"),
+        "inspeção": ("Vigilância Sanitária", "3_VISA"),
 
-st.markdown(
-    """
-    <div style='padding: 10px 0 25px 0;'>
-        <div class="main-title">🏥 Painel Integrado de Vigilância em Saúde – Ipojuca</div>
-        <div class="main-subtitle">
-            Sistema oficial de monitoramento, análise e inteligência em saúde pública.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        "pce": ("Programa de Controle de Endemias", "4_PCE"),
+        "endemia": ("Programa de Controle de Endemias", "4_PCE"),
+
+        "oropouche": ("Oropouche", "5_Oropouche"),
+        "gestante": ("Oropouche", "5_Oropouche"),
+    }
+
+    termo = st.text_input("Digite um termo para pesquisar:")
+
+    if termo:
+        termo_low = termo.lower()
+        resultados = {k: v for k, v in index_busca.items() if termo_low in k}
+
+        if resultados:
+            st.markdown("### Resultados encontrados:")
+            for palavra, (titulo, modulo) in resultados.items():
+                st.markdown(f"🔗 **[{titulo}](./{modulo})** — encontrado em “{palavra}”")
+        else:
+            st.warning("Nenhum resultado encontrado para esse termo.")
+
+    st.markdown("---")
+
+    # SEÇÃO SOBRE
+    st.markdown("## 📘 Sobre este painel")
+    st.markdown("""
+O **Painel Integrado de Vigilância em Saúde do Ipojuca** é uma ferramenta estratégica
+desenvolvida para fortalecer a gestão, qualificar análises e ampliar a capacidade de resposta
+do município.
+
+Aqui, dados se convertem em direção.  
+Indicadores se transformam em ação.  
+E cada visualização ilumina o caminho da saúde pública no território ipojucano.
+
+Este ambiente integra informações da Vigilância Epidemiológica,  
+Vigilância em Saúde do Trabalhador, Vigilância Sanitária e Vigilância Ambiental,
+promovendo uma visão unificada, inteligente e estratégica do território.
+    """)
+
+    st.markdown("---")
+    st.caption("Prefeitura do Ipojuca • Secretaria Municipal de Saúde")
+
+# ============================================================
+# CABEÇALHO PRINCIPAL
+# ============================================================
+
+col_logo, col_title = st.columns([1, 3])
+
+with col_logo:
+    st.image(
+        "https://ipojuca.pe.gov.br/wp-content/uploads/2024/02/cropped-LOGO-PRINCIPAL.png",
+        width=190
+    )
+
+with col_title:
+    st.title("🏥 Painel Integrado de Vigilância em Saúde – Ipojuca")
+    st.markdown(
+        "Sistema oficial de monitoramento, análise e inteligência em saúde pública."
+    )
 
 st.markdown("---")
 
