@@ -40,7 +40,7 @@ st.markdown("""
 
 /* ====== TÍTULOS ====== */
 h1, h2, h3, h4 {
-    color: var(--azul-secundario) !important;
+    color: var(--verde-ipojuca) !important;
     font-weight: 800 !important;
 }
 
