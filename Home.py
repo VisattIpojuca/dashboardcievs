@@ -86,12 +86,6 @@ promovendo uma visão unificada, inteligente e estratégica do território.
 
 col_logo, col_title = st.columns([1, 3])
 
-with col_logo:
-    st.image(
-        "https://ipojuca.pe.gov.br/wp-content/uploads/2024/02/cropped-LOGO-PRINCIPAL.png",
-        width=190
-    )
-
 with col_title:
     st.title("🏥 Painel Integrado de Vigilância em Saúde – Ipojuca")
     st.markdown(
