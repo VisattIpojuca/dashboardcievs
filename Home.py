@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# CSS — IDENTIDADE VISUAL + MODO CLARO/ESCURO CORRIGIDO
+# CSS — IDENTIDADE VISUAL FIXA (SEM MUDAR NO DARK MODE)
 # ============================================================
 
 st.markdown("""
@@ -26,29 +26,15 @@ st.markdown("""
     --branco: #FFFFFF;
 }
 
-/* ====== FUNDO GERAL ====== */
+/* ====== FUNDO GERAL (fixo, não muda no dark mode) ====== */
 [data-testid="stAppViewContainer"] {
-    background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF);
+    background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-    [data-testid="stAppViewContainer"] {
-        background: #0E1117 !important;
-    }
-}
-
-/* ====== TÍTULOS ====== */
+/* ====== TÍTULOS (cor fixa) ====== */
 h1, h2, h3, h4 {
     color: var(--verde-ipojuca) !important;
     font-weight: 800 !important;
-}
-
-/* MODO ESCURO: títulos verde */
-@media (prefers-color-scheme: dark) {
-    h1, h2, h3, h4 {
-        color: #009D4A !important;
-    }
 }
 
 /* ====== PARÁGRAFOS JUSTIFICADOS ====== */
@@ -59,22 +45,14 @@ h1, h2, h3, h4 {
 
 /* ====== CARDS / BLOCOS ====== */
 .stMetric {
-    background-color: var(--branco);
+    background-color: var(--branco) !important;
     padding: 20px;
     border-radius: 12px;
     border-left: 6px solid var(--azul-principal);
     box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
 }
 
-/* Dark mode cards */
-@media (prefers-color-scheme: dark) {
-    .stMetric {
-        background-color: #1E1E1E !important;
-        border-left: 6px solid var(--azul-secundario) !important;
-    }
-}
-
-/* ====== SIDEBAR ====== */
+/* ====== SIDEBAR FIXA ====== */
 [data-testid="stSidebar"] {
     background: var(--azul-secundario) !important;
 }
@@ -88,11 +66,12 @@ h1, h2, h3, h4 {
     font-weight: 600;
 }
 
-/* Dark mode sidebar mantém contraste */
-@media (prefers-color-scheme: dark) {
-    [data-testid="stSidebar"] {
-        background: #009D4A !important;
-    }
+/* Logo em fundo branco */
+.sidebar-logo {
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    text-align:center;
 }
 
 </style>
@@ -105,12 +84,7 @@ h1, h2, h3, h4 {
 with st.sidebar:
 
     st.markdown("""
-        <div style="
-            background:white;
-            padding:10px;
-            border-radius:10px;
-            text-align:center;
-        ">
+        <div class="sidebar-logo">
             <img src="https://cievsipojuca.wordpress.com/wp-content/uploads/2022/01/cievs-ipojuca-sem-fundo.png?w=640"
                  width="150">
         </div>
