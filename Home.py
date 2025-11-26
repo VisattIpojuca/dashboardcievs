@@ -1,17 +1,64 @@
 import streamlit as st
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA — precisa ser a primeira chamada!
+# CONFIGURAÇÃO DA PÁGINA — deve ser a primeira instrução!
 # ============================================================
 st.set_page_config(
-    page_title="Painel de Saúde Ipojuca",
+    page_title="Painel de Saúde de Ipojuca",
     page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ============================================================
-# CABEÇALHO COM IMAGEM DO CIEVS
+# CSS — Estilos inspirados na identidade visual oficial
+# ============================================================
+
+st.markdown("""
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@600;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, .metric-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.section-box {
+    background-color: #f7f9fc;
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 6px solid #003F8C;  /* Azul Ipojuca */
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.big-separator {
+    height: 6px;
+    background: linear-gradient(90deg, #003F8C, #FFC72C, #009364);
+    border-radius: 5px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #003F8C;
+}
+
+a:hover {
+    color: #009364;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ============================================================
+# CABEÇALHO COM LOGO
 # ============================================================
 
 col_logo, col_title = st.columns([1, 3])
@@ -23,106 +70,123 @@ with col_logo:
     )
 
 with col_title:
-    st.title("🏥 Painel Integrado de Vigilância em Saúde – Ipojuca")
-    st.markdown(
-        "Sistema integrado para monitoramento de indicadores epidemiológicos e de Saúde do Trabalhador."
-    )
+    st.markdown("<h1>🏥 Painel Integrado de Vigilância em Saúde – Ipojuca</h1>", unsafe_allow_html=True)
+    st.markdown("""
+        <p style='font-size:18px;'>
+        Monitoramento inteligente dos indicadores epidemiológicos e da Saúde do Trabalhador.  
+        Um painel moderno, integrado e alinhado à identidade visual da gestão municipal.
+        </p>
+    """, unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='big-separator'></div>", unsafe_allow_html=True)
 
 # ============================================================
-# TEXTO DE BOAS-VINDAS
+# TEXTO DE APRESENTAÇÃO
 # ============================================================
 
 st.markdown("""
-Seja bem-vindo ao **Painel Integrado de Indicadores da Vigilância em Saúde**,  
-um ambiente onde cada dado vira direção, e cada indicador ilumina o caminho da gestão. ✨
+<div class='section-box'>
+<h2>👋 Bem-vindo ao Painel Integrado de Vigilância em Saúde</h2>
 
-Aqui você encontra informações estratégicas, atualizadas e organizadas  
-para apoiar decisões, fortalecer ações e ampliar o impacto do SUS no território.
-""")
+Este painel é uma bússola digital da gestão:  
+cada gráfico revela um movimento,  
+cada filtro mostra um território,  
+cada indicador acende um alerta.
 
-st.markdown("---")
+Aqui, dados viram decisão.  
+Aqui, gestão vira cuidado.
+
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
-# SEÇÃO: MÓDULOS DISPONÍVEIS
+# MÓDULOS DISPONÍVEIS
 # ============================================================
 
-st.subheader("📊 Módulos Disponíveis")
+st.markdown("<h2>📊 Módulos do Sistema</h2>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-    ### 🦟 Módulo de Dengue  
-    Monitoramento contínuo das arboviroses com dados de notificação:
-
-    - 📅 Distribuição temporal  
-    - 🗺️ Análise geográfica por bairro e distrito  
-    - 📈 Indicadores epidemiológicos  
-    - 👥 Perfil dos casos  
-
-    *Acesse pelo menu lateral esquerdo.*
-    """)
+    <div class='section-box'>
+    <h3>🦟 Módulo de Dengue</h3>
+    <ul>
+        <li>Distribuição temporal</li>
+        <li>Análise territorial</li>
+        <li>Perfil dos casos</li>
+        <li>Indicadores epidemiológicos</li>
+    </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
     st.markdown("""
-    ### 👷 Módulo de Saúde do Trabalhador  
-    Acompanhamento dos acidentes de trabalho notificados no município:
-
-    - 📌 Indicadores principais  
-    - 🧑‍🏭 Análises por ocupação  
-    - 🗓️ Tendência temporal  
-    - 🏘️ Distribuição territorial  
-    - 🩺 Evolução dos casos
-
-    *Disponível no menu lateral esquerdo.*
-    """)
-
-st.markdown("---")
+    <div class='section-box'>
+    <h3>👷 Saúde do Trabalhador</h3>
+    <ul>
+        <li>Acompanhamento dos acidentes de trabalho</li>
+        <li>Análises por ocupação</li>
+        <li>Evolução dos casos</li>
+        <li>Distribuição territorial</li>
+    </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================================
 # LINKS INSTITUCIONAIS
 # ============================================================
 
-st.subheader("🌐 Acesse também")
+st.markdown("<h2>🌐 Acesse também</h2>", unsafe_allow_html=True)
 
 colA, colB, colC = st.columns(3)
 
 with colA:
-    st.markdown("### 🔵 CIEVS Ipojuca")
-    st.markdown("[👉 Acessar site](https://cievsipojuca.wordpress.com/)")
+    st.markdown("""
+    <div class='section-box'>
+    <h3>🔵 CIEVS Ipojuca</h3>
+    <a href='https://cievsipojuca.wordpress.com/' target='_blank'>Acessar site</a>
+    </div>
+    """, unsafe_allow_html=True)
 
 with colB:
-    st.markdown("### 🟢 VISATT Ipojuca")
-    st.markdown("[👉 Acessar site](https://visattipojuca.com/)")
+    st.markdown("""
+    <div class='section-box'>
+    <h3>🟢 VISATT Ipojuca</h3>
+    <a href='https://visattipojuca.com/' target='_blank'>Acessar site</a>
+    </div>
+    """, unsafe_allow_html=True)
 
 with colC:
-    st.markdown("### 🟣 Prefeitura do Ipojuca")
-    st.markdown("[👉 Acessar site](https://ipojuca.pe.gov.br/)")
-
-st.markdown("---")
+    st.markdown("""
+    <div class='section-box'>
+    <h3>🟣 Prefeitura do Ipojuca</h3>
+    <a href='https://ipojuca.pe.gov.br/' target='_blank'>Acessar site</a>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================================
 # COMO UTILIZAR
 # ============================================================
 
-st.subheader("📌 Como utilizar este painel")
+st.markdown("<h2>📌 Como usar este painel</h2>", unsafe_allow_html=True)
 
 st.markdown("""
-- Navegue pelos módulos através do **menu lateral**.  
-- Aplique filtros específicos em cada página para análises mais detalhadas.  
-- Baixe dados filtrados quando disponível.  
-- Utilize os gráficos para identificar tendências, padrões e anomalias.  
-""")
-
-st.markdown("---")
+<div class='section-box'>
+<ul>
+    <li>Use o menu lateral para navegar entre os módulos.</li>
+    <li>Aplique filtros para personalizar análises.</li>
+    <li>Explore gráficos interativos para identificar padrões.</li>
+    <li>Baixe dados filtrados quando disponível.</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # INFORMAÇÕES DO SISTEMA
 # ============================================================
 
-st.subheader("ℹ️ Informações do Sistema")
+st.markdown("<h2>ℹ️ Informações do Sistema</h2>", unsafe_allow_html=True)
 
 colA, colB, colC = st.columns(3)
 
@@ -136,17 +200,19 @@ with colC:
     st.metric("Responsável", "Vigilância em Saúde – Ipojuca")
 
 st.markdown("""
-Desenvolvido com ❤️ utilizando **Streamlit**, **Python**,  
-e dados das Gerências da Vigilância em Saúde de Ipojuca.
-""")
+<div class='section-box'>
+Desenvolvido com ❤️ utilizando <b>Python</b>, <b>Streamlit</b>  
+e dados das Gerências da Vigilância em Saúde do Município do Ipojuca.
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # SIDEBAR
 # ============================================================
 with st.sidebar:
     st.header("📍 Navegação")
-    st.info("Use o menu acima para acessar os módulos do sistema.")
+    st.info("Escolha um módulo no menu acima.")
 
     st.markdown("---")
-    st.subheader("🧭 Sobre este painel")
+    st.subheader("🧭 Sobre o painel")
     st.markdown("Sistema integrado para monitoramento dos principais indicadores de saúde pública municipal.")
