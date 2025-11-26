@@ -27,23 +27,23 @@ with st.sidebar:
     st.markdown("---")
 
     # 🔎 BUSCADOR GLOBAL DO PAINEL
-    #st.markdown("## 🔎 Buscar no Painel")
+    st.markdown("## 🔎 Buscar no Painel")
 
-    #index_busca = {
-      #  "dengue": ("Módulo de Dengue", "1_Dengue"),
-      #  "arbovirose": ("Módulo de Dengue", "1_Dengue"),
+    index_busca = {
+        "dengue": ("Módulo de Dengue", "1_Dengue"),
+        "arbovirose": ("Módulo de Dengue", "1_Dengue"),
 
-      #  "saúde do trabalhador": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
-      #  "acidente": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
+        "saúde do trabalhador": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
+        "acidente": ("Saúde do Trabalhador", "2_Saude_do_Trabalhador"),
 
-      #  "visa": ("Vigilância Sanitária", "3_VISA"),
-      #  "inspeção": ("Vigilância Sanitária", "3_VISA"),
+        "visa": ("Vigilância Sanitária", "3_VISA"),
+        "inspeção": ("Vigilância Sanitária", "3_VISA"),
 
-      #  "pce": ("Programa de Controle de Endemias", "4_PCE"),
-      #  "endemia": ("Programa de Controle de Endemias", "4_PCE"),
+        "pce": ("Programa de Controle de Endemias", "4_PCE"),
+        "endemia": ("Programa de Controle de Endemias", "4_PCE"),
 
-      #  "oropouche": ("Oropouche", "5_Oropouche"),
-      #  "gestante": ("Oropouche", "5_Oropouche"),
+        "oropouche": ("Oropouche", "5_Oropouche"),
+        "gestante": ("Oropouche", "5_Oropouche"),
     }
 
     termo = st.text_input("Digite um termo para pesquisar:")
