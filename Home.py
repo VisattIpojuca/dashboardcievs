@@ -59,7 +59,7 @@ h1, h2, h3, h4 {
 
 /* ====== CARDS / BLOCOS ====== */
 .stMetric {
-    background-color: var(--branco);
+    background-color: var(azul-secundario);
     padding: 20px;
     border-radius: 12px;
     border-left: 6px solid var(--azul-principal);
