@@ -44,10 +44,10 @@ h1, h2, h3, h4 {
     font-weight: 800 !important;
 }
 
-/* MODO ESCURO: títulos mais claros */
+/* MODO ESCURO: títulos verde */
 @media (prefers-color-scheme: dark) {
     h1, h2, h3, h4 {
-        color: #0073CF !important;
+        color: #009D4A !important;
     }
 }
 
