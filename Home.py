@@ -40,14 +40,14 @@ st.markdown("""
 
 /* ====== TÍTULOS ====== */
 h1, h2, h3, h4 {
-    color: var(--azul-principal) !important;
+    color: var(--azul-secundario) !important;
     font-weight: 800 !important;
 }
 
-/* MODO ESCURO: títulos branco */
+/* MODO ESCURO: títulos mais claros */
 @media (prefers-color-scheme: dark) {
     h1, h2, h3, h4 {
-        color: #FFFFFF !important;
+        color: #0073CF !important;
     }
 }
 
