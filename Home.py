@@ -11,51 +11,177 @@ st.set_page_config(
 )
 
 # ============================================================
-# SIDEBAR — LOGO + BUSCADOR + SOBRE
+# CSS — Identidade visual da Prefeitura do Ipojuca
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+
+        /* ==============================
+           CORES INSTITUCIONAIS
+           ============================== */
+
+        :root {
+            --ipojuca-blue: #004F9F;
+            --ipojuca-blue-light: #1A73E8;
+            --light-bg: #F5F7FA;
+            --dark-bg: #1a1a1a;
+            --block-light: rgba(255,255,255,0.8);
+            --block-dark: rgba(255,255,255,0.05);
+        }
+
+        /* ==============================
+           GLOBAL — AJUSTES DE TEXTO
+           ============================== */
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --text-color: #1a1a1a;
+                --text-color2: #333333;
+                --block-bg: var(--block-light);
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #ffffff;
+                --text-color2: #dddddd;
+                --block-bg: var(--block-dark);
+            }
+        }
+
+        /* Fundo geral */
+        .stApp {
+            background: var(--light-bg);
+        }
+        @media (prefers-color-scheme: dark) {
+            .stApp {
+                background: var(--dark-bg);
+            }
+        }
+
+        /* ==============================
+           TÍTULO PRINCIPAL
+           ============================== */
+
+        .main-title-container {
+            width: 100%;
+            padding: 25px 10px 10px 5px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--ipojuca-blue-light);
+            margin-bottom: 3px;
+        }
+
+        .main-subtitle {
+            font-size: 22px;
+            color: var(--text-color2);
+            margin-top: -5px;
+        }
+
+        /* ==============================
+           CARDS MODULARES
+           ============================== */
+
+        .module-card {
+            padding: 22px;
+            border-radius: 12px;
+            background: var(--block-bg);
+            border: 2px solid var(--ipojuca-blue);
+            transition: 0.3s;
+        }
+
+        .module-card:hover {
+            transform: scale(1.02);
+            border-color: var(--ipojuca-blue-light);
+        }
+
+        /* ==============================
+           LINKS INSTITUCIONAIS
+           ============================== */
+
+        .inst-card {
+            padding: 18px;
+            border-radius: 12px;
+            background: var(--block-bg);
+            border: 1px solid var(--ipojuca-blue);
+            text-align: center;
+        }
+
+        /* ==============================
+           SIDEBAR — FUNDO BRANCO PARA A LOGO
+           ============================== */
+
+        .sidebar-logo-container {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+        }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ============================================================
+# SIDEBAR — LOGO + SOBRE
 # ============================================================
 with st.sidebar:
 
-    # LOGO DO CIEVS NO TOPO
+    # Fundo branco para garantir legibilidade em modo escuro/claro
+    st.markdown('<div class="sidebar-logo-container">', unsafe_allow_html=True)
     st.image(
         "https://cievsipojuca.wordpress.com/wp-content/uploads/2022/01/cievs-ipojuca-sem-fundo.png?w=640",
         width=160
     )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("## 📍 Navegação")
     st.info("Use o menu acima para acessar os módulos do sistema.")
 
     st.markdown("---")
 
-    # SEÇÃO SOBRE
     st.markdown("## 📘 Sobre este painel")
     st.markdown("""
-O **Painel Integrado de Vigilância em Saúde do Ipojuca** é uma ferramenta estratégica
-desenvolvida para fortalecer a gestão, qualificar análises e ampliar a capacidade de resposta
-do município.
+O **Painel Integrado de Vigilância em Saúde do Ipojuca** é uma ferramenta estratégica  
+para fortalecer análises, orientar decisões e ampliar a capacidade de resposta do município.  
 
-Aqui, dados se convertem em direção.  
-Indicadores se transformam em ação.  
-E cada visualização ilumina o caminho da saúde pública no território ipojucano.
+Aqui, dados ganham sentido.  
+Indicadores viram estratégia.  
+E a inteligência em saúde guia o cuidado no território.  
 
-Este ambiente integra informações da Vigilância Epidemiológica,  
-Vigilância em Saúde do Trabalhador, Vigilância Sanitária e Vigilância Ambiental,
-promovendo uma visão unificada, inteligente e estratégica do território.
+Integra informações da Vigilância Epidemiológica,  
+Saúde do Trabalhador, Vigilância Sanitária e Vigilância Ambiental,  
+oferecendo uma visão unificada e profunda da saúde de Ipojuca.
     """)
 
     st.markdown("---")
     st.caption("Prefeitura do Ipojuca • Secretaria Municipal de Saúde")
 
+
 # ============================================================
-# CABEÇALHO PRINCIPAL
+# TÍTULO PRINCIPAL — OCUPANDO TODA A LARGURA
 # ============================================================
 
-col_logo, col_title = st.columns([1, 3])
-
-with col_title:
-    st.title("🏥 Painel Integrado de Vigilância em Saúde – Ipojuca")
-    st.markdown(
-        "Sistema oficial de monitoramento, análise e inteligência em saúde pública."
-    )
+st.markdown(
+    """
+    <div class="main-title-container">
+        <div class="main-title">
+            🏥 Painel Integrado de Vigilância em Saúde – Ipojuca
+        </div>
+        <div class="main-subtitle">
+            Sistema oficial de monitoramento, análise e inteligência em saúde pública.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("---")
 
@@ -63,19 +189,19 @@ st.markdown("---")
 # TEXTO DE BOAS-VINDAS
 # ============================================================
 st.markdown("""
-Bem-vindo ao **Painel Integrado de Indicadores da Vigilância em Saúde**,  
+Bem-vindo ao **Painel Integrado de Vigilância em Saúde**,  
 onde a gestão encontra precisão, o cuidado encontra direção  
-e o território encontra respostas.
+e o território descobre caminhos.  
 
 Aqui, cada número pulsa.  
 Cada gráfico respira.  
-Cada indicador revela caminhos para fortalecer o SUS em Ipojuca.  
+Cada indicador ilumina o futuro do SUS em Ipojuca.
 """)
 
 st.markdown("---")
 
 # ============================================================
-# SEÇÃO: MÓDULOS DISPONÍVEIS
+# MÓDULOS DISPONÍVEIS
 # ============================================================
 st.subheader("📊 Módulos Disponíveis")
 
@@ -83,96 +209,118 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-    ### 🦟 Módulo de Dengue  
-    Monitoramento contínuo das arboviroses:
-
-    - Distribuição temporal  
-    - Análise geográfica  
-    - Indicadores epidemiológicos  
-    - Perfil dos casos  
-
-    *Acesse pelo menu lateral.*
-    """)
+    <div class='module-card'>
+        <h3>🦟 Módulo de Dengue</h3>
+        <ul>
+            <li>Distribuição temporal</li>
+            <li>Análise geográfica</li>
+            <li>Indicadores epidemiológicos</li>
+            <li>Perfil dos casos</li>
+        </ul>
+        <i>Acesse pelo menu lateral.</i>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
     st.markdown("""
-    ### 👷 Saúde do Trabalhador  
-    Acompanhamento dos acidentes de trabalho:
-
-    - Indicadores principais  
-    - Análises por ocupação  
-    - Tendência temporal  
-    - Territórios e setores afetados  
-    - Evolução dos casos  
-
-    *Acesse pelo menu lateral.*
-    """)
+    <div class='module-card'>
+        <h3>👷 Saúde do Trabalhador</h3>
+        <ul>
+            <li>Indicadores principais</li>
+            <li>Análises por ocupação</li>
+            <li>Tendência temporal</li>
+            <li>Distribuição territorial</li>
+            <li>Evolução dos casos</li>
+        </ul>
+        <i>Acesse pelo menu lateral.</i>
+    </div>
+    """, unsafe_allow_html=True)
 
 col3, col4 = st.columns(2)
 
 with col3:
     st.markdown("""
-    ### 🧪 Vigilância Sanitária (VISA)
-    Monitoramento da produção, inspeções, resultados e desempenho do serviço.
-
-    - Indicadores de 30 e 90 dias  
-    - Produção mensal  
-    - Análise por coordenação e território  
-    - Processos pendentes e concluídos  
-    """)
+    <div class='module-card'>
+        <h3>🧪 Vigilância Sanitária (VISA)</h3>
+        <ul>
+            <li>Indicadores de 30 e 90 dias</li>
+            <li>Produção mensal</li>
+            <li>Análise por coordenação</li>
+            <li>Processos abertos e concluídos</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col4:
     st.markdown("""
-    ### 🦟 Oropouche  
-    Acompanhamento dos casos notificados:
-
-    - Distribuição por localidade  
-    - Classificação dos casos  
-    - Indicadores em gestantes  
-    - Tendência por período  
-    """)
+    <div class='module-card'>
+        <h3>🦟 Oropouche</h3>
+        <ul>
+            <li>Distribuição por localidade</li>
+            <li>Classificação dos casos</li>
+            <li>Indicadores em gestantes</li>
+            <li>Tendência por período</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("---")
 
 # ============================================================
 # LINKS INSTITUCIONAIS
 # ============================================================
-
 st.subheader("🌐 Acesse também")
 
-colA, colB, colC = st.columns(3)
+c1, c2, c3 = st.columns(3)
 
-with colA:
-    st.markdown("### 🔵 CIEVS Ipojuca")
-    st.markdown("[👉 Acessar site](https://cievsipojuca.wordpress.com/)")
+with c1:
+    st.markdown(
+        """
+        <div class='inst-card'>
+            <h3>🔵 CIEVS Ipojuca</h3>
+            <a href='https://cievsipojuca.wordpress.com/' target='_blank'>Acessar</a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-with colB:
-    st.markdown("### 🟢 VISATT Ipojuca")
-    st.markdown("[👉 Acessar site](https://visattipojuca.com/)")
+with c2:
+    st.markdown(
+        """
+        <div class='inst-card'>
+            <h3>🟢 VISATT</h3>
+            <a href='https://visattipojuca.com/' target='_blank'>Acessar</a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-with colC:
-    st.markdown("### 🟣 Prefeitura do Ipojuca")
-    st.markdown("[👉 Acessar site](https://ipojuca.pe.gov.br/)")
+with c3:
+    st.markdown(
+        """
+        <div class='inst-card'>
+            <h3>🟣 Prefeitura do Ipojuca</h3>
+            <a href='https://ipojuca.pe.gov.br/' target='_blank'>Acessar</a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 st.markdown("---")
 
 # ============================================================
-# COMO UTILIZAR + SOBRE (VERSÃO RESUMIDA)
+# COMO UTILIZAR + INFORMAÇÕES
 # ============================================================
 st.subheader("📌 Como utilizar este painel")
 
 st.markdown("""
 - Navegue pelos módulos usando o **menu lateral**.  
 - Aplique filtros específicos em cada página.  
-- Leia indicadores, tendências e distribuições territoriais.  
-- Utilize exportações quando disponíveis.  
+- Utilize gráficos e indicadores para análise territorial e temporal.  
+- Exporte dados quando necessário.  
 """)
 
 st.markdown("---")
-
-# ============================================================
-# INFORMAÇÕES DO SISTEMA
-# ============================================================
 
 st.subheader("ℹ️ Informações do Sistema")
 
@@ -189,5 +337,5 @@ with colC:
 
 st.markdown("""
 Desenvolvido com ❤️ utilizando **Streamlit** e **Python**,  
-em parceria com as Gerências da Vigilância em Saúde do município.
+em parceria com as Gerências da Vigilância em Saúde.
 """)
