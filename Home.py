@@ -33,7 +33,7 @@ html, body, [data-testid="stAppViewContainer"], * {
 
 /* Títulos (cor fixa) */
 h1, h2, h3, h4, h5, h6 {
-    color: var(--azul-principal) !important;
+    color: var(--azul-secundario) !important;
 }
 
 /* Parágrafos */
