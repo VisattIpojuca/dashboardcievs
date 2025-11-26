@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# CSS — Identidade visual da Prefeitura do Ipojuca
+# CSS — Identidade visual da Prefeitura do Ipojuca + texto justificado
 # ============================================================
 
 st.markdown(
@@ -30,10 +30,6 @@ st.markdown(
             --block-light: rgba(255,255,255,0.8);
             --block-dark: rgba(255,255,255,0.05);
         }
-
-        /* ==============================
-           GLOBAL — AJUSTES DE TEXTO
-           ============================== */
 
         @media (prefers-color-scheme: light) {
             :root {
@@ -59,6 +55,18 @@ st.markdown(
             .stApp {
                 background: var(--dark-bg);
             }
+        }
+
+        /* ==============================
+           JUSTIFICAR TODOS OS PARÁGRAFOS
+           ============================== */
+
+        p {
+            text-align: justify !important;
+        }
+
+        li {
+            text-align: justify !important;
         }
 
         /* ==============================
@@ -113,15 +121,11 @@ st.markdown(
         }
 
         /* ==============================
-           SIDEBAR — FUNDO BRANCO PARA A LOGO
+           REMOÇÃO DO FUNDO DA LOGO DO CIEVS
            ============================== */
 
         .sidebar-logo-container {
-            background: white;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
+            display: none !important;
         }
 
     </style>
@@ -130,17 +134,9 @@ st.markdown(
 )
 
 # ============================================================
-# SIDEBAR — LOGO + SOBRE
+# SIDEBAR — APENAS NAVEGAÇÃO E SOBRE
 # ============================================================
 with st.sidebar:
-
-    # Fundo branco para garantir legibilidade em modo escuro/claro
-    st.markdown('<div class="sidebar-logo-container">', unsafe_allow_html=True)
-    st.image(
-        "https://cievsipojuca.wordpress.com/wp-content/uploads/2022/01/cievs-ipojuca-sem-fundo.png?w=640",
-        width=160
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("## 📍 Navegação")
     st.info("Use o menu acima para acessar os módulos do sistema.")
@@ -150,20 +146,20 @@ with st.sidebar:
     st.markdown("## 📘 Sobre este painel")
     st.markdown("""
 O **Painel Integrado de Vigilância em Saúde do Ipojuca** é uma ferramenta estratégica  
-para fortalecer análises, orientar decisões e ampliar a capacidade de resposta do município.  
+desenvolvida para fortalecer a gestão, qualificar análises e ampliar a capacidade de resposta  
+do município.
 
-Aqui, dados ganham sentido.  
-Indicadores viram estratégia.  
-E a inteligência em saúde guia o cuidado no território.  
+Aqui, dados se transformam em direção;  
+indicadores se convertem em ação;  
+e cada visualização ilumina decisões fundamentais para a saúde pública.
 
-Integra informações da Vigilância Epidemiológica,  
+O painel integra informações das áreas de Vigilância Epidemiológica,  
 Saúde do Trabalhador, Vigilância Sanitária e Vigilância Ambiental,  
-oferecendo uma visão unificada e profunda da saúde de Ipojuca.
+oferecendo uma visão abrangente, inteligente e territorializada da saúde do município.
     """)
 
     st.markdown("---")
     st.caption("Prefeitura do Ipojuca • Secretaria Municipal de Saúde")
-
 
 # ============================================================
 # TÍTULO PRINCIPAL — OCUPANDO TODA A LARGURA
@@ -191,11 +187,12 @@ st.markdown("---")
 st.markdown("""
 Bem-vindo ao **Painel Integrado de Vigilância em Saúde**,  
 onde a gestão encontra precisão, o cuidado encontra direção  
-e o território descobre caminhos.  
+e o território descobre caminhos possíveis.
 
-Aqui, cada número pulsa.  
-Cada gráfico respira.  
-Cada indicador ilumina o futuro do SUS em Ipojuca.
+Aqui, cada número pulsa com significado.  
+Cada gráfico revela tendências.  
+Cada indicador abre janelas para decisões mais fortes, justas e eficazes  
+para a saúde da população ipojucana.
 """)
 
 st.markdown("---")
@@ -211,12 +208,9 @@ with col1:
     st.markdown("""
     <div class='module-card'>
         <h3>🦟 Módulo de Dengue</h3>
-        <ul>
-            <li>Distribuição temporal</li>
-            <li>Análise geográfica</li>
-            <li>Indicadores epidemiológicos</li>
-            <li>Perfil dos casos</li>
-        </ul>
+        Monitoramento contínuo das arboviroses, com análises temporais,
+        territoriais e comportamentais dos casos.
+        <br><br>
         <i>Acesse pelo menu lateral.</i>
     </div>
     """, unsafe_allow_html=True)
@@ -225,13 +219,9 @@ with col2:
     st.markdown("""
     <div class='module-card'>
         <h3>👷 Saúde do Trabalhador</h3>
-        <ul>
-            <li>Indicadores principais</li>
-            <li>Análises por ocupação</li>
-            <li>Tendência temporal</li>
-            <li>Distribuição territorial</li>
-            <li>Evolução dos casos</li>
-        </ul>
+        Acompanhamento dos acidentes de trabalho, perfis ocupacionais,
+        evolução clínica e distribuição territorial dos casos.
+        <br><br>
         <i>Acesse pelo menu lateral.</i>
     </div>
     """, unsafe_allow_html=True)
@@ -242,12 +232,8 @@ with col3:
     st.markdown("""
     <div class='module-card'>
         <h3>🧪 Vigilância Sanitária (VISA)</h3>
-        <ul>
-            <li>Indicadores de 30 e 90 dias</li>
-            <li>Produção mensal</li>
-            <li>Análise por coordenação</li>
-            <li>Processos abertos e concluídos</li>
-        </ul>
+        Monitoramento da produção, inspeções, prazos, resultados e
+        desempenho das coordenações e equipes em campo.
     </div>
     """, unsafe_allow_html=True)
 
@@ -255,12 +241,8 @@ with col4:
     st.markdown("""
     <div class='module-card'>
         <h3>🦟 Oropouche</h3>
-        <ul>
-            <li>Distribuição por localidade</li>
-            <li>Classificação dos casos</li>
-            <li>Indicadores em gestantes</li>
-            <li>Tendência por período</li>
-        </ul>
+        Acompanhamento das notificações, distribuição geográfica,
+        classificação dos casos e indicadores específicos.
     </div>
     """, unsafe_allow_html=True)
 
@@ -314,10 +296,10 @@ st.markdown("---")
 st.subheader("📌 Como utilizar este painel")
 
 st.markdown("""
-- Navegue pelos módulos usando o **menu lateral**.  
-- Aplique filtros específicos em cada página.  
-- Utilize gráficos e indicadores para análise territorial e temporal.  
-- Exporte dados quando necessário.  
+- Utilize o **menu lateral** para navegar entre os módulos.  
+- Aplique filtros conforme necessário para análises específicas.  
+- Interprete gráficos, indicadores e tabelas para apoiar decisões de gestão.  
+- Exporte dados quando a opção estiver disponível.  
 """)
 
 st.markdown("---")
@@ -337,5 +319,5 @@ with colC:
 
 st.markdown("""
 Desenvolvido com ❤️ utilizando **Streamlit** e **Python**,  
-em parceria com as Gerências da Vigilância em Saúde.
+em parceria com todas as Gerências da Vigilância em Saúde do município.
 """)
