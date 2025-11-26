@@ -91,7 +91,7 @@ h1, h2, h3, h4 {
 /* Dark mode sidebar mantém contraste */
 @media (prefers-color-scheme: dark) {
     [data-testid="stSidebar"] {
-        background: #FFC20E !important;
+        background: #009D4A !important;
     }
 }
 
