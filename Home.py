@@ -69,7 +69,7 @@ h1, h2, h3, h4 {
 /* Dark mode cards */
 @media (prefers-color-scheme: dark) {
     .stMetric {
-        background-color: #FFFFFF !important;
+        background-color: #1E1E1E !important;
         border-left: 6px solid var(--azul-secundario) !important;
     }
 }
