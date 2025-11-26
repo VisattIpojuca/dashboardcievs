@@ -33,7 +33,7 @@ html, body, [data-testid="stAppViewContainer"], * {
 
 /* Títulos (cor fixa) */
 h1, h2, h3, h4, h5, h6 {
-    color: var(--verde-ipojuca) !important;
+    color: var(--azul-principal) !important;
 }
 
 /* Parágrafos */
@@ -64,7 +64,7 @@ button, .stButton button {
 
 /* Links */
 a {
-    color: var(--azul-principal) !important;
+    color: var(--azul-secundario) !important;
     font-weight: 600;
 }
 
@@ -75,7 +75,7 @@ a {
 
 /* ====== SIDEBAR FIXA ====== */
 [data-testid="stSidebar"] {
-    background: var(--azul-secundario) !important;
+    background: var(--azul-principal) !important;
 }
 
 [data-testid="stSidebar"] * {
@@ -84,15 +84,15 @@ a {
 
 /* Links na sidebar */
 [data-testid="stSidebar"] a {
-    color: #FFC20E !important;
+    color: #004A8D !important;
 }
 
 /* ====== CARDS ====== */
 .stMetric {
-    background-color: var(--branco) !important;
+    background-color: var(--amarelo-ipojuca) !important;
     padding: 20px;
     border-radius: 12px;
-    border-left: 6px solid var(--azul-principal);
+    border-left: 6px solid var(--azul-secundario);
     box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
 }
 
