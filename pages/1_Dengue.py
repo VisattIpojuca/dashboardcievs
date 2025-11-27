@@ -142,7 +142,7 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Garante contraste: fundo dos campos um pouco mais claro que o texto */
+    /* Campos de filtro com fundo branco para dar contraste no tema claro */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
     [data-testid="stSidebar"] .stDateInput > div > div,
@@ -151,7 +151,7 @@ def aplicar_css():
         background-color: var(--branco) !important;
     }}
 
-    /* Placeholder (texto antes de selecionar) também azul, mas um pouco mais claro */
+    /* Placeholder também azul, mas um pouco mais claro */
     [data-testid="stSidebar"] input::placeholder,
     [data-testid="stSidebar"] textarea::placeholder {{
         color: #2f6bbd !important;
@@ -186,9 +186,11 @@ def aplicar_css():
 
     /* ------------------------------
        TEMA ESCURO DO NAVEGADOR
+       Mantém visual CLARO (caixas brancas, gráficos claros)
        ------------------------------ */
     @media (prefers-color-scheme: dark) {{
-        /* No dark mode: texto DOS FILTROS em BRANCO */
+
+        /* Texto dos filtros em BRANCO (como você pediu), mas caixas claras */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -202,13 +204,27 @@ def aplicar_css():
             color: white !important;
         }}
 
-        /* Fundo dos campos um pouco mais escuro para contraste */
+        /* Caixas de filtro com FUNDO BRANCO também no modo escuro */
         [data-testid="stSidebar"] .stTextInput > div > div,
         [data-testid="stSidebar"] .stNumberInput > div > div,
         [data-testid="stSidebar"] .stDateInput > div > div,
         [data-testid="stSidebar"] .stSelectbox > div > div,
         [data-testid="stSidebar"] .stMultiSelect > div > div {{
-            background-color: #1f334a !important;
+            background-color: var(--branco) !important;
+        }}
+
+        /* Fundo da área principal continua CLARO (igual tema claro) */
+        [data-testid="stAppViewContainer"] {{
+            background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
+        }}
+
+        /* Fundo dos gráficos Plotly: branco (figura e plot area) */
+        .js-plotly-plot .plotly .bg,
+        .js-plotly-plot .plotly .plotly-background,
+        .js-plotly-plot .plotly .paper,
+        .js-plotly-plot .plotly .plotbg {{
+            fill: #FFFFFF !important;
+            background-color: #FFFFFF !important;
         }}
     }}
 
