@@ -592,8 +592,8 @@ def main():
     botao_download(df_filtrado)
 
     st.markdown("---")
-    st.caption("Painel de Dengue • Versão 1.0 (refatorada)")
-    st.caption("Desenvolvido por Maviael Barros.")
+    st.caption("Painel de Dengue • Versão 1.0")
+    st.caption("Desenvolvido por MB Technological Solutions®.")
 
 
 if __name__ == "__main__":
