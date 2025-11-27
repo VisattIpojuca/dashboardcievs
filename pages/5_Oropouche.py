@@ -158,7 +158,7 @@ def aplicar_css():
         background-color: var(--amarelo-ipojuca) !important;
         padding: 18px;
         border-radius: 10px;
-        border-left: 6px solid var(--branco);
+        border-left: 6px solid var(--azul-secundario);
         box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
     }}
 
