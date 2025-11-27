@@ -90,6 +90,7 @@ def aplicar_css():
         --branco: #FFFFFF;
     }}
 
+    /* TEXTO ÁREA CENTRAL */
     body, p, li, span, label, .stMarkdown {{
         color: #0073CF !important;
     }}
@@ -106,12 +107,35 @@ def aplicar_css():
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
+    /* SIDEBAR */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
+    }}
+
+    /* TÍTULO "Filtros" e demais headings da sidebar */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4 {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
+    }}
+
+    /* RÓTULOS DOS CAMPOS NA SIDEBAR (títulos dos filtros) */
+    [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stDateInput label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stTextInput label {{
+        color: {CORES["azul_claro"]} !important;  /* aqui entra o azul claro */
+        font-weight: 600 !important;
     }}
 
     /* TEXTO E CAMPOS DOS FILTROS – tema claro */
@@ -175,13 +199,11 @@ def aplicar_css():
         background-color: #FFFFFF !important;
     }}
 
-    /* Textos dentro dos gráficos: forçar cor em azul escuro mesmo no modo escuro do navegador */
     .js-plotly-plot text {{
         fill: {CORES["azul"]} !important;
         color: {CORES["azul"]} !important;
     }}
 
-    /* Borda preta externa em todos os gráficos Plotly */
     .element-container .js-plotly-plot {{
         border: 1px solid #000000 !important;
         border-radius: 4px !important;
@@ -203,10 +225,11 @@ def aplicar_css():
     }}
 
     /* ===========================
-       MODO ESCURO: DROPDOWN azul claro + texto branco
+       MODO ESCURO
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
+        /* texto dos campos */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -218,6 +241,18 @@ def aplicar_css():
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
             color: #FFFFFF !important;
+        }}
+
+        /* rótulos continuam em azul_claro para dar contraste */
+        [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stNumberInput label,
+        [data-testid="stSidebar"] .stSelectbox label,
+        [data-testid="stSidebar"] .stMultiSelect label,
+        [data-testid="stSidebar"] .stDateInput label,
+        [data-testid="stSidebar"] .stSlider label,
+        [data-testid="stSidebar"] .stTextInput label {{
+            color: {CORES["azul_claro"]} !important;
         }}
 
         [data-testid="stSidebar"] input::placeholder,
@@ -232,17 +267,6 @@ def aplicar_css():
 
         [data-testid="stSidebar"] div[role="listbox"] *,
         [data-testid="stSidebar"] ul[role="listbox"] * {{
-            color: #FFFFFF !important;
-        }}
-
-        [data-testid="stSidebar"] div[role="option"],
-        [data-testid="stSidebar"] li[role="option"] {{
-            color: #FFFFFF !important;
-        }}
-
-        [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
-        [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
-            background-color: rgba(0,0,0,0.2) !important;
             color: #FFFFFF !important;
         }}
     }}
@@ -262,7 +286,6 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
-
 
 # =======================================================
 # TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS AZUL ESCURO
