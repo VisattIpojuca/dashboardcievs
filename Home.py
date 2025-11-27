@@ -236,7 +236,7 @@ c1, c2 = st.columns(2)
 with c1:
     st.markdown("""
     <div class="modulo-card">
-        <h3>🦟 Módulo de Dengue</h3>
+        <h3>🦟 Dengue</h3>
         <ul>
             <li>Séries históricas e sazonalidade</li>
             <li>Distribuição espacial por bairro/localidade</li>
