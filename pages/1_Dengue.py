@@ -189,11 +189,11 @@ def aplicar_css():
     }}
 
     /* ===========================
-       MODO ESCURO: deixar tudo visível em BRANCO
+       MODO ESCURO: DROPDOWN azul claro + texto branco
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
-        /* Texto dentro das caixas dos filtros */
+        /* Texto dentro das caixas de filtro também branco (para combinar) */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -212,30 +212,28 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Chips / tags selecionadas */
-        [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
-        [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
-            color: #FFFFFF !important;
+        /* FUNDO DO MENU SUSPENSO (DROPDOWN) EM AZUL CLARO */
+        [data-testid="stSidebar"] div[role="listbox"],
+        [data-testid="stSidebar"] ul[role="listbox"] {{
+            background-color: {CORES["azul_claro"]} !important;
         }}
 
-        /* ===== DROPDOWN NO MODO ESCURO =====
-           qualquer texto dentro do menu suspenso de opções  */
-        [data-testid="stSidebar"] div[role="listbox"],
-        [data-testid="stSidebar"] ul[role="listbox"],
-        [data-testid="stSidebar"] div[role="listbox"] * ,
+        /* Todos os elementos dentro do dropdown com texto branco */
+        [data-testid="stSidebar"] div[role="listbox"] *,
         [data-testid="stSidebar"] ul[role="listbox"] * {{
             color: #FFFFFF !important;
         }}
 
-        /* itens de opção específicos */
+        /* Itens de opção especificamente */
         [data-testid="stSidebar"] div[role="option"],
         [data-testid="stSidebar"] li[role="option"] {{
             color: #FFFFFF !important;
         }}
 
-        /* opção focada/selecionada */
+        /* Opção focada/selecionada no menu */
         [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
         [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
+            background-color: rgba(0,0,0,0.2) !important;
             color: #FFFFFF !important;
         }}
     }}
