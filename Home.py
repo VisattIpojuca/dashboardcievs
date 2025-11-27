@@ -198,7 +198,7 @@ with st.sidebar:
 # ============================================================
 # HERO / CABEÇALHO PRINCIPAL
 # ============================================================
-st.markdown(f"""
+st.markdown("""
 <div style="
     background: linear-gradient(90deg, #004A8D, #0073CF);
     padding: 32px;
@@ -313,7 +313,7 @@ with c5:
 st.markdown("---")
 
 # ============================================================
-# Canais INSTITUCIONAIS (mais sóbrios)
+# CANAIS INSTITUCIONAIS
 # ============================================================
 st.subheader("🌐 Canais institucionais")
 
