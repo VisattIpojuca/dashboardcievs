@@ -701,8 +701,8 @@ def main():
     st.dataframe(df_filtrado, use_container_width=True)
 
     st.markdown("---")
-    st.caption("Painel de Saúde do Trabalhador • Versão 1.0 (tema institucional)")
-    st.caption("Desenvolvido por Maviael Barros.")
+    st.caption("Painel de Saúde do Trabalhador • Versão 1.0")
+    st.caption("Desenvolvido por MB Technological Solutions®")
 
 
 if __name__ == "__main__":
