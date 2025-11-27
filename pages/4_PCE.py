@@ -82,7 +82,7 @@ def aplicar_css():
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar */
+    /* Sidebar (fundo azul) */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -182,18 +182,22 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* GRÁFICOS – fundo branco, texto azul escuro */
+    /* GRÁFICOS – fundo totalmente branco, textos em azul escuro */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
     .js-plotly-plot .plotly .plotbg {{
-        fill: #FFFFFF !important;
-        background-color: #FFFFFF !important;
+        fill: #FFFFFF !important;             /* fundo SVG */
+        background-color: #FFFFFF !important; /* fundo do container */
     }}
+
+    /* Texto de títulos, eixos, ticks, legenda, rótulos dentro dos gráficos */
     .js-plotly-plot text {{
         fill: {CORES["azul"]} !important;
         color: {CORES["azul"]} !important;
     }}
+
+    /* Moldura do gráfico (card branco com borda preta fina) */
     .element-container .js-plotly-plot {{
         border: 1px solid #000000 !important;
         border-radius: 4px !important;
