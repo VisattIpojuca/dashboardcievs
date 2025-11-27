@@ -329,7 +329,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'CLASSIFICACAO_FINAL' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Classificação Final</div>",
             unsafe_allow_html=True
         )
@@ -342,7 +342,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Semana Epidemiológica</div>",
             unsafe_allow_html=True
         )
@@ -355,7 +355,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'SEXO' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Sexo</div>",
             unsafe_allow_html=True
         )
@@ -368,7 +368,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'FAIXA_ETARIA' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Faixa Etária</div>",
             unsafe_allow_html=True
         )
@@ -380,7 +380,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'EVOLUCAO' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Evolução do Caso</div>",
             unsafe_allow_html=True
         )
@@ -393,7 +393,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'ESCOLARIDADE' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Escolaridade</div>",
             unsafe_allow_html=True
         )
@@ -406,7 +406,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if 'BAIRRO' in df.columns:
         st.sidebar.markdown(
             f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
             f"Bairro</div>",
             unsafe_allow_html=True
         )
