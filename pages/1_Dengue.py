@@ -114,7 +114,7 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* TEXTO E CAMPOS DOS FILTROS – padrão (claro) */
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -189,11 +189,11 @@ def aplicar_css():
     }}
 
     /* ===========================
-       MODO ESCURO: texto dos filtros e das OPÇÕES em branco
+       MODO ESCURO: deixar tudo visível em BRANCO
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
-        /* Texto dentro das caixas */
+        /* Texto dentro das caixas dos filtros */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -212,23 +212,28 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Chips/opções selecionadas */
-        [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
-        [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"],
+        /* Chips / tags selecionadas */
         [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
         [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
             color: #FFFFFF !important;
         }}
 
-        /* *** LISTA ABERTA DAS OPÇÕES (CHIKUNGUNYA, DENGUE, etc.) *** */
-        /* BaseWeb option items dentro do dropdown */
-        [data-testid="stSidebar"] div[role="listbox"] div[role="option"],
-        [data-testid="stSidebar"] ul[role="listbox"] li[role="option"],
-        [data-testid="stSidebar"] div[role="option"] span {{
+        /* ===== DROPDOWN NO MODO ESCURO =====
+           qualquer texto dentro do menu suspenso de opções  */
+        [data-testid="stSidebar"] div[role="listbox"],
+        [data-testid="stSidebar"] ul[role="listbox"],
+        [data-testid="stSidebar"] div[role="listbox"] * ,
+        [data-testid="stSidebar"] ul[role="listbox"] * {{
             color: #FFFFFF !important;
         }}
 
-        /* opção focada/hover também branca */
+        /* itens de opção específicos */
+        [data-testid="stSidebar"] div[role="option"],
+        [data-testid="stSidebar"] li[role="option"] {{
+            color: #FFFFFF !important;
+        }}
+
+        /* opção focada/selecionada */
         [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
         [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
             color: #FFFFFF !important;
