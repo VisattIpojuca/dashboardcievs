@@ -57,9 +57,14 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
-    body, p, li, span, label, .stMarkdown {{
-        color: #000 !important;
+    /* Texto principal da área central */
+    [data-testid="stAppViewContainer"] body,
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li,
+    [data-testid="stAppViewContainer"] span,
+    [data-testid="stAppViewContainer"] label,
+    [data-testid="stAppViewContainer"] .stMarkdown {{
+        color: #0073CF !important;
     }}
 
     /* Títulos amarelos na área principal */
@@ -72,9 +77,9 @@ def aplicar_css():
     }}
 
     /* Parágrafos justificados */
-    p, li {{
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li {{
         text-align: justify !important;
-        color: #000 !important;
     }}
 
     /* Fundo geral */
@@ -86,19 +91,47 @@ def aplicar_css():
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
-    [data-testid="stSidebar"] * {{
-        color: white !important;
-    }}
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
     }}
 
-    /* ------------------------------
-       WIDGETS DE FILTRO NA SIDEBAR
-       ------------------------------ */
+    /* MENU DE NAVEGAÇÃO (Home, Dengue, Saúde do Trabalhador, VISA, PCE, Oropouche) */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
 
-    /* Texto dos inputs/selects: azul em tema claro */
+    /* Título "Filtros" na sidebar */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4 {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
+    }}
+
+    /* RÓTULOS DOS FILTROS – AZUL CLARO */
+    [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stDateInput label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stTextInput label {{
+        color: {CORES["azul_sec"]} !important;
+        font-weight: 600 !important;
+    }}
+
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -112,33 +145,67 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
+    /* Campos: fundo branco no modo claro */
+    [data-testid="stSidebar"] .stTextInput > div > div,
+    [data-testid="stSidebar"] .stNumberInput > div > div,
+    [data-testid="stSidebar"] .stSelectbox > div > div,
+    [data-testid="stSidebar"] .stMultiSelect > div > div,
+    [data-testid="stSidebar"] .stDateInput > div > div {{
+        background-color: var(--branco) !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] input::placeholder,
+    [data-testid="stSidebar"] textarea::placeholder {{
+        color: #2f6bbd !important;
+    }}
+
+    /* Chips selecionados */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
-
-    /* Algumas versões usam span para os "chips" selecionados */
-    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
 
-    /* Borda dos campos de filtro em azul */
+    /* Bordas dos campos */
     [data-testid="stSidebar"] .stMultiSelect > div,
     [data-testid="stSidebar"] .stSelectbox > div,
     [data-testid="stSidebar"] .stTextInput > div,
     [data-testid="stSidebar"] .stNumberInput > div,
     [data-testid="stSidebar"] .stDateInput > div {{
         border-color: {CORES["azul_sec"]} !important;
+        border-radius: 6px !important;
     }}
 
-    /* ------------------------------
-       TEMA ESCURO DO NAVEGADOR
-       ------------------------------ */
+    /* GRÁFICOS – fundo branco por CSS (reforço) */
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+    .js-plotly-plot text {{
+        fill: {CORES["azul"]} !important;
+        color: {CORES["azul"]} !important;
+    }}
+    .element-container .js-plotly-plot {{
+        border: 1px solid #000000 !important;
+        border-radius: 4px !important;
+        padding: 4px !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* MODO ESCURO */
     @media (prefers-color-scheme: dark) {{
-        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -149,7 +216,43 @@ def aplicar_css():
         [data-testid="stSidebar"] .stDateInput,
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
-            color: white !important;
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stNumberInput label,
+        [data-testid="stSidebar"] .stSelectbox label,
+        [data-testid="stSidebar"] .stMultiSelect label,
+        [data-testid="stSidebar"] .stDateInput label,
+        [data-testid="stSidebar"] .stSlider label,
+        [data-testid="stSidebar"] .stTextInput label {{
+            color: {CORES["azul_sec"]} !important;
+            font-weight: 600 !important;
+        }}
+
+        [data-testid="stSidebar"] .stTextInput > div > div,
+        [data-testid="stSidebar"] .stNumberInput > div > div,
+        [data-testid="stSidebar"] .stSelectbox > div > div,
+        [data-testid="stSidebar"] .stMultiSelect > div > div,
+        [data-testid="stSidebar"] .stDateInput > div > div {{
+            background-color: #1F2933 !important;
+            border-radius: 6px !important;
+        }}
+
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"],
+        [data-testid="stSidebar"] ul[role="listbox"] {{
+            background-color: #1F2933 !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"] *,
+        [data-testid="stSidebar"] ul[role="listbox"] * {{
+            color: #FFFFFF !important;
         }}
     }}
 
@@ -164,8 +267,9 @@ def aplicar_css():
 
     /* Botões */
     button, .stButton button {{
-        color: #000 !important;
+        color: #FFFFFF !important;
         background-color: var(--cinza-claro) !important;
+        border-radius: 6px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -269,7 +373,7 @@ def aplicar_filtros(df: pd.DataFrame,
                     col_classificacao: str | None,
                     col_sexo: str | None,
                     col_raca: str | None) -> pd.DataFrame:
-    st.sidebar.header("Filtros")
+    st.sidebar.header("🔎 Filtros")
 
     localidades = opcoes(df, col_localidade)
     classificacoes = opcoes(df, col_classificacao)
@@ -317,16 +421,14 @@ def tratar_data(df: pd.DataFrame,
     else:
         df["MES_NOTIF"] = "SEM_DATA"
 
-    # Semana epidemiológica:
-    # 1) se existir coluna própria (SEMANA_EPIDEMIOLOGICA etc.), usa ela
+    # Semana epidemiológica
     if col_semana_epid and col_semana_epid in df.columns:
         df["SE_SEMANA"] = (
             df[col_semana_epid]
             .astype(str)
-            .str.extract(r"(\d+)", expand=False)  # pega só o número
+            .str.extract(r"(\\d+)", expand=False)
             .fillna("IGNORADO")
         )
-    # 2) senão, deriva da data (se tiver)
     elif col_data and col_data in df.columns and df[col_data].notna().any():
         try:
             df["SE_SEMANA"] = df[col_data].dt.isocalendar().week.astype("Int64").astype(str)
@@ -354,7 +456,7 @@ def mostrar_indicadores(df_filtrado: pd.DataFrame, col_gestante: str | None):
 
 
 # ---------------------------------------------------------
-# Gráficos
+# Gráficos – fundo branco via update_layout
 # ---------------------------------------------------------
 def mostrar_graficos(df_filtrado: pd.DataFrame,
                      col_localidade: str | None,
@@ -382,7 +484,24 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
             labels={"MES_NOTIF": "Mês (YYYY-MM)", "CASOS": "Casos"},
             color_discrete_sequence=[CORES["azul"]]
         )
-        fig_mes.update_layout(xaxis=dict(tickangle=-45))
+        fig_mes.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            xaxis=dict(
+                tickangle=-45,
+                showgrid=False,
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#DDDDDD",
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            legend=dict(font=dict(color=CORES["azul"]))
+        )
         st.plotly_chart(fig_mes, use_container_width=True)
 
     # 2) Classificação por mês
@@ -405,7 +524,24 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
             labels={"MES_NOTIF": "Mês (YYYY-MM)", "CASOS": "Casos"},
             color_discrete_sequence=PALETA
         )
-        fig_class.update_layout(xaxis=dict(tickangle=-45))
+        fig_class.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            xaxis=dict(
+                tickangle=-45,
+                showgrid=False,
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#DDDDDD",
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            legend=dict(font=dict(color=CORES["azul"]))
+        )
         st.plotly_chart(fig_class, use_container_width=True)
 
     # 3) Localidade x Classificação
@@ -427,6 +563,23 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
             title="Localidade x Classificação",
             color_discrete_sequence=PALETA
         )
+        fig_loc.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            xaxis=dict(
+                showgrid=False,
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#DDDDDD",
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            legend=dict(font=dict(color=CORES["azul"]))
+        )
         st.plotly_chart(fig_loc, use_container_width=True)
 
     # 4) Sexo (pizza)
@@ -440,6 +593,12 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
             values="QTD",
             title="Sexo",
             color_discrete_sequence=PALETA
+        )
+        fig_sex.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            legend=dict(font=dict(color=CORES["azul"]))
         )
         st.plotly_chart(fig_sex, use_container_width=True)
 
@@ -455,6 +614,23 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
             barmode="group",
             title="Raça/Cor por Sexo",
             color_discrete_sequence=PALETA
+        )
+        fig_raca_sexo.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            xaxis=dict(
+                showgrid=False,
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#DDDDDD",
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            legend=dict(font=dict(color=CORES["azul"]))
         )
         st.plotly_chart(fig_raca_sexo, use_container_width=True)
 
@@ -506,7 +682,6 @@ def main():
     col_sexo = detectar(df, ["SEXO", "GENERO", "GÊNERO"])
     col_raca = detectar(df, ["RACA_COR", "RAÇA_COR", "RACA", "COR", "RACA/COR"])
     col_gestante = detectar(df, ["GESTANTE", "GRAVIDEZ", "GESTACAO"])
-    # inclui "Data da Notificação"
     col_data = detectar(df, [
         "DATA DA NOTIFICAÇÃO", "DATA DA NOTIFICACAO",
         "DATA_DA_NOTIFICAÇÃO", "DATA_DA_NOTIFICACAO",
