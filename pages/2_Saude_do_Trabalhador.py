@@ -199,28 +199,35 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* POPUP DO CALENDÁRIO (DateInput) – texto legível */
-    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
-    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
-        color: #FFFFFF !important;
-    }}
-
+    /* POPUP DO CALENDÁRIO (DateInput) – base: texto claro e fundo escuro */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"],
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] {{
         background-color: #222831 !important;
     }}
 
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
+        color: #FFFFFF !important;
+    }}
+
+    /* Dias e cabeçalhos de dia da semana */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] td,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] th {{
         color: #FFFFFF !important;
     }}
 
-    [data-testid="stSidebar"] .stDateInput [role="button"],
-    [data-testid="stSidebar"] .stDateInput select {{
-        color: #FFFFFF !important;
+    /* Cabeçalho do calendário: mês, ano e setas em azul claro */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] [role="button"] {{
+        color: {CORES["azul_sec"]} !important;
+    }}
+
+    /* Fundo dos selects de mês/ano */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select {{
         background-color: #393E46 !important;
     }}
 
+    /* Dia selecionado em destaque */
     [data-testid="stSidebar"] .stDateInput [aria-selected="true"] {{
         background-color: {CORES["azul_sec"]} !important;
         color: #FFFFFF !important;
@@ -280,7 +287,7 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* No modo escuro, o texto do Período também fica branco */
+        /* No modo escuro, o texto do Período também fica branco no campo */
         [data-testid="stSidebar"] .stDateInput input {{
             color: #FFFFFF !important;
         }}
@@ -320,6 +327,12 @@ def aplicar_css():
         [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
         [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
             color: #FFFFFF !important;
+        }}
+
+        /* Cabeçalho (mês, ano, setas) em azul claro no modo escuro também */
+        [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select,
+        [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] [role="button"] {{
+            color: {CORES["azul_sec"]} !important;
         }}
     }}
 
