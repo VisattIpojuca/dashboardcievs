@@ -87,12 +87,9 @@ def aplicar_css():
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar */
+    /* Sidebar – fundo azul institucional */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
-    }}
-    [data-testid="stSidebar"] * {{
-        color: white !important;
     }}
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
@@ -103,7 +100,7 @@ def aplicar_css():
        WIDGETS DE FILTRO NA SIDEBAR
        ------------------------------ */
 
-    /* Texto dos inputs/selects: azul em tema claro */
+    /* Texto dos inputs/selects em TEMA CLARO: azul */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -117,20 +114,22 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
+    /* Chips / opções selecionadas: FUNDO VERDE + TEXTO BRANCO */
+    /* Base Web (utilizado por MultiSelect/Selectbox) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
     }}
 
-    /* Algumas versões usam span para os "chips" selecionados */
-    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+    /* Tags de seleção (algumas versões usam span[data-baseweb="tag"]) */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
     }}
 
-    /* Borda dos campos de filtro em azul */
+    /* Borda dos campos de filtro em azul secundário */
     [data-testid="stSidebar"] .stMultiSelect > div,
     [data-testid="stSidebar"] .stSelectbox > div,
     [data-testid="stSidebar"] .stTextInput > div,
@@ -143,7 +142,7 @@ def aplicar_css():
        TEMA ESCURO DO NAVEGADOR
        ------------------------------ */
     @media (prefers-color-scheme: dark) {{
-        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+        /* No dark mode: texto dos filtros em BRANCO */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -174,7 +173,6 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
-
 
 # --------------------------------------------------------
 # HELPERS
@@ -462,3 +460,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
