@@ -43,7 +43,7 @@ PALETA = [
 ]
 
 # ---------------------------------------------------------
-# CSS – MESMO ESTILO DOS OUTROS PAINÉIS
+# CSS – TEMA INSTITUCIONAL + AJUSTES NOS FILTROS
 # ---------------------------------------------------------
 def aplicar_css():
     st.markdown(f"""
@@ -57,10 +57,12 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
+    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
     body, p, li, span, label, .stMarkdown {{
         color: #000 !important;
     }}
 
+    /* Títulos amarelos na área principal */
     [data-testid="stAppViewContainer"] h1,
     [data-testid="stAppViewContainer"] h2,
     [data-testid="stAppViewContainer"] h3,
@@ -69,15 +71,18 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
+    /* Parágrafos justificados */
     p, li {{
         text-align: justify !important;
         color: #000 !important;
     }}
 
+    /* Fundo geral */
     [data-testid="stAppViewContainer"] {{
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
+    /* Sidebar */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -89,6 +94,66 @@ def aplicar_css():
         font-weight: 600;
     }}
 
+    /* ------------------------------
+       WIDGETS DE FILTRO NA SIDEBAR
+       ------------------------------ */
+
+    /* Texto dos inputs/selects: azul em tema claro */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea,
+    [data-testid="stSidebar"] select,
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stNumberInput,
+    [data-testid="stSidebar"] .stSlider,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stTextInput,
+    [data-testid="stSidebar"] .stMultiSelect * {{
+        color: {CORES["azul"]} !important;
+    }}
+
+    /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
+    [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
+    [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+    }}
+
+    /* Algumas versões usam span para os "chips" selecionados */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+    }}
+
+    /* Borda dos campos de filtro em azul */
+    [data-testid="stSidebar"] .stMultiSelect > div,
+    [data-testid="stSidebar"] .stSelectbox > div,
+    [data-testid="stSidebar"] .stTextInput > div,
+    [data-testid="stSidebar"] .stNumberInput > div,
+    [data-testid="stSidebar"] .stDateInput > div {{
+        border-color: {CORES["azul_sec"]} !important;
+    }}
+
+    /* ------------------------------
+       TEMA ESCURO DO NAVEGADOR
+       ------------------------------ */
+    @media (prefers-color-scheme: dark) {{
+        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select,
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stNumberInput,
+        [data-testid="stSidebar"] .stSlider,
+        [data-testid="stSidebar"] .stDateInput,
+        [data-testid="stSidebar"] .stTextInput,
+        [data-testid="stSidebar"] .stMultiSelect * {{
+            color: white !important;
+        }}
+    }}
+
+    /* Métricas */
     .stMetric {{
         background-color: var(--amarelo-ipojuca) !important;
         padding: 18px;
@@ -97,6 +162,7 @@ def aplicar_css():
         box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
     }}
 
+    /* Botões */
     button, .stButton button {{
         color: #000 !important;
         background-color: var(--cinza-claro) !important;
@@ -440,7 +506,7 @@ def main():
     col_sexo = detectar(df, ["SEXO", "GENERO", "GÊNERO"])
     col_raca = detectar(df, ["RACA_COR", "RAÇA_COR", "RACA", "COR", "RACA/COR"])
     col_gestante = detectar(df, ["GESTANTE", "GRAVIDEZ", "GESTACAO"])
-    # 🔹 inclui exatamente "Data da Notificação"
+    # inclui "Data da Notificação"
     col_data = detectar(df, [
         "DATA DA NOTIFICAÇÃO", "DATA DA NOTIFICACAO",
         "DATA_DA_NOTIFICAÇÃO", "DATA_DA_NOTIFICACAO",
@@ -455,7 +521,7 @@ def main():
         "SEMANA", "SEMANA_EP", "SE"
     ])
 
-    # Padronizar Sexo: F/M -> Feminino/Masculino
+    # Sexo: F/M -> Feminino/Masculino
     if col_sexo and col_sexo in df.columns:
         df[col_sexo] = (
             df[col_sexo]
