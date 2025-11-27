@@ -236,19 +236,19 @@ def aplicar_css():
 
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
-        color: #FFFFFF !important;
+        color: #008cde !important;
     }}
 
     /* Dias e cabeçalhos de dia da semana */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] td,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] th {{
-        color: #FFFFFF !important;
+        color: #004a8d !important;
     }}
 
-    /* Cabeçalho do calendário: mês, ano e setas em azul claro */
+    /* Cabeçalho do calendário: mês, ano e setas em azul */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] [role="button"] {{
-        color: {CORES["azul_sec"]} !important;
+        color: {CORES["azul"]} !important;
     }}
 
     /* Fundo dos selects de mês/ano */
