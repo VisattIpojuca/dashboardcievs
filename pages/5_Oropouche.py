@@ -728,8 +728,8 @@ def main():
     mostrar_tabela(df_filtrado)
 
     st.markdown("---")
-    st.caption("Painel de Oropouche • Versão 1.0 (tema institucional)")
-    st.caption("Desenvolvido por Maviael Barros.")
+    st.caption("Painel de Oropouche • Versão 1.0")
+    st.caption("Desenvolvido por MB Technological Solutions®")
 
 
 if __name__ == "__main__":
