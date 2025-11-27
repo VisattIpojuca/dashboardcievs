@@ -240,7 +240,7 @@ def aplicar_filtros(df: pd.DataFrame,
 def tratar_data(df: pd.DataFrame,
                 col_data: str | None,
                 col_semana_epid: str | None) -> pd.DataFrame:
-    # Data
+    # Data (Data da Notificação)
     if col_data and col_data in df.columns:
         df[col_data] = pd.to_datetime(df[col_data], dayfirst=True, errors="coerce")
         if df[col_data].notna().any():
@@ -440,9 +440,13 @@ def main():
     col_sexo = detectar(df, ["SEXO", "GENERO", "GÊNERO"])
     col_raca = detectar(df, ["RACA_COR", "RAÇA_COR", "RACA", "COR", "RACA/COR"])
     col_gestante = detectar(df, ["GESTANTE", "GRAVIDEZ", "GESTACAO"])
+    # 🔹 inclui exatamente "Data da Notificação"
     col_data = detectar(df, [
-        "DATA_NOTIFICACAO", "DATA_DE_NOTIFICACAO", "DATA NOTIFICAÇÃO",
-        "DATA DE NOTIFICACAO", "DATA_DE_NOTIFICAÇÃO",
+        "DATA DA NOTIFICAÇÃO", "DATA DA NOTIFICACAO",
+        "DATA_DA_NOTIFICAÇÃO", "DATA_DA_NOTIFICACAO",
+        "DATA_NOTIFICACAO", "DATA_DE_NOTIFICACAO",
+        "DATA NOTIFICAÇÃO", "DATA DE NOTIFICACAO",
+        "DATA_DE_NOTIFICAÇÃO",
         "NOTIFICACAO", "DATA_DO_CASO", "DATA_ENTRADA", "DATA", "DATA_NOTIF", "DATE"
     ])
     col_semana_epid = detectar(df, [
@@ -450,17 +454,6 @@ def main():
         "SEMANA_EPIDEMIOLÓGICA", "SEMANA EPIDEMIOLÓGICA",
         "SEMANA", "SEMANA_EP", "SE"
     ])
-
-    # Mostrar debug de colunas detectadas (ajuda a entender por que aparece SEM_DATA)
-    with st.expander("Colunas detectadas (debug)", expanded=False):
-        st.write("Colunas originais:", orig_cols)
-        st.write("Coluna de Localidade:", col_localidade)
-        st.write("Coluna de Classificação:", col_classificacao)
-        st.write("Coluna de Sexo:", col_sexo)
-        st.write("Coluna de Raça/Cor:", col_raca)
-        st.write("Coluna de Gestante:", col_gestante)
-        st.write("Coluna de Data (Notificação):", col_data)
-        st.write("Coluna de Semana Epidemiológica:", col_semana_epid)
 
     # Padronizar Sexo: F/M -> Feminino/Masculino
     if col_sexo and col_sexo in df.columns:
@@ -477,14 +470,6 @@ def main():
 
     # Tratar data + semana epidemiológica
     df = tratar_data(df, col_data, col_semana_epid)
-
-    # Se MES_NOTIF ainda estiver como SEM_DATA, avisa
-    if "MES_NOTIF" in df.columns and (df["MES_NOTIF"] == "SEM_DATA").all():
-        st.warning(
-            "Não foi possível identificar ou converter corretamente a coluna de Data de Notificação. "
-            "Os gráficos mensais usarão o rótulo 'SEM_DATA'. "
-            "Verifique o nome exato da coluna na planilha (ex.: 'Data de Notificação')."
-        )
 
     # Remover sensíveis
     df = remover_sensiveis(df, col_localidade, col_data)
