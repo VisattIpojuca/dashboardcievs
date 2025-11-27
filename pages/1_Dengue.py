@@ -75,7 +75,7 @@ def remover_acentos(texto: str) -> str:
 
 
 # =======================================================
-# CSS — PALETA INSTITUCIONAL + AJUSTES DE FILTROS
+# CSS — PALETA INSTITUCIONAL + MENU/FILTROS
 # =======================================================
 
 def aplicar_css():
@@ -142,14 +142,14 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Caixas de filtro com FUNDO BRANCO (sempre) e bordas ARREDONDADAS */
+    /* Caixas de filtro com FUNDO BRANCO e bordas ARREDONDADAS */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
     [data-testid="stSidebar"] .stDateInput > div > div,
     [data-testid="stSidebar"] .stSelectbox > div > div,
     [data-testid="stSidebar"] .stMultiSelect > div > div {{
         background-color: var(--branco) !important;
-        border-radius: 6px !important;   /* <<< aqui arredonda as arestas */
+        border-radius: 6px !important;
     }}
 
     /* Placeholder (texto antes de selecionar) em azul mais claro */
@@ -167,7 +167,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
-        border-radius: 6px !important;   /* chips levemente arredondados */
+        border-radius: 6px !important;
     }}
 
     /* Tags visuais do multiselect */
@@ -185,7 +185,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stNumberInput > div,
     [data-testid="stSidebar"] .stDateInput > div {{
         border-color: var(--azul-secundario) !important;
-        border-radius: 6px !important;   /* borda externa também arredondada */
+        border-radius: 6px !important;
     }}
 
     /* ------------------------------
@@ -198,6 +198,32 @@ def aplicar_css():
     .js-plotly-plot .plotly .plotbg {{
         fill: #FFFFFF !important;
         background-color: #FFFFFF !important;
+    }}
+
+    /* ===========================
+       MENU DE PÁGINAS (Home, Dengue, etc.)
+       Sempre com texto BRANCO
+       =========================== */
+
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;
+    }}
+
+    /* Opcional: destacar a página atual com leve fundo translúcido */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
+
+    /* Fallback para versões antigas de sidebar-nav */
+    [data-testid="stSidebar"] .css-1w0uvxj a,
+    [data-testid="stSidebar"] .css-1w0uvxj span,
+    [data-testid="stSidebar"] .css-1w0uvxj button {{
+        color: #FFFFFF !important;
     }}
 
     /* Métricas */
