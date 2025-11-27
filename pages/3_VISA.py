@@ -620,10 +620,11 @@ def main():
 
     st.caption("Painel VISA Ipojuca – Acesso público")
     st.markdown("---")
-    st.caption("Painel de Indicadores da Vigilância Sanitária • Versão 1.0 (tema institucional)")
-    st.caption("Desenvolvido por Maviael Barros.")
+    st.caption("Painel de Indicadores da Vigilância Sanitária • Versão 1.0")
+    st.caption("Desenvolvido por MB Technological Solutions®")
 
 
 if __name__ == "__main__":
     main()
+
 
