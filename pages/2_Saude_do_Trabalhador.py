@@ -103,7 +103,7 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal */
+    /* Texto principal da área central */
     body, p, li, span, label, .stMarkdown {{
         color: #0073CF !important;
     }}
@@ -134,6 +134,27 @@ def aplicar_css():
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
+    }}
+
+    /* Título "Filtros" na sidebar */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4 {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
+    }}
+
+    /* RÓTULOS DOS FILTROS (Período, Sexo, etc.) EM AZUL CLARO */
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stMarkdown p,
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stDateInput label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stTextInput label {{
+        color: {CORES["azul_sec"]} !important;
     }}
 
     /* TEXTO E CAMPOS DOS FILTROS – tema claro (padrão azul escuro) */
@@ -287,7 +308,19 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* No modo escuro, o texto do Período também fica branco no campo */
+        /* Rótulos dos filtros em azul claro também no modo escuro */
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stMarkdown p,
+        [data-testid="stSidebar"] .stNumberInput label,
+        [data-testid="stSidebar"] .stSelectbox label,
+        [data-testid="stSidebar"] .stMultiSelect label,
+        [data-testid="stSidebar"] .stDateInput label,
+        [data-testid="stSidebar"] .stSlider label,
+        [data-testid="stSidebar"] .stTextInput label {{
+            color: {CORES["azul_sec"]} !important;
+        }}
+
+        /* Texto do campo Período */
         [data-testid="stSidebar"] .stDateInput input {{
             color: #FFFFFF !important;
         }}
@@ -329,7 +362,7 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Cabeçalho (mês, ano, setas) em azul claro no modo escuro também */
+        /* Cabeçalho do calendário (mês, ano, setas) em azul claro no modo escuro também */
         [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select,
         [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] [role="button"] {{
             color: {CORES["azul_sec"]} !important;
