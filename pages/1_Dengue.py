@@ -328,7 +328,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # ====== Classificação Final ======
     if 'CLASSIFICACAO_FINAL' in df.columns:
         st.sidebar.markdown(
-            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"<p style='margin-bottom:0px; margin-top:2px; "
             f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
             f"Classificação Final</p>",
             unsafe_allow_html=True
