@@ -91,14 +91,13 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* MENU DE NAVEGAÇÃO (Home, Dengue, Saúde do Trabalhador, VISA, PCE, Oropouche) */
+    /* MENU DE NAVEGAÇÃO */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
-        color: #FFFFFF !important;          /* texto branco para todos os itens */
+        color: #FFFFFF !important;
     }}
 
-    /* Item de página atual (selecionado) também branco, com leve destaque de fundo */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
         background-color: rgba(255, 255, 255, 0.12) !important;
@@ -182,7 +181,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* GRÁFICOS – CSS de segurança (mas o branco é garantido via update_layout) */
+    /* GRÁFICOS – CSS de segurança */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
@@ -206,7 +205,6 @@ def aplicar_css():
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
-        /* Texto dos campos em branco */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -220,7 +218,6 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Rótulos dos filtros em azul claro */
         [data-testid="stSidebar"] div[class*="stMarkdown"] p,
         [data-testid="stSidebar"] label,
         [data-testid="stSidebar"] .stNumberInput label,
@@ -233,7 +230,6 @@ def aplicar_css():
             font-weight: 600 !important;
         }}
 
-        /* Campos: fundo escuro no modo escuro */
         [data-testid="stSidebar"] .stTextInput > div > div,
         [data-testid="stSidebar"] .stNumberInput > div > div,
         [data-testid="stSidebar"] .stSelectbox > div > div,
@@ -248,7 +244,6 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Dropdown de opções em fundo escuro */
         [data-testid="stSidebar"] div[role="listbox"],
         [data-testid="stSidebar"] ul[role="listbox"] {{
             background-color: #1F2933 !important;
@@ -339,7 +334,6 @@ def carregar_dados():
     return df
 
 
-# Detectar automaticamente colunas equivalentes (para tabela final)
 def encontrar_coluna(df, lista_nomes):
     """Retorna a coluna presente no DataFrame dentre as opções possíveis."""
     for col_df in df.columns:
@@ -359,7 +353,6 @@ def aplicar_filtros(df, col_localidade, col_data):
 
     # ----------------- Localidade -----------------
     if col_localidade:
-        # Título manual em azul-secundário
         st.sidebar.markdown(
             f"<p style='margin-bottom:0px; margin-top:8px; "
             f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
@@ -369,7 +362,7 @@ def aplicar_filtros(df, col_localidade, col_data):
 
         localidades = sorted(df[col_localidade].dropna().unique())
         sel_loc = st.sidebar.multiselect(
-            label="",           # sem label nativo
+            label="",
             options=localidades,
             default=localidades
         )
@@ -382,7 +375,6 @@ def aplicar_filtros(df, col_localidade, col_data):
         min_d = df_filtrado[col_data].min()
         max_d = df_filtrado[col_data].max()
 
-        # Título manual em azul-secundário
         st.sidebar.markdown(
             f"<p style='margin-bottom:0px; margin-top:8px; "
             f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
@@ -391,7 +383,7 @@ def aplicar_filtros(df, col_localidade, col_data):
         )
 
         data_ini, data_fim = st.sidebar.date_input(
-            label="",           # sem label nativo
+            label="",
             value=[min_d, max_d]
         )
 
@@ -408,21 +400,37 @@ def aplicar_filtros(df, col_localidade, col_data):
 
 
 # ---------------------------------------------------------
-# INDICADORES
+# INDICADORES – POP. TRAB, EXAMES, POSITIVOS, TRATADOS, A TRATAR
 # ---------------------------------------------------------
 def mostrar_indicadores(df_filtrado, col_localidade):
     st.header("📊 Indicadores Gerais")
 
-    col1, col2 = st.columns(2)
+    # Detectar colunas pelos mesmos padrões usados na tabela
+    col_pop = encontrar_coluna(df_filtrado, ["POP_TRAB", "POP. TRAB.", "POP_TRABALHADORES", "POP TRAB"])
+    col_exames = encontrar_coluna(df_filtrado, ["EXAMES", "TOTAL_EXAMES", "N_EXAMES"])
+    col_positivos = encontrar_coluna(df_filtrado, ["POSITIVOS", "CASOS_POSITIVOS", "TESTES_POSITIVOS"])
+    col_tratados = encontrar_coluna(df_filtrado, ["TRATADOS", "N_TRATADOS"])
+    col_a_tratar = encontrar_coluna(df_filtrado, ["A_TRATAR", "A TRATAR", "N_A_TRATAR"])
 
-    col1.metric("Registros filtrados", len(df_filtrado))
+    def soma_coluna(col):
+        if col and col in df_filtrado.columns:
+            return pd.to_numeric(df_filtrado[col], errors="coerce").sum()
+        return 0
 
-    if col_localidade and col_localidade in df_filtrado.columns:
-        if not df_filtrado[col_localidade].dropna().empty:
-            top_loc = df_filtrado[col_localidade].value_counts().idxmax()
-        else:
-            top_loc = "Indefinido"
-        col2.metric("Localidade mais frequente", top_loc)
+    total_pop = soma_coluna(col_pop)
+    total_exames = soma_coluna(col_exames)
+    total_positivos = soma_coluna(col_positivos)
+    total_tratados = soma_coluna(col_tratados)
+    total_a_tratar = soma_coluna(col_a_tratar)
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("População trabalhada (POP. TRAB)", int(total_pop) if pd.notna(total_pop) else "—")
+    c2.metric("Exames realizados", int(total_exames) if pd.notna(total_exames) else "—")
+    c3.metric("Indivíduos POSITIVOS", int(total_positivos) if pd.notna(total_positivos) else "—")
+
+    c4, c5, _ = st.columns(3)
+    c4.metric("Indivíduos TRATADOS", int(total_tratados) if pd.notna(total_tratados) else "—")
+    c5.metric("Indivíduos A TRATAR", int(total_a_tratar) if pd.notna(total_a_tratar) else "—")
 
 
 # ---------------------------------------------------------
@@ -512,10 +520,19 @@ def mostrar_graficos(df_filtrado, col_localidade, col_data):
 
 
 # ---------------------------------------------------------
-# TABELA FINAL – APENAS AS COLUNAS ESPECIFICADAS
+# TABELA FINAL – APENAS AS COLUNAS ESPECIFICADAS, SEM LINHA TOTAL
 # ---------------------------------------------------------
 def mostrar_tabela(df_filtrado):
     st.header("📋 Dados Filtrados")
+
+    # Remover linha de TOTAL, se existir (ex.: na coluna de localidade)
+    col_localidade = encontrar_coluna(df_filtrado, ["LOCALIDADE", "BAIRRO", "AREA", "TERRITORIO"])
+    if col_localidade and col_localidade in df_filtrado.columns:
+        df_filtrado = df_filtrado[
+            ~df_filtrado[col_localidade].astype(str).str.upper().str.strip().isin(
+                ["TOTAL", "TOTAL GERAL", "TOTALGERAL"]
+            )
+        ]
 
     mapa_colunas = {
         "LOCALIDADE": ["LOCALIDADE", "BAIRRO", "AREA", "TERRITORIO"],
