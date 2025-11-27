@@ -133,7 +133,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stDateInput label,
     [data-testid="stSidebar"] .stSlider label,
     [data-testid="stSidebar"] .stTextInput label {{
-        color: {CORES["--azul_secundario"]} !important;  /* só o título fica azul claro */
+        color: {CORES["azul_claro"]} !important;  /* só o título fica azul claro */
         font-weight: 600 !important;
     }}
 
