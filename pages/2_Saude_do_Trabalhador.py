@@ -150,7 +150,7 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Campo de período (DateInput) com texto azul claro */
+    /* Campo de período (DateInput) com texto azul claro no modo claro */
     [data-testid="stSidebar"] .stDateInput input {{
         color: {CORES["azul_sec"]} !important;
     }}
@@ -164,7 +164,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* DateInput (Período) mantém fundo branco, só mudamos a cor da fonte */
+    /* DateInput (Período) – fundo branco */
     [data-testid="stSidebar"] .stDateInput > div > div {{
         background-color: var(--branco) !important;
         border-radius: 6px !important;
@@ -199,6 +199,33 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
+    /* POPUP DO CALENDÁRIO (DateInput) – texto legível */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
+        color: #FFFFFF !important;
+    }}
+
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"],
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] {{
+        background-color: #222831 !important;
+    }}
+
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] td,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] th {{
+        color: #FFFFFF !important;
+    }}
+
+    [data-testid="stSidebar"] .stDateInput [role="button"],
+    [data-testid="stSidebar"] .stDateInput select {{
+        color: #FFFFFF !important;
+        background-color: #393E46 !important;
+    }}
+
+    [data-testid="stSidebar"] .stDateInput [aria-selected="true"] {{
+        background-color: {CORES["azul_sec"]} !important;
+        color: #FFFFFF !important;
+    }}
+
     /* GRÁFICOS – garantir fundo branco */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
@@ -208,7 +235,7 @@ def aplicar_css():
         background-color: #FFFFFF !important;
     }}
 
-    /* Textos dentro dos gráficos: forçar cor em azul escuro mesmo no modo escuro do navegador */
+    /* Textos dentro dos gráficos: azul escuro */
     .js-plotly-plot text {{
         fill: {CORES["azul"]} !important;
         color: {CORES["azul"]} !important;
@@ -236,7 +263,7 @@ def aplicar_css():
     }}
 
     /* ===========================
-       MODO ESCURO: DROPDOWN azul claro + texto branco
+       MODO ESCURO
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
@@ -253,7 +280,7 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* No modo escuro, o texto do Período também fica branco para contraste */
+        /* No modo escuro, o texto do Período também fica branco */
         [data-testid="stSidebar"] .stDateInput input {{
             color: #FFFFFF !important;
         }}
@@ -281,6 +308,17 @@ def aplicar_css():
         [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
         [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
             background-color: rgba(0,0,0,0.2) !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* Reforçar contraste do popup do calendário no modo escuro */
+        [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"],
+        [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] {{
+            background-color: #222831 !important;
+        }}
+
+        [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
+        [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
             color: #FFFFFF !important;
         }}
     }}
