@@ -328,18 +328,22 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # CLASSIFICAÇÃO FINAL
     if 'CLASSIFICACAO_FINAL' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Classificação Final</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Classificação Final</div>",
             unsafe_allow_html=True
         )
         opcoes = sorted(df['CLASSIFICACAO_FINAL'].dropna().unique())
-        sel = st.sidebar.multiselect("", opcoes)
+        sel = st.sidebar.multiselect(label="", options=opcoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(sel)]
 
     # SEMANA EPIDEMIOLÓGICA
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Semana Epidemiológica</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Semana Epidemiológica</div>",
             unsafe_allow_html=True
         )
         semanas = sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique())
@@ -350,7 +354,9 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # SEXO
     if 'SEXO' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Sexo</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Sexo</div>",
             unsafe_allow_html=True
         )
         sexos = sorted(df['SEXO'].dropna().unique())
@@ -361,7 +367,9 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # FAIXA ETÁRIA
     if 'FAIXA_ETARIA' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Faixa Etária</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Faixa Etária</div>",
             unsafe_allow_html=True
         )
         faixas = st.sidebar.multiselect("", ORDEM_FAIXA_ETARIA)
@@ -371,7 +379,9 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # EVOLUÇÃO
     if 'EVOLUCAO' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Evolução do Caso</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Evolução do Caso</div>",
             unsafe_allow_html=True
         )
         evolucoes = sorted(df['EVOLUCAO'].dropna().unique())
@@ -382,7 +392,9 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # ESCOLARIDADE
     if 'ESCOLARIDADE' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Escolaridade</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Escolaridade</div>",
             unsafe_allow_html=True
         )
         escs = sorted(df['ESCOLARIDADE'].dropna().unique())
@@ -393,7 +405,9 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # BAIRRO
     if 'BAIRRO' in df.columns:
         st.sidebar.markdown(
-            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Bairro</span>",
+            f"<div style='color:{CORES['azul_claro']}; "
+            f"font-weight:600; margin-top:10px; margin-bottom:2px;'>"
+            f"Bairro</div>",
             unsafe_allow_html=True
         )
         bairros = sorted(df['BAIRRO'].dropna().unique())
