@@ -209,7 +209,7 @@ def aplicar_filtros(df: pd.DataFrame,
     classificacoes = opcoes(df, col_classificacao)
     sexos = opcoes(df, col_sexo)
     racas = opcoes(df, col_raca)
-    semanas = opcoes(df, "SE_SEMANA")  # <- aqui garantimos que são VALORES da coluna SE_SEMANA
+    semanas = opcoes(df, "SE_SEMANA")
 
     f_localidade = st.sidebar.multiselect("Localidade", options=localidades, default=localidades)
     f_classificacao = st.sidebar.multiselect("Classificação", options=classificacoes, default=classificacoes)
@@ -231,8 +231,6 @@ def aplicar_filtros(df: pd.DataFrame,
 
     if df_filtrado.empty:
         st.warning("Nenhum dado encontrado com os filtros selecionados.")
-        st.stop()
-
     return df_filtrado
 
 
@@ -245,7 +243,11 @@ def tratar_data(df: pd.DataFrame,
     # Data
     if col_data and col_data in df.columns:
         df[col_data] = pd.to_datetime(df[col_data], dayfirst=True, errors="coerce")
-        df["MES_NOTIF"] = df[col_data].dt.to_period("M").astype(str)
+        if df[col_data].notna().any():
+            df["MES_NOTIF"] = df[col_data].dt.to_period("M").astype(str)
+        else:
+            st.warning("Coluna de Data encontrada, mas todos os valores são inválidos. Usando SEM_DATA.")
+            df["MES_NOTIF"] = "SEM_DATA"
     else:
         df["MES_NOTIF"] = "SEM_DATA"
 
@@ -258,8 +260,8 @@ def tratar_data(df: pd.DataFrame,
             .str.extract(r"(\d+)", expand=False)  # pega só o número
             .fillna("IGNORADO")
         )
-    # 2) senão, deriva da data
-    elif col_data and col_data in df.columns:
+    # 2) senão, deriva da data (se tiver)
+    elif col_data and col_data in df.columns and df[col_data].notna().any():
         try:
             df["SE_SEMANA"] = df[col_data].dt.isocalendar().week.astype("Int64").astype(str)
         except Exception:
@@ -439,13 +441,26 @@ def main():
     col_raca = detectar(df, ["RACA_COR", "RAÇA_COR", "RACA", "COR", "RACA/COR"])
     col_gestante = detectar(df, ["GESTANTE", "GRAVIDEZ", "GESTACAO"])
     col_data = detectar(df, [
-        "DATA_NOTIFICACAO", "DATA_DE_NOTIFICACAO", "NOTIFICACAO", "DATA",
-        "DATA_DO_CASO", "DATA_ENTRADA", "DATA_NOTIF", "DATE"
+        "DATA_NOTIFICACAO", "DATA_DE_NOTIFICACAO", "DATA NOTIFICAÇÃO",
+        "DATA DE NOTIFICACAO", "DATA_DE_NOTIFICAÇÃO",
+        "NOTIFICACAO", "DATA_DO_CASO", "DATA_ENTRADA", "DATA", "DATA_NOTIF", "DATE"
     ])
-    # coluna explícita de semana epidemiológica, se existir
     col_semana_epid = detectar(df, [
-        "SEMANA_EPIDEMIOLOGICA", "SEMANA EPIDEMIOLOGICA", "SEMANA", "SEMANA_EP", "SE"
+        "SEMANA_EPIDEMIOLOGICA", "SEMANA EPIDEMIOLOGICA",
+        "SEMANA_EPIDEMIOLÓGICA", "SEMANA EPIDEMIOLÓGICA",
+        "SEMANA", "SEMANA_EP", "SE"
     ])
+
+    # Mostrar debug de colunas detectadas (ajuda a entender por que aparece SEM_DATA)
+    with st.expander("Colunas detectadas (debug)", expanded=False):
+        st.write("Colunas originais:", orig_cols)
+        st.write("Coluna de Localidade:", col_localidade)
+        st.write("Coluna de Classificação:", col_classificacao)
+        st.write("Coluna de Sexo:", col_sexo)
+        st.write("Coluna de Raça/Cor:", col_raca)
+        st.write("Coluna de Gestante:", col_gestante)
+        st.write("Coluna de Data (Notificação):", col_data)
+        st.write("Coluna de Semana Epidemiológica:", col_semana_epid)
 
     # Padronizar Sexo: F/M -> Feminino/Masculino
     if col_sexo and col_sexo in df.columns:
@@ -462,6 +477,14 @@ def main():
 
     # Tratar data + semana epidemiológica
     df = tratar_data(df, col_data, col_semana_epid)
+
+    # Se MES_NOTIF ainda estiver como SEM_DATA, avisa
+    if "MES_NOTIF" in df.columns and (df["MES_NOTIF"] == "SEM_DATA").all():
+        st.warning(
+            "Não foi possível identificar ou converter corretamente a coluna de Data de Notificação. "
+            "Os gráficos mensais usarão o rótulo 'SEM_DATA'. "
+            "Verifique o nome exato da coluna na planilha (ex.: 'Data de Notificação')."
+        )
 
     # Remover sensíveis
     df = remover_sensiveis(df, col_localidade, col_data)
