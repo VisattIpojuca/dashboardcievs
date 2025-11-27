@@ -104,7 +104,12 @@ def aplicar_css():
     }}
 
     /* Texto principal da área central */
-    body, p, li, span, label, .stMarkdown {{
+    [data-testid="stAppViewContainer"] body,
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li,
+    [data-testid="stAppViewContainer"] span,
+    [data-testid="stAppViewContainer"] label,
+    [data-testid="stAppViewContainer"] .stMarkdown {{
         color: #0073CF !important;
     }}
 
@@ -118,7 +123,8 @@ def aplicar_css():
     }}
 
     /* Parágrafos justificados */
-    p, li {{
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li {{
         text-align: justify !important;
     }}
 
@@ -145,9 +151,10 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* RÓTULOS DOS FILTROS (Período, Sexo, etc.) EM AZUL CLARO */
+    /* RÓTULOS DOS FILTROS (Período, Sexo, etc.) – AZUL CLARO
+       Aumentamos a especificidade e usamos !important para ganhar de qualquer regra global */
+    [data-testid="stSidebar"] div[class*="stMarkdown"] p,
     [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] .stMarkdown p,
     [data-testid="stSidebar"] .stNumberInput label,
     [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stMultiSelect label,
@@ -155,6 +162,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stSlider label,
     [data-testid="stSidebar"] .stTextInput label {{
         color: {CORES["azul_sec"]} !important;
+        font-weight: 600 !important;
     }}
 
     /* TEXTO E CAMPOS DOS FILTROS – tema claro (padrão azul escuro) */
@@ -309,8 +317,8 @@ def aplicar_css():
         }}
 
         /* Rótulos dos filtros em azul claro também no modo escuro */
+        [data-testid="stSidebar"] div[class*="stMarkdown"] p,
         [data-testid="stSidebar"] label,
-        [data-testid="stSidebar"] .stMarkdown p,
         [data-testid="stSidebar"] .stNumberInput label,
         [data-testid="stSidebar"] .stSelectbox label,
         [data-testid="stSidebar"] .stMultiSelect label,
@@ -318,6 +326,7 @@ def aplicar_css():
         [data-testid="stSidebar"] .stSlider label,
         [data-testid="stSidebar"] .stTextInput label {{
             color: {CORES["azul_sec"]} !important;
+            font-weight: 600 !important;
         }}
 
         /* Texto do campo Período */
