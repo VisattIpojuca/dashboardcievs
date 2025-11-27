@@ -52,9 +52,14 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
-    body, p, li, span, label, .stMarkdown {{
-        color: #000 !important;
+    /* Texto principal da área central */
+    [data-testid="stAppViewContainer"] body,
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li,
+    [data-testid="stAppViewContainer"] span,
+    [data-testid="stAppViewContainer"] label,
+    [data-testid="stAppViewContainer"] .stMarkdown {{
+        color: #0073CF !important;
     }}
 
     /* Títulos amarelos na área principal */
@@ -67,9 +72,9 @@ def aplicar_css():
     }}
 
     /* Parágrafos justificados */
-    p, li {{
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li {{
         text-align: justify !important;
-        color: #000 !important;
     }}
 
     /* Fundo geral */
@@ -81,19 +86,34 @@ def aplicar_css():
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
-    [data-testid="stSidebar"] * {{
-        color: white !important;
-    }}
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
     }}
 
-    /* ------------------------------
-       WIDGETS DE FILTRO NA SIDEBAR
-       ------------------------------ */
+    /* Título "Filtros" na sidebar */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4 {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
+    }}
 
-    /* Texto dos inputs/selects: azul em tema claro */
+    /* RÓTULOS DOS FILTROS – AZUL CLARO */
+    [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stDateInput label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stTextInput label {{
+        color: {CORES["azul_sec"]} !important;
+        font-weight: 600 !important;
+    }}
+
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -107,17 +127,34 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
+    /* Campos: fundo branco no modo claro */
+    [data-testid="stSidebar"] .stTextInput > div > div,
+    [data-testid="stSidebar"] .stNumberInput > div > div,
+    [data-testid="stSidebar"] .stSelectbox > div > div,
+    [data-testid="stSidebar"] .stMultiSelect > div > div,
+    [data-testid="stSidebar"] .stDateInput > div > div {{
+        background-color: var(--branco) !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] input::placeholder,
+    [data-testid="stSidebar"] textarea::placeholder {{
+        color: #2f6bbd !important;
+    }}
+
     /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
 
-    /* Algumas versões usam span para os "chips" selecionados */
-    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
 
     /* Borda dos campos de filtro em azul */
@@ -127,13 +164,34 @@ def aplicar_css():
     [data-testid="stSidebar"] .stNumberInput > div,
     [data-testid="stSidebar"] .stDateInput > div {{
         border-color: {CORES["azul_sec"]} !important;
+        border-radius: 6px !important;
     }}
 
-    /* ------------------------------
-       TEMA ESCURO DO NAVEGADOR
-       ------------------------------ */
+    /* GRÁFICOS – fundo branco, texto azul escuro */
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+    .js-plotly-plot text {{
+        fill: {CORES["azul"]} !important;
+        color: {CORES["azul"]} !important;
+    }}
+    .element-container .js-plotly-plot {{
+        border: 1px solid #000000 !important;
+        border-radius: 4px !important;
+        padding: 4px !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* ===========================
+       MODO ESCURO
+       =========================== */
     @media (prefers-color-scheme: dark) {{
-        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+
+        /* Texto dos campos em branco */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -144,7 +202,57 @@ def aplicar_css():
         [data-testid="stSidebar"] .stDateInput,
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
-            color: white !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* Rótulos dos filtros em azul claro */
+        [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stNumberInput label,
+        [data-testid="stSidebar"] .stSelectbox label,
+        [data-testid="stSidebar"] .stMultiSelect label,
+        [data-testid="stSidebar"] .stDateInput label,
+        [data-testid="stSidebar"] .stSlider label,
+        [data-testid="stSidebar"] .stTextInput label {{
+            color: {CORES["azul_sec"]} !important;
+            font-weight: 600 !important;
+        }}
+
+        /* Campos: fundo escuro no modo escuro */
+        [data-testid="stSidebar"] .stTextInput > div > div,
+        [data-testid="stSidebar"] .stNumberInput > div > div,
+        [data-testid="stSidebar"] .stSelectbox > div > div,
+        [data-testid="stSidebar"] .stMultiSelect > div > div,
+        [data-testid="stSidebar"] .stDateInput > div > div {{
+            background-color: #1F2933 !important;
+            border-radius: 6px !important;
+        }}
+
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {{
+            color: #FFFFFF !important;
+        }}
+
+        /* Dropdown de opções em fundo escuro */
+        [data-testid="stSidebar"] div[role="listbox"],
+        [data-testid="stSidebar"] ul[role="listbox"] {{
+            background-color: #1F2933 !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"] *,
+        [data-testid="stSidebar"] ul[role="listbox"] * {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="option"],
+        [data-testid="stSidebar"] li[role="option"] {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
+        [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
+            background-color: rgba(0,0,0,0.2) !important;
+            color: #FFFFFF !important;
         }}
     }}
 
@@ -159,8 +267,9 @@ def aplicar_css():
 
     /* Botões */
     button, .stButton button {{
-        color: #000 !important;
-        background-color: var(--cinza-claro") !important;
+        color: #FFFFFF !important;
+        background-color: var(--cinza-claro) !important;
+        border-radius: 6px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -242,6 +351,7 @@ def aplicar_filtros(df, col_localidade, col_data):
 
     # Filtro temporal
     if col_data:
+        df_filtrado[col_data] = pd.to_datetime(df_filtrado[col_data], errors="coerce")
         min_d = df_filtrado[col_data].min()
         max_d = df_filtrado[col_data].max()
 
@@ -368,10 +478,6 @@ def main():
     # IDENTIFICAÇÃO DE COLUNAS
     col_localidade = detectar_coluna(df, ["LOCALIDADE", "BAIRRO", "AREA", "TERRITORIO"])
     col_data = detectar_coluna(df, ["DATA", "DATA_REGISTRO", "DT", "DATA_OCORRENCIA"])
-
-    # Converter data, se existir
-    if col_data and col_data in df.columns:
-        df[col_data] = pd.to_datetime(df[col_data], errors="coerce")
 
     # FILTROS
     df_filtrado = aplicar_filtros(df, col_localidade, col_data)
