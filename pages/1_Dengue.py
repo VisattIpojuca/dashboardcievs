@@ -90,8 +90,12 @@ def aplicar_css():
         --branco: #FFFFFF;
     }}
 
-    /* TEXTO ÁREA CENTRAL */
-    body, p, li, span, label, .stMarkdown {{
+    /* =============== ÁREA CENTRAL (fora da sidebar) =============== */
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li,
+    [data-testid="stAppViewContainer"] span,
+    [data-testid="stAppViewContainer"] label,
+    [data-testid="stAppViewContainer"] .stMarkdown {{
         color: #0073CF !important;
     }}
 
@@ -107,16 +111,12 @@ def aplicar_css():
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* SIDEBAR */
+    /* ====================== SIDEBAR ====================== */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
-    [data-testid="stSidebar"] a {{
-        color: var(--amarelo-ipojuca) !important;
-        font-weight: 600;
-    }}
 
-    /* TÍTULO "Filtros" e demais headings da sidebar */
+    /* Título "Filtros" e demais headings na sidebar */
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3,
@@ -125,20 +125,32 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* RÓTULOS DOS CAMPOS NA SIDEBAR (títulos dos filtros) */
-    [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+    /* >>> TÍTULOS DOS CAMPOS (rótulos dos filtros) <<< */
     [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] .stNumberInput label,
-    [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stNumberInput label,
     [data-testid="stSidebar"] .stDateInput label,
     [data-testid="stSidebar"] .stSlider label,
     [data-testid="stSidebar"] .stTextInput label {{
-        color: {CORES["azul_claro"]} !important;  /* aqui entra o azul claro */
+        color: {CORES["azul_claro"]} !important;  /* só o título fica azul claro */
         font-weight: 600 !important;
     }}
 
-    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
+    /* Links do menu multipage */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
+
+    /* VALORES DENTRO DOS CAMPOS (voltam a ser azul escuro) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -149,7 +161,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stDateInput,
     [data-testid="stSidebar"] .stTextInput,
     [data-testid="stSidebar"] .stMultiSelect * {{
-        color: {CORES["azul"]} !important;
+        color: {CORES["azul"]} !important;     /* texto interno igual antes */
     }}
 
     [data-testid="stSidebar"] .stTextInput > div > div,
@@ -166,18 +178,11 @@ def aplicar_css():
         color: #2f6bbd !important;
     }}
 
-    /* OPÇÕES SELECIONADAS (chips) */
-    [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
-    [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
+    /* Chips selecionados */
+    [data-testid="stSidebar"] span[data-baseweb="tag"],
+    [data-testid="stSidebar"] span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
-        color: white !important;
-        border-radius: 6px !important;
-    }}
-
-    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
-    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
-        background-color: {CORES["verde"]} !important;
-        color: white !important;
+        color: #FFFFFF !important;
         border-radius: 6px !important;
     }}
 
@@ -190,7 +195,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* GRÁFICOS – garantir fundo branco */
+    /* ================= GRÁFICOS ================= */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
@@ -209,66 +214,6 @@ def aplicar_css():
         border-radius: 4px !important;
         padding: 4px !important;
         background-color: #FFFFFF !important;
-    }}
-
-    /* MENU PÁGINAS */
-    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
-    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
-    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
-        color: #FFFFFF !important;
-    }}
-    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
-    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
-        background-color: rgba(255, 255, 255, 0.12) !important;
-        color: #FFFFFF !important;
-        border-radius: 6px !important;
-    }}
-
-    /* ===========================
-       MODO ESCURO
-       =========================== */
-    @media (prefers-color-scheme: dark) {{
-
-        /* texto dos campos */
-        [data-testid="stSidebar"] input,
-        [data-testid="stSidebar"] textarea,
-        [data-testid="stSidebar"] select,
-        [data-testid="stSidebar"] .stMultiSelect,
-        [data-testid="stSidebar"] .stSelectbox,
-        [data-testid="stSidebar"] .stNumberInput,
-        [data-testid="stSidebar"] .stSlider,
-        [data-testid="stSidebar"] .stDateInput,
-        [data-testid="stSidebar"] .stTextInput,
-        [data-testid="stSidebar"] .stMultiSelect * {{
-            color: #FFFFFF !important;
-        }}
-
-        /* rótulos continuam em azul_claro para dar contraste */
-        [data-testid="stSidebar"] div[class*="stMarkdown"] p,
-        [data-testid="stSidebar"] label,
-        [data-testid="stSidebar"] .stNumberInput label,
-        [data-testid="stSidebar"] .stSelectbox label,
-        [data-testid="stSidebar"] .stMultiSelect label,
-        [data-testid="stSidebar"] .stDateInput label,
-        [data-testid="stSidebar"] .stSlider label,
-        [data-testid="stSidebar"] .stTextInput label {{
-            color: {CORES["azul_claro"]} !important;
-        }}
-
-        [data-testid="stSidebar"] input::placeholder,
-        [data-testid="stSidebar"] textarea::placeholder {{
-            color: #FFFFFF !important;
-        }}
-
-        [data-testid="stSidebar"] div[role="listbox"],
-        [data-testid="stSidebar"] ul[role="listbox"] {{
-            background-color: {CORES["azul_claro"]} !important;
-        }}
-
-        [data-testid="stSidebar"] div[role="listbox"] *,
-        [data-testid="stSidebar"] ul[role="listbox"] * {{
-            color: #FFFFFF !important;
-        }}
     }}
 
     .stMetric {{
