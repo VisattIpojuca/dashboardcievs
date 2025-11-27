@@ -176,12 +176,12 @@ def aplicar_css():
     [data-testid="stSidebar"] .stDateInput,
     [data-testid="stSidebar"] .stTextInput,
     [data-testid="stSidebar"] .stMultiSelect * {{
-        color: {CORES["azul"]} !important;
+        color: {CORES["azul_sec"]} !important;
     }}
 
     /* Campo de período (DateInput) com texto azul claro no modo claro */
     [data-testid="stSidebar"] .stDateInput input {{
-        color: {CORES["azul_sec"]} !important;
+        color: {CORES["azul"]} !important;
     }}
 
     /* Campos de texto, número, select e multiselect: fundo branco */
