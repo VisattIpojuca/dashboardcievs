@@ -90,12 +90,10 @@ def aplicar_css():
         --branco: #FFFFFF;
     }}
 
-    /* Texto principal em preto */
     body, p, li, span, label, .stMarkdown {{
         color: #000 !important;
     }}
 
-    /* Títulos na área principal */
     [data-testid="stAppViewContainer"] h1,
     [data-testid="stAppViewContainer"] h2,
     [data-testid="stAppViewContainer"] h3,
@@ -104,12 +102,10 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* Fundo geral claro */
     [data-testid="stAppViewContainer"] {{
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar azul */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -118,7 +114,7 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* TEXTO E CAMPOS DOS FILTROS – padrão (tema claro) */
+    /* TEXTO E CAMPOS DOS FILTROS – padrão (claro) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -146,7 +142,7 @@ def aplicar_css():
         color: #2f6bbd !important;
     }}
 
-    /* OPÇÕES SELECIONADAS (chips) – fundo verde */
+    /* OPÇÕES SELECIONADAS (chips) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
@@ -170,7 +166,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* GRÁFICOS – fundo claro */
+    /* GRÁFICOS */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
@@ -179,13 +175,12 @@ def aplicar_css():
         background-color: #FFFFFF !important;
     }}
 
-    /* MENU DE PÁGINAS sempre branco */
+    /* MENU PÁGINAS */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
         color: #FFFFFF !important;
     }}
-
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
         background-color: rgba(255, 255, 255, 0.12) !important;
@@ -194,11 +189,11 @@ def aplicar_css():
     }}
 
     /* ===========================
-       MODO ESCURO: texto dos filtros em branco
+       MODO ESCURO: texto dos filtros e das OPÇÕES em branco
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
-        /* Texto geral dentro das caixas de filtro passa de azul para BRANCO */
+        /* Texto dentro das caixas */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -212,17 +207,30 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Placeholder também branco no dark mode */
         [data-testid="stSidebar"] input::placeholder,
         [data-testid="stSidebar"] textarea::placeholder {{
             color: #FFFFFF !important;
         }}
 
-        /* Chips/opções selecionadas continuam com fundo verde e TEXTO BRANCO */
+        /* Chips/opções selecionadas */
         [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
         [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"],
         [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
         [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
+            color: #FFFFFF !important;
+        }}
+
+        /* *** LISTA ABERTA DAS OPÇÕES (CHIKUNGUNYA, DENGUE, etc.) *** */
+        /* BaseWeb option items dentro do dropdown */
+        [data-testid="stSidebar"] div[role="listbox"] div[role="option"],
+        [data-testid="stSidebar"] ul[role="listbox"] li[role="option"],
+        [data-testid="stSidebar"] div[role="option"] span {{
+            color: #FFFFFF !important;
+        }}
+
+        /* opção focada/hover também branca */
+        [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
+        [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
             color: #FFFFFF !important;
         }}
     }}
