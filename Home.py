@@ -193,7 +193,7 @@ with st.sidebar:
     """)
 
     st.markdown("---")
-    st.caption("Prefeitura do Ipojuca • Secretaria Municipal de Saúde • MB Technological Solutions")
+    st.caption("Vigilância em Saúde • Cievs Ipojuca • MB Technological Solutions®")
 
 # ============================================================
 # HERO / CABEÇALHO PRINCIPAL
