@@ -48,7 +48,7 @@ CORES = {
 }
 
 # --------------------------------------------------------
-# CSS — MESMO ESTILO DOS OUTROS PAINÉIS (MENU PADRÃO)
+# CSS — TEMA INSTITUCIONAL + MENU LATERAL PADRÃO
 # --------------------------------------------------------
 def aplicar_css():
     st.markdown(f"""
@@ -213,12 +213,20 @@ def carregar_planilha_google(url_original: str) -> pd.DataFrame:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], dayfirst=True, errors="coerce")
 
+    # Ano / mês de entrada
     if "ENTRADA" in df.columns:
         df["ANO_ENTRADA"] = df["ENTRADA"].dt.year
         df["MES_ENTRADA"] = df["ENTRADA"].dt.month
+
+        # Semana Epidemiológica (derivada de ENTRADA)
+        try:
+            df["SE_SEMANA"] = df["ENTRADA"].dt.isocalendar().week.astype("Int64").astype(str)
+        except Exception:
+            df["SE_SEMANA"] = df["ENTRADA"].dt.week.astype("Int64").astype(str)
     else:
         df["ANO_ENTRADA"] = pd.NA
         df["MES_ENTRADA"] = pd.NA
+        df["SE_SEMANA"] = pd.NA
 
     if "SITUAÇÃO" in df.columns:
         df["SITUAÇÃO"] = df["SITUAÇÃO"].fillna("").astype(str).str.upper()
@@ -250,7 +258,7 @@ def gerar_excel_bytes(dfs: dict):
 
 
 # --------------------------------------------------------
-# FILTROS
+# FILTROS (incluindo Semana Epidemiológica)
 # --------------------------------------------------------
 def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     st.sidebar.header("Filtros")
@@ -289,8 +297,16 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     riscos = sorted(df["CLASSIFICAÇÃO"].dropna().unique()) if "CLASSIFICAÇÃO" in df.columns else []
     sel_risco = st.sidebar.multiselect("Classificação (Risco)", riscos, default=riscos)
 
+    # Semana Epidemiológica (usando SE_SEMANA)
+    if "SE_SEMANA" in df.columns:
+        semanas = sorted(df["SE_SEMANA"].dropna().unique())
+    else:
+        semanas = []
+    sel_se = st.sidebar.multiselect("Semana Epidemiológica", semanas, default=semanas)
+
     filtro_df = df.copy()
 
+    # Filtro por período
     if modo == "Ano/Mês":
         filtro_df = filtro_df[
             (filtro_df["ANO_ENTRADA"] == ano) &
@@ -302,8 +318,13 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
             (filtro_df["ENTRADA"].dt.date <= fim)
         ]
 
+    # Filtro por classificação (risco)
     if sel_risco and "CLASSIFICAÇÃO" in filtro_df.columns:
         filtro_df = filtro_df[filtro_df["CLASSIFICAÇÃO"].isin(sel_risco)]
+
+    # Filtro de Semana Epidemiológica (agora corrigido para usar SE_SEMANA)
+    if sel_se and "SE_SEMANA" in filtro_df.columns:
+        filtro_df = filtro_df[filtro_df["SE_SEMANA"].isin(sel_se)]
 
     if filtro_df.empty:
         st.warning("Nenhum dado encontrado com os filtros aplicados.")
@@ -423,7 +444,7 @@ def main():
     col_coord = detectar_coluna(df, ["COORDENAÇÃO", "COORDENACAO", "COORDENADORIA", "COORD"])
     col_territorio = detectar_coluna(df, ["TERRITÓRIO", "TERRITORIO", "TERRITORY", "TERR"])
 
-    # Aplica filtros
+    # Aplica filtros (inclui Semana Epidemiológica corrigida)
     filtro_df = aplicar_filtros(df)
 
     # Indicadores / Tabela
