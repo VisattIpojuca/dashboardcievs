@@ -322,7 +322,7 @@ def mostrar_tabela_e_kpis(tabela: pd.DataFrame, kpis: dict):
     st.subheader("📊 Indicadores Mensais")
     st.dataframe(tabela, use_container_width=True)
 
-    st.subheader("📈 KPIs do Período")
+    st.subheader("📈 Dados do Período")
     c1, c2, c3 = st.columns(3)
     c1.metric("Entradas (período)", kpis["total"])
     c2.metric("% Inspeções ≤ 30 dias", f"{kpis['p30']}%")
@@ -382,3 +382,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
