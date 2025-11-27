@@ -89,7 +89,6 @@ def aplicar_css():
     }}
 
     /* =============== ÁREA CENTRAL (fora da sidebar) =============== */
-    /* Repare que só estilizo o container central, NÃO o body inteiro */
     [data-testid="stAppViewContainer"] p,
     [data-testid="stAppViewContainer"] li,
     [data-testid="stAppViewContainer"] span,
@@ -124,8 +123,7 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* >>> TÍTULOS DOS CAMPOS (labels dos widgets) <<< */
-    /* Seletor bem específico, para ganhar de qualquer regra global */
+    /* Labels nativos dos widgets (se usados) em azul-secundario */
     [data-testid="stSidebar"] .stMultiSelect > label,
     [data-testid="stSidebar"] .stSelectbox > label,
     [data-testid="stSidebar"] .stDateInput > label,
@@ -193,6 +191,28 @@ def aplicar_css():
     [data-testid="stSidebar"] .stDateInput > div {{
         border-color: var(--azul-secundario) !important;
         border-radius: 6px !important;
+    }}
+
+    /* ===== Encostar título (markdown) na caixa ===== */
+    [data-testid="stSidebar"] .stMarkdown p {{
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }}
+
+    [data-testid="stSidebar"] .stMarkdown + div,
+    [data-testid="stSidebar"] .stMarkdown + .stMultiSelect,
+    [data-testid="stSidebar"] .stMarkdown + .stSelectbox,
+    [data-testid="stSidebar"] .stMarkdown + .stDateInput,
+    [data-testid="stSidebar"] .stMarkdown + .stNumberInput {{
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }}
+
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stNumberInput {{
+        margin-bottom: 4px !important;
     }}
 
     /* ================= GRÁFICOS ================= */
