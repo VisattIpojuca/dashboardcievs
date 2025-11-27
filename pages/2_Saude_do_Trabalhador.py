@@ -17,16 +17,38 @@ st.set_page_config(
 
 st.title("👷 Saúde do Trabalhador - Análise de Acidentes de Trabalho")
 
+# ==========================================================
+# PALETA DE CORES — MESMA DO 1_DENGUE.PY
+# ==========================================================
+cores = {
+    "azul": "#0057B7",
+    "verde": "#1A944E",
+    "amarelo": "#FFC20E",
+    "laranja": "#FF8C00"
+}
+
+paleta = [
+    cores["azul"],
+    cores["verde"],
+    cores["amarelo"],
+    cores["laranja"]
+]
 
 # ==========================================================
-# FIXAR TEMA PLOTLY CLARO PARA TUDO
+# FIXAR TEMA PLOTLY CLARO
 # ==========================================================
 pio.templates["ipojuca_tema"] = pio.templates["plotly_white"]
 pio.templates["ipojuca_tema"].layout.update(
     paper_bgcolor="white",
     plot_bgcolor="white",
     font=dict(color="#000000", size=14),
-    title=dict(font=dict(color="#004A8D", size=20, family="Arial")),
+    title=dict(
+        font=dict(
+            color=cores["azul"],
+            size=20,
+            family="Arial"
+        )
+    ),
 )
 pio.templates.default = "ipojuca_tema"
 
@@ -56,8 +78,8 @@ def detectar_coluna(df, termos):
 def contar_obitos(df, coluna):
     if coluna not in df.columns:
         return 0
-    
-    padrões = [
+        
+    padroes = [
         "ÓBITO POR ACIDENTE DE TRABALHO GRAVE",
         "OBITO POR ACIDENTE DE TRABALHO GRAVE",
         "ÓBITO",
@@ -70,14 +92,14 @@ def contar_obitos(df, coluna):
     
     resultados = pd.DataFrame({
         p: serie.str.contains(p, case=False, na=False)
-        for p in padrões
+        for p in padroes
     })
     
     return resultados.any(axis=1).sum()
 
 
 # ==========================================================
-# CARREGAR DADOS DO GOOGLE SHEETS
+# CARREGAR DADOS
 # ==========================================================
 
 @st.cache_data
@@ -154,7 +176,7 @@ if COL_SEMANA:
         semanas_df = df_filtrado[COL_SEMANA].astype(str).str.extract(r"(\d+)")[0].astype(float)
         df_filtrado = df_filtrado[semanas_df.isin(semanas_sel)]
 
-# Função genérica
+# Multiselect genérico
 def add_filtro(label, coluna):
     global df_filtrado
     if coluna:
@@ -171,7 +193,6 @@ add_filtro("Ocupação", COL_OCUPACAO)
 add_filtro("Situação no Mercado de Trabalho", COL_SITUACAO)
 add_filtro("Bairro de Ocorrência", COL_BAIRRO)
 add_filtro("Evolução do Caso", COL_EVOL)
-
 
 if df_filtrado.empty:
     st.warning("Nenhum dado encontrado com os filtros aplicados.")
@@ -195,10 +216,8 @@ c3.metric("Ocupação mais afetada", top_ocup)
 
 
 # ==========================================================
-# GRÁFICOS — sempre fundo branco
+# GRÁFICOS — fundo branco e paleta idêntica ao 1_Dengue.py
 # ==========================================================
-
-cores = ["#004A8D", "#009D4A", "#FFC20E", "#0073CF"]
 
 st.header("📈 Distribuições")
 
@@ -206,51 +225,78 @@ st.header("📈 Distribuições")
 if COL_SEXO:
     ds = df_filtrado[COL_SEXO].value_counts().reset_index()
     ds.columns = ["SEXO", "QTD"]
-    fig = px.pie(ds, names="SEXO", values="QTD", hole=0.3,
-                 title="Distribuição por Sexo", color_discrete_sequence=cores)
+    fig = px.pie(
+        ds,
+        names="SEXO",
+        values="QTD",
+        hole=0.3,
+        title="Distribuição por Sexo",
+        color_discrete_sequence=paleta
+    )
     st.plotly_chart(fig, use_container_width=True)
 
-# Raça/cor × sexo
+# Raça × Sexo
 if COL_RACA and COL_SEXO:
     d = df_filtrado[[COL_RACA, COL_SEXO]].dropna()
     d = d.groupby([COL_RACA, COL_SEXO]).size().reset_index(name="QTD")
-    fig = px.bar(d, x=COL_RACA, y="QTD", color=COL_SEXO,
-                 barmode="group", title="Raça/Cor por Sexo",
-                 color_discrete_sequence=cores)
+    fig = px.bar(
+        d,
+        x=COL_RACA,
+        y="QTD",
+        color=COL_SEXO,
+        barmode="group",
+        title="Raça/Cor por Sexo",
+        color_discrete_sequence=paleta
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 # Idade
 if COL_IDADE:
-    fig = px.histogram(df_filtrado, x=COL_IDADE,
-                       title="Distribuição por Idade",
-                       color_discrete_sequence=[cores[0]])
+    fig = px.histogram(
+        df_filtrado,
+        x=COL_IDADE,
+        title="Distribuição por Idade",
+        color_discrete_sequence=[cores["azul"]]
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 # Escolaridade
 if COL_ESCOLARIDADE:
     df_esc = df_filtrado[COL_ESCOLARIDADE].value_counts().reset_index()
     df_esc.columns = ["ESCOLARIDADE", "QTD"]
-    fig = px.bar(df_esc, x="ESCOLARIDADE", y="QTD",
-                 title="Escolaridade",
-                 color_discrete_sequence=[cores[3]])
+    fig = px.bar(
+        df_esc,
+        x="ESCOLARIDADE",
+        y="QTD",
+        title="Escolaridade",
+        color_discrete_sequence=[cores["laranja"]]
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 # Bairro
 if COL_BAIRRO:
     df_bairro = df_filtrado[COL_BAIRRO].value_counts().reset_index()
     df_bairro.columns = ["BAIRRO", "QTD"]
-    fig = px.bar(df_bairro.head(20), x="BAIRRO", y="QTD",
-                 title="Top 20 Bairros",
-                 color_discrete_sequence=[cores[1]])
+    fig = px.bar(
+        df_bairro.head(20),
+        x="BAIRRO",
+        y="QTD",
+        title="Top 20 Bairros",
+        color_discrete_sequence=[cores["verde"]]
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 # Evolução
 if COL_EVOL:
     df_ev = df_filtrado[COL_EVOL].value_counts().reset_index()
     df_ev.columns = ["EVOLUCAO", "QTD"]
-    fig = px.bar(df_ev, x="EVOLUCAO", y="QTD",
-                 title="Evolução dos Casos",
-                 color_discrete_sequence=[cores[2]])
+    fig = px.bar(
+        df_ev,
+        x="EVOLUCAO",
+        y="QTD",
+        title="Evolução dos Casos",
+        color_discrete_sequence=[cores["amarelo"]]
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 
