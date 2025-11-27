@@ -48,7 +48,7 @@ CORES = {
 }
 
 # --------------------------------------------------------
-# CSS — MESMO ESTILO DOS OUTROS PAINÉIS
+# CSS — MESMO ESTILO DOS OUTROS PAINÉIS (MENU PADRÃO)
 # --------------------------------------------------------
 def aplicar_css():
     st.markdown(f"""
@@ -97,6 +97,65 @@ def aplicar_css():
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
+    }}
+
+    /* ------------------------------
+       WIDGETS DE FILTRO NA SIDEBAR
+       ------------------------------ */
+
+    /* Texto dos inputs/selects: azul em tema claro */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea,
+    [data-testid="stSidebar"] select,
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stNumberInput,
+    [data-testid="stSidebar"] .stSlider,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stTextInput,
+    [data-testid="stSidebar"] .stMultiSelect * {{
+        color: {CORES["azul"]} !important;
+    }}
+
+    /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
+    [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
+    [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+    }}
+
+    /* Algumas versões usam span para os "chips" selecionados */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+    }}
+
+    /* Borda dos campos de filtro em azul */
+    [data-testid="stSidebar"] .stMultiSelect > div,
+    [data-testid="stSidebar"] .stSelectbox > div,
+    [data-testid="stSidebar"] .stTextInput > div,
+    [data-testid="stSidebar"] .stNumberInput > div,
+    [data-testid="stSidebar"] .stDateInput > div {{
+        border-color: {CORES["azul_sec"]} !important;
+    }}
+
+    /* ------------------------------
+       TEMA ESCURO DO NAVEGADOR
+       ------------------------------ */
+    @media (prefers-color-scheme: dark) {{
+        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select,
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stNumberInput,
+        [data-testid="stSidebar"] .stSlider,
+        [data-testid="stSidebar"] .stDateInput,
+        [data-testid="stSidebar"] .stTextInput,
+        [data-testid="stSidebar"] .stMultiSelect * {{
+            color: white !important;
+        }}
     }}
 
     /* Métricas */
@@ -215,7 +274,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
             format_func=lambda m: NOME_MESES.get(m, str(m)),
         )
     else:
-        # Garante que ENTTRADA é datetime
+        # Garante que ENTRADA é datetime
         if "ENTRADA" not in df.columns or df["ENTRADA"].isna().all():
             st.error("Não há dados de data de entrada para filtrar por intervalo.")
             st.stop()
@@ -382,4 +441,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
