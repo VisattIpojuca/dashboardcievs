@@ -369,7 +369,7 @@ with cC:
     st.metric("Gestão responsável", "Cievs Ipojuca")
 
 with cD:
-    st.metric("Tecnologia", "MB Technological Solutions")
+    st.metric("Tecnologia", "MB Technological Solutions®")
 
 st.markdown("""
 <div class="footer-text">
