@@ -110,7 +110,7 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* RÓTULOS DOS FILTROS (Período, Ano, Mês, etc.) – AZUL CLARO */
+    /* RÓTULOS DOS FILTROS (Markdown + labels) – AZUL CLARO */
     [data-testid="stSidebar"] div[class*="stMarkdown"] p,
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] .stNumberInput label,
@@ -121,6 +121,26 @@ def aplicar_css():
     [data-testid="stSidebar"] .stTextInput label {{
         color: {CORES["azul_sec"]} !important;
         font-weight: 600 !important;
+    }}
+
+    /* Ajuste de espaçamento: encostar títulos (markdown) nas caixas */
+    [data-testid="stSidebar"] .stMarkdown p {{
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }}
+    [data-testid="stSidebar"] .stMarkdown + div,
+    [data-testid="stSidebar"] .stMarkdown + .stMultiSelect,
+    [data-testid="stSidebar"] .stMarkdown + .stSelectbox,
+    [data-testid="stSidebar"] .stMarkdown + .stDateInput,
+    [data-testid="stSidebar"] .stMarkdown + .stNumberInput {{
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }}
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stNumberInput {{
+        margin-bottom: 4px !important;
     }}
 
     /* TEXTO E CAMPOS DOS FILTROS – tema claro (padrão azul escuro) */
@@ -181,41 +201,32 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* POPUP DO CALENDÁRIO (DateInput) – base: texto claro e fundo escuro */
+    /* POPUP DO CALENDÁRIO (DateInput) */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"],
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] {{
         background-color: #222831 !important;
     }}
-
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
         color: #FFFFFF !important;
     }}
-
-    /* Dias e cabeçalhos de dia da semana */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] td,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] th {{
         color: #FFFFFF !important;
     }}
-
-    /* Cabeçalho do calendário: mês, ano e setas em azul claro */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select,
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] [role="button"] {{
         color: {CORES["azul_sec"]} !important;
     }}
-
-    /* Fundo dos selects de mês/ano no popup */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select {{
         background-color: #393E46 !important;
     }}
-
-    /* Dia selecionado em destaque */
     [data-testid="stSidebar"] .stDateInput [aria-selected="true"] {{
         background-color: {CORES["azul_sec"]} !important;
         color: #FFFFFF !important;
     }}
 
-    /* GRÁFICOS – fundo branco, texto azul escuro */
+    /* GRÁFICOS */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
@@ -251,8 +262,6 @@ def aplicar_css():
        MODO ESCURO
        =========================== */
     @media (prefers-color-scheme: dark) {{
-
-        /* Texto dos campos em branco */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -266,7 +275,6 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Rótulos dos filtros em azul claro no modo escuro também */
         [data-testid="stSidebar"] div[class*="stMarkdown"] p,
         [data-testid="stSidebar"] label,
         [data-testid="stSidebar"] .stNumberInput label,
@@ -279,17 +287,15 @@ def aplicar_css():
             font-weight: 600 !important;
         }}
 
-        /* Fundo das caixas de seleção / texto / número em ESCURO no modo escuro */
         [data-testid="stSidebar"] .stTextInput > div > div,
         [data-testid="stSidebar"] .stNumberInput > div > div,
         [data-testid="stSidebar"] .stSelectbox > div > div,
         [data-testid="stSidebar"] .stMultiSelect > div > div,
         [data-testid="stSidebar"] .stDateInput > div > div {{
-            background-color: #1F2933 !important;  /* fundo escuro */
+            background-color: #1F2933 !important;
             border-radius: 6px !important;
         }}
 
-        /* Texto do campo Período */
         [data-testid="stSidebar"] .stDateInput input {{
             color: #FFFFFF !important;
         }}
@@ -299,22 +305,18 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Dropdown de opções (menus abertos) em fundo escuro */
         [data-testid="stSidebar"] div[role="listbox"],
         [data-testid="stSidebar"] ul[role="listbox"] {{
             background-color: #1F2933 !important;
         }}
-
         [data-testid="stSidebar"] div[role="listbox"] *,
         [data-testid="stSidebar"] ul[role="listbox"] * {{
             color: #FFFFFF !important;
         }}
-
         [data-testid="stSidebar"] div[role="option"],
         [data-testid="stSidebar"] li[role="option"] {{
             color: #FFFFFF !important;
         }}
-
         [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
         [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
             background-color: rgba(0,0,0,0.2) !important;
@@ -344,7 +346,6 @@ def aplicar_css():
 # HELPERS
 # --------------------------------------------------------
 def converter_para_csv(url: str) -> str | None:
-    """Converte URL de Google Sheets para CSV."""
     if not isinstance(url, str):
         return None
     partes = url.split("/d/")
@@ -358,7 +359,6 @@ def converter_para_csv(url: str) -> str | None:
 
 @st.cache_data(ttl=600)
 def carregar_planilha_google(url_original: str) -> pd.DataFrame:
-    """Carrega planilha Google Sheets em CSV e normaliza colunas."""
     url_csv = converter_para_csv(url_original)
     if not url_csv:
         st.error("URL do Google Sheets inválida.")
@@ -372,17 +372,13 @@ def carregar_planilha_google(url_original: str) -> pd.DataFrame:
 
     df.columns = [str(c).strip() for c in df.columns]
 
-    # Datas
     for col in ["ENTRADA", "1ª INSPEÇÃO", "DATA CONCLUSÃO"]:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], dayfirst=True, errors="coerce")
 
-    # Ano / mês de entrada
     if "ENTRADA" in df.columns:
         df["ANO_ENTRADA"] = df["ENTRADA"].dt.year
         df["MES_ENTRADA"] = df["ENTRADA"].dt.month
-
-        # Semana Epidemiológica (derivada de ENTRADA)
         try:
             df["SE_SEMANA"] = df["ENTRADA"].dt.isocalendar().week.astype("Int64").astype(str)
         except Exception:
@@ -409,7 +405,6 @@ def detectar_coluna(df, candidatos):
 
 
 def gerar_excel_bytes(dfs: dict):
-    """Gera um arquivo Excel usando openpyxl (compatível com Streamlit Cloud)."""
     out = BytesIO()
     with pd.ExcelWriter(out, engine="openpyxl") as writer:
         for name, d in dfs.items():
@@ -422,31 +417,51 @@ def gerar_excel_bytes(dfs: dict):
 
 
 # --------------------------------------------------------
-# FILTROS (incluindo Semana Epidemiológica)
+# FILTROS
 # --------------------------------------------------------
 def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     st.sidebar.header("Filtros")
 
-    modo = st.sidebar.radio("Período:", ["Ano/Mês", "Intervalo de datas"])
+    # Período (radio)
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:4px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Período</p>",
+        unsafe_allow_html=True
+    )
+    modo = st.sidebar.radio(label="", options=["Ano/Mês", "Intervalo de datas"])
 
+    # Ano
     anos = sorted(df["ANO_ENTRADA"].dropna().unique()) if "ANO_ENTRADA" in df.columns else []
     ANO_ATUAL = datetime.now().year
     if not anos:
         anos = [ANO_ATUAL]
-
     ano_sel = ANO_ATUAL if ANO_ATUAL in anos else anos[0]
 
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Ano</p>",
+        unsafe_allow_html=True
+    )
+    ano = st.sidebar.selectbox(label="", options=anos, index=anos.index(ano_sel))
+
+    # Mês OU intervalo de datas
     if modo == "Ano/Mês":
-        ano = st.sidebar.selectbox("Ano", anos, index=anos.index(ano_sel))
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+            f"Mês</p>",
+            unsafe_allow_html=True
+        )
         meses = sorted(df[df["ANO_ENTRADA"] == ano]["MES_ENTRADA"].dropna().unique())
         mes_sel = st.sidebar.multiselect(
-            "Mês",
+            label="",
             options=meses,
             default=meses,
             format_func=lambda m: NOME_MESES.get(m, str(m)),
         )
     else:
-        # Garante que ENTRADA é datetime
         if "ENTRADA" not in df.columns or df["ENTRADA"].isna().all():
             st.error("Não há dados de data de entrada para filtrar por intervalo.")
             st.stop()
@@ -454,23 +469,59 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
         min_data = df["ENTRADA"].min().date()
         max_data = df["ENTRADA"].max().date()
 
-        inicio = st.sidebar.date_input("Início", min_data, min_value=min_data, max_value=max_data)
-        fim = st.sidebar.date_input("Fim", max_data, min_value=min_data, max_value=max_data)
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+            f"Data de Início</p>",
+            unsafe_allow_html=True
+        )
+        inicio = st.sidebar.date_input(
+            label="",
+            value=min_data,
+            min_value=min_data,
+            max_value=max_data
+        )
 
-    # Classificação (risco)
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+            f"Data de Fim</p>",
+            unsafe_allow_html=True
+        )
+        fim = st.sidebar.date_input(
+            label=" ",
+            value=max_data,
+            min_value=min_data,
+            max_value=max_data
+        )
+
+    # Classificação (Risco)
     riscos = sorted(df["CLASSIFICAÇÃO"].dropna().unique()) if "CLASSIFICAÇÃO" in df.columns else []
-    sel_risco = st.sidebar.multiselect("Classificação (Risco)", riscos, default=riscos)
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:12px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Classificação (Risco)</p>",
+        unsafe_allow_html=True
+    )
+    sel_risco = st.sidebar.multiselect(label="", options=riscos, default=riscos)
 
-    # Semana Epidemiológica (usando SE_SEMANA)
+    # Semana Epidemiológica
     if "SE_SEMANA" in df.columns:
         semanas = sorted(df["SE_SEMANA"].dropna().unique())
     else:
         semanas = []
-    sel_se = st.sidebar.multiselect("Semana Epidemiológica", semanas, default=semanas)
 
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Semana Epidemiológica</p>",
+        unsafe_allow_html=True
+    )
+    sel_se = st.sidebar.multiselect(label="", options=semanas, default=semanas)
+
+    # Aplicação dos filtros
     filtro_df = df.copy()
 
-    # Filtro por período
     if modo == "Ano/Mês":
         filtro_df = filtro_df[
             (filtro_df["ANO_ENTRADA"] == ano) &
@@ -482,11 +533,9 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
             (filtro_df["ENTRADA"].dt.date <= fim)
         ]
 
-    # Filtro por classificação (risco)
     if sel_risco and "CLASSIFICAÇÃO" in filtro_df.columns:
         filtro_df = filtro_df[filtro_df["CLASSIFICAÇÃO"].isin(sel_risco)]
 
-    # Filtro de Semana Epidemiológica
     if sel_se and "SE_SEMANA" in filtro_df.columns:
         filtro_df = filtro_df[filtro_df["SE_SEMANA"].isin(sel_se)]
 
@@ -501,19 +550,16 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
 # INDICADORES E TABELA
 # --------------------------------------------------------
 def calcular_indicadores(filtro_df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
-    # DEADLINES
     filtro_df["DEADLINE_30"] = filtro_df["ENTRADA"] + timedelta(days=30)
     filtro_df["DEADLINE_90"] = filtro_df["ENTRADA"] + timedelta(days=90)
 
     filtro_df["REALIZOU_30"] = (
         filtro_df["1ª INSPEÇÃO"].notna() & (filtro_df["1ª INSPEÇÃO"] <= filtro_df["DEADLINE_30"])
     )
-
     filtro_df["FINALIZOU_90"] = (
         filtro_df["DATA CONCLUSÃO"].notna() & (filtro_df["DATA CONCLUSÃO"] <= filtro_df["DEADLINE_90"])
     )
 
-    # Tabela resumida
     tabela = (
         filtro_df.groupby(["ANO_ENTRADA", "MES_ENTRADA"])
         .agg(
@@ -543,7 +589,6 @@ def calcular_indicadores(filtro_df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
         "% Finalizou 90 dias",
     ]
 
-    # KPIs
     total = len(filtro_df)
     realizou = int(filtro_df["REALIZOU_30"].sum())
     finalizou = int(filtro_df["FINALIZOU_90"].sum())
@@ -594,28 +639,22 @@ def mostrar_download(filtro_df: pd.DataFrame, tabela: pd.DataFrame):
 def main():
     aplicar_css()
 
-    # Usuário padrão (simples)
     st.session_state["user"] = "default"
     st.session_state["role"] = "standard"
 
-    # Carrega dados
     df = carregar_planilha_google(GOOGLE_SHEETS_URL)
     if df.empty:
         st.error("Nenhum dado encontrado.")
         st.stop()
 
-    # Detecção de colunas (se no futuro quiser usar coord/território)
     col_coord = detectar_coluna(df, ["COORDENAÇÃO", "COORDENACAO", "COORDENADORIA", "COORD"])
     col_territorio = detectar_coluna(df, ["TERRITÓRIO", "TERRITORIO", "TERRITORY", "TERR"])
 
-    # Aplica filtros (inclui Semana Epidemiológica corrigida)
     filtro_df = aplicar_filtros(df)
 
-    # Indicadores / Tabela
     tabela, kpis = calcular_indicadores(filtro_df)
     mostrar_tabela_e_kpis(tabela, kpis)
 
-    # Download
     mostrar_download(filtro_df, tabela)
 
     st.caption("Painel VISA Ipojuca – Acesso público")
@@ -626,5 +665,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
