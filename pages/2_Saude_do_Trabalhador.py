@@ -20,71 +20,19 @@ st.title("👷 Saúde do Trabalhador - Análise de Acidentes de Trabalho")
 # ==========================================================
 # PALETA DE CORES — MESMA DO 1_DENGUE.PY
 # ==========================================================
-st.markdown("""
-<style>
-
-:root {
-    --azul-principal: #004A8D;
-    --azul-secundario: #0073CF;
-    --verde-ipojuca: #009D4A;
-    --amarelo-ipojuca: #FFC20E;
-    --cinza-claro: #F2F2F2;
-    --branco: #FFFFFF;
+cores = {
+    "azul": "#0057B7",
+    "verde": "#1A944E",
+    "amarelo": "#FFC20E",
+    "laranja": "#FF8C00"
 }
 
-/* Texto sempre preto */
-html, body, * {
-    color: #000 !important;
-}
-
-/* Títulos amarelo */
-h1, h2, h3, h4 {
-    color: var(--amarelo-ipojuca) !important;
-    font-weight: 800 !important;
-}
-
-/* Parágrafos justificados */
-p, li {
-    text-align: justify !important;
-    color: #000 !important;
-}
-
-/* Fundo geral */
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
-}
-
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background: var(--azul-principal) !important;
-}
-
-[data-testid="stSidebar"] * {
-    color: white !important;
-}
-
-[data-testid="stSidebar"] a {
-    color: var(--amarelo-ipojuca) !important;
-    font-weight: 600;
-}
-
-/* Métricas */
-.stMetric {
-    background-color: var(--amarelo-ipojuca) !important;
-    padding: 18px;
-    border-radius: 10px;
-    border-left: 6px solid var(--azul-secundario);
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
-}
-
-/* Botões */
-button, .stButton button {
-    color: #000 !important;
-    background-color: var(--cinza-claro) !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
+paleta = [
+    cores["azul"],
+    cores["verde"],
+    cores["amarelo"],
+    cores["laranja"]
+]
 
 # ==========================================================
 # FIXAR TEMA PLOTLY CLARO
