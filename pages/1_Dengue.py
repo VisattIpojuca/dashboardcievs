@@ -49,10 +49,10 @@ MAPEAMENTO_FAIXA_ETARIA = {
 }
 
 CORES = {
-    "azul": "#004A8D",
+    "azul": "#004A8D",       # azul principal
     "verde": "#009D4A",
     "amarelo": "#FFC20E",
-    "azul_claro": "#0073CF"   # azul secundário
+    "azul_claro": "#0073CF"  # azul secundário
 }
 
 SINTOMAS_E_COMORBIDADES = [
@@ -64,18 +64,16 @@ SINTOMAS_E_COMORBIDADES = [
 
 
 def limpar_nome_coluna(col: str) -> str:
-    """Normaliza nomes de colunas: remove acentos, espaços, hífens etc."""
     c = unicodedata.normalize('NFKD', str(col)).encode('ascii', 'ignore').decode()
     return c.strip().upper().replace(" ", "_").replace("-", "_").replace("/", "_")
 
 
 def remover_acentos(texto: str) -> str:
-    """Remove acentos de um texto (útil para padronizar 'ÓBITO'/'OBITO')."""
     return unicodedata.normalize("NFKD", str(texto)).encode("ascii", "ignore").decode("utf-8")
 
 
 # =======================================================
-# CSS — PALETA INSTITUCIONAL + MENU/FILTROS
+# CSS — PALETA + SIDEBAR + GRÁFICOS
 # =======================================================
 
 def aplicar_css():
@@ -125,15 +123,9 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* >>> TÍTULOS DOS CAMPOS (rótulos dos filtros) <<< */
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] .stMultiSelect label,
-    [data-testid="stSidebar"] .stSelectbox label,
-    [data-testid="stSidebar"] .stNumberInput label,
-    [data-testid="stSidebar"] .stDateInput label,
-    [data-testid="stSidebar"] .stSlider label,
-    [data-testid="stSidebar"] .stTextInput label {{
-        color: var(--azul-secundario) !important;  /* azul_secundário */
+    /* Títulos dos campos (labels nativos) na sidebar */
+    [data-testid="stSidebar"] label {{
+        color: var(--azul-secundario) !important;   /* azul_secundario */
         font-weight: 600 !important;
     }}
 
@@ -150,7 +142,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* VALORES DENTRO DOS CAMPOS (texto azul escuro) */
+    /* VALORES DENTRO DOS CAMPOS (texto azul principal) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -234,7 +226,7 @@ def aplicar_css():
 
 
 # =======================================================
-# TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS AZUL ESCURO
+# TEMA DOS GRÁFICOS PLOTLY
 # =======================================================
 
 def aplicar_tema_plotly(fig):
@@ -318,7 +310,7 @@ def carregar_dados() -> pd.DataFrame:
 
 
 # =======================================================
-# FILTROS — SIDEBAR (com títulos manuais)
+# FILTROS — usando label nativo (mesma posição de antes)
 # =======================================================
 
 def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
@@ -327,84 +319,49 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
 
     # CLASSIFICAÇÃO FINAL
     if 'CLASSIFICACAO_FINAL' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Classificação Final</span>",
-            unsafe_allow_html=True
-        )
         opcoes = sorted(df['CLASSIFICACAO_FINAL'].dropna().unique())
-        sel = st.sidebar.multiselect("", opcoes)
+        sel = st.sidebar.multiselect("Classificação Final", opcoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(sel)]
 
     # SEMANA EPIDEMIOLÓGICA
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Semana Epidemiológica</span>",
-            unsafe_allow_html=True
-        )
         semanas = sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique())
-        sel = st.sidebar.multiselect("", semanas)
+        sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['SEMANA_EPIDEMIOLOGICA'].isin(sel)]
 
     # SEXO
     if 'SEXO' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Sexo</span>",
-            unsafe_allow_html=True
-        )
         sexos = sorted(df['SEXO'].dropna().unique())
-        sel = st.sidebar.multiselect("", sexos)
+        sel = st.sidebar.multiselect("Sexo", sexos)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['SEXO'].isin(sel)]
 
     # FAIXA ETÁRIA
     if 'FAIXA_ETARIA' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Faixa Etária</span>",
-            unsafe_allow_html=True
-        )
-        faixas = st.sidebar.multiselect("", ORDEM_FAIXA_ETARIA)
+        faixas = st.sidebar.multiselect("Faixa Etária", ORDEM_FAIXA_ETARIA)
         if faixas:
             df_filtrado = df_filtrado[df_filtrado['FAIXA_ETARIA'].isin(faixas)]
 
     # EVOLUÇÃO
     if 'EVOLUCAO' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Evolução do Caso</span>",
-            unsafe_allow_html=True
-        )
         evolucoes = sorted(df['EVOLUCAO'].dropna().unique())
-        sel = st.sidebar.multiselect("", evolucoes)
+        sel = st.sidebar.multiselect("Evolução do Caso", evolucoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['EVOLUCAO'].isin(sel)]
 
     # ESCOLARIDADE
     if 'ESCOLARIDADE' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Escolaridade</span>",
-            unsafe_allow_html=True
-        )
         escs = sorted(df['ESCOLARIDADE'].dropna().unique())
-        sel = st.sidebar.multiselect("", escs)
+        sel = st.sidebar.multiselect("Escolaridade", escs)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(sel)]
 
     # BAIRRO
     if 'BAIRRO' in df.columns:
-        st.sidebar.markdown(
-            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
-            f"Bairro</span>",
-            unsafe_allow_html=True
-        )
         bairros = sorted(df['BAIRRO'].dropna().unique())
-        sel = st.sidebar.multiselect("", bairros)
+        sel = st.sidebar.multiselect("Bairro", bairros)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(sel)]
 
