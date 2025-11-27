@@ -442,6 +442,19 @@ def main():
         "DATA_DO_CASO", "DATA_ENTRADA", "DATA_NOTIF", "DATE"
     ])
 
+    # 🔹 Padronizar valores de sexo: F/M -> Feminino/Masculino
+    if col_sexo and col_sexo in df.columns:
+        df[col_sexo] = (
+            df[col_sexo]
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            .replace({
+                "F": "Feminino",
+                "M": "Masculino"
+            })
+        )
+
     # Tratar data
     df = tratar_data(df, col_data)
 
