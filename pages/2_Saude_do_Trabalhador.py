@@ -36,25 +36,6 @@ PALETA = [
 ]
 
 # ==========================================================
-# FIXAR TEMA PLOTLY CLARO (MANTENDO SUA IDEIA ORIGINAL)
-# ==========================================================
-pio.templates["ipojuca_tema"] = pio.templates["plotly_white"]
-pio.templates["ipojuca_tema"].layout.update(
-    paper_bgcolor="white",
-    plot_bgcolor="white",
-    font=dict(color="#000000", size=14),
-    title=dict(
-        font=dict(
-            color=CORES["azul"],
-            size=20,
-            family="Arial"
-        )
-    ),
-)
-pio.templates.default = "ipojuca_tema"
-
-
-# ==========================================================
 # FUNÇÕES AUXILIARES DE TEXTO/COLUNAS
 # ==========================================================
 
@@ -107,7 +88,7 @@ def contar_obitos(df, coluna):
 
 
 # ==========================================================
-# CSS — MESMO ESTILO DO DASHBOARD DE DENGUE
+# CSS — ALINHADO AO DASHBOARD DE DENGUE
 # ==========================================================
 
 def aplicar_css():
@@ -122,9 +103,9 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
+    /* Texto principal */
     body, p, li, span, label, .stMarkdown {{
-        color: #000 !important;
+        color: #0073CF !important;
     }}
 
     /* Títulos amarelos na área principal */
@@ -139,7 +120,6 @@ def aplicar_css():
     /* Parágrafos justificados */
     p, li {{
         text-align: justify !important;
-        color: #000 !important;
     }}
 
     /* Fundo geral */
@@ -151,12 +131,142 @@ def aplicar_css():
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
-    [data-testid="stSidebar"] * {{
-        color: white !important;
-    }}
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
+    }}
+
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea,
+    [data-testid="stSidebar"] select,
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stNumberInput,
+    [data-testid="stSidebar"] .stSlider,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stTextInput,
+    [data-testid="stSidebar"] .stMultiSelect * {{
+        color: {CORES["azul"]} !important;
+    }}
+
+    [data-testid="stSidebar"] .stTextInput > div > div,
+    [data-testid="stSidebar"] .stNumberInput > div > div,
+    [data-testid="stSidebar"] .stDateInput > div > div,
+    [data-testid="stSidebar"] .stSelectbox > div > div,
+    [data-testid="stSidebar"] .stMultiSelect > div > div {{
+        background-color: var(--branco) !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] input::placeholder,
+    [data-testid="stSidebar"] textarea::placeholder {{
+        color: #2f6bbd !important;
+    }}
+
+    /* OPÇÕES SELECIONADAS (chips) */
+    [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
+    [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] .stMultiSelect > div,
+    [data-testid="stSidebar"] .stSelectbox > div,
+    [data-testid="stSidebar"] .stTextInput > div,
+    [data-testid="stSidebar"] .stNumberInput > div,
+    [data-testid="stSidebar"] .stDateInput > div {{
+        border-color: var(--azul-secundario) !important;
+        border-radius: 6px !important;
+    }}
+
+    /* GRÁFICOS – garantir fundo branco */
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* Textos dentro dos gráficos: forçar cor em azul escuro mesmo no modo escuro do navegador */
+    .js-plotly-plot text {{
+        fill: {CORES["azul"]} !important;
+        color: {CORES["azul"]} !important;
+    }}
+
+    /* Borda preta externa em todos os gráficos Plotly */
+    .element-container .js-plotly-plot {{
+        border: 1px solid #000000 !important;
+        border-radius: 4px !important;
+        padding: 4px !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* MENU PÁGINAS NA SIDEBAR */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
+
+    /* ===========================
+       MODO ESCURO: DROPDOWN azul claro + texto branco
+       =========================== */
+    @media (prefers-color-scheme: dark) {{
+
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select,
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stNumberInput,
+        [data-testid="stSidebar"] .stSlider,
+        [data-testid="stSidebar"] .stDateInput,
+        [data-testid="stSidebar"] .stTextInput,
+        [data-testid="stSidebar"] .stMultiSelect * {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"],
+        [data-testid="stSidebar"] ul[role="listbox"] {{
+            background-color: {CORES["azul_sec"]} !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"] *,
+        [data-testid="stSidebar"] ul[role="listbox"] * {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="option"],
+        [data-testid="stSidebar"] li[role="option"] {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
+        [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
+            background-color: rgba(0,0,0,0.2) !important;
+            color: #FFFFFF !important;
+        }}
     }}
 
     /* Métricas */
@@ -170,11 +280,70 @@ def aplicar_css():
 
     /* Botões */
     button, .stButton button {{
-        color: #000 !important;
+        color: #FFFFFF !important;
         background-color: var(--cinza-claro) !important;
+        border-radius: 6px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
+
+
+# ==========================================================
+# TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS AZUL ESCURO
+# ==========================================================
+
+def aplicar_tema_plotly(fig):
+    """
+    - fundo branco;
+    - todos os textos em azul escuro (títulos, eixos, legenda, textos internos).
+    """
+    azul_escuro = CORES["azul"]
+
+    fig.update_layout(
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+
+        font=dict(color=azul_escuro),
+
+        xaxis=dict(
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.08)",
+            zerolinecolor="rgba(0,0,0,0.6)",
+            color=azul_escuro,
+            title_font=dict(color=azul_escuro)
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.08)",
+            zerolinecolor="rgba(0,0,0,0.6)",
+            color=azul_escuro,
+            title_font=dict(color=azul_escuro)
+        ),
+
+        legend=dict(
+            bgcolor="rgba(255,255,255,0.9)",
+            bordercolor="rgba(0,0,0,0.3)",
+            borderwidth=1,
+            font=dict(color=azul_escuro)
+        ),
+
+        title_font=dict(color=azul_escuro),
+        margin=dict(l=60, r=40, t=60, b=60)
+    )
+
+    # Textos internos das séries, se existirem
+    try:
+        fig.update_traces(textfont=dict(color=azul_escuro))
+    except Exception:
+        pass
+
+    # Contornos em barras/histogramas
+    try:
+        fig.update_traces(marker_line_color="rgba(0,0,0,0.3)")
+    except Exception:
+        pass
+
+    return fig
 
 
 # ==========================================================
@@ -222,14 +391,14 @@ def aplicar_filtros(df, col_data, col_semana, col_sexo, col_idade,
 
     # Semana epidemiológica
     if col_semana:
-        semanas = df[col_semana].dropna().astype(str).str.extract(r"(\\d+)")[0]
+        semanas = df[col_semana].dropna().astype(str).str.extract(r"(\d+)")[0]
         semanas = semanas.dropna().astype(int).unique()
         semanas = sorted(semanas)
 
         semanas_sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
 
         if semanas_sel:
-            semanas_df = df_filtrado[col_semana].astype(str).str.extract(r"(\\d+)")[0].astype(float)
+            semanas_df = df_filtrado[col_semana].astype(str).str.extract(r"(\d+)")[0].astype(float)
             df_filtrado = df_filtrado[semanas_df.isin(semanas_sel)]
 
     # Multiselect genérico
@@ -297,6 +466,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             title="Distribuição por Sexo",
             color_discrete_sequence=PALETA
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Raça × Sexo
@@ -312,6 +482,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             title="Raça/Cor por Sexo",
             color_discrete_sequence=PALETA
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Idade
@@ -322,6 +493,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             title="Distribuição por Idade",
             color_discrete_sequence=[CORES["azul"]]
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Escolaridade
@@ -335,6 +507,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             title="Escolaridade",
             color_discrete_sequence=[CORES["azul_sec"]]
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Bairro
@@ -348,6 +521,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             title="Top 20 Bairros",
             color_discrete_sequence=[CORES["verde"]]
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Evolução
@@ -361,6 +535,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             title="Evolução dos Casos",
             color_discrete_sequence=[CORES["amarelo"]]
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
 
