@@ -11,12 +11,12 @@ import unicodedata
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Programa de Controle da Esquistossomose",
-    page_icon="📍",
+    page_icon="🧬",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-st.title("📍 Programa de Controle da Esquistossomose – Análise por Localidade")
+st.title("🧬 Programa de Controle da Esquistossomose – Análise por Localidade")
 
 # ---------------------------------------------------------
 # PALETA / CORES INSTITUCIONAIS
