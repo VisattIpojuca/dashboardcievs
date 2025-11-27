@@ -277,7 +277,7 @@ with c3:
 with c4:
     st.markdown("""
     <div class="modulo-card">
-        <h3>🦟 Módulo de Oropouche</h3>
+        <h3>🦟 Oropouche</h3>
         <ul>
             <li>Monitoramento por localidade</li>
             <li>Classificação e evolução dos casos</li>
