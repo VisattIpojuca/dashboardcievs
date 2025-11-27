@@ -45,21 +45,21 @@ PALETA = [
 # ---------------------------------------------------------
 # CSS – TEMA INSTITUCIONAL + AJUSTES NOS FILTROS
 # ---------------------------------------------------------
-def  aplicar_css ():
-    st.markdown( f"""
+def aplicar_css():
+    st.markdown(f"""
     <style>
-    :raiz {{
-        --azul-principal: {CORES[ "azul" ]} ;
-        --azul-secundario: {CORES[ "azul_sec" ]} ;
-        --verde-ipojuca: {CORES[ "verde" ]} ;
-        --amarelo-ipojuca: {CORES[ "amarelo" ]} ;
-        --cinza-claro: {NÚCLEOS[ "cinza_claro" ]} ;
-        --branco: {NÚCLEOS[ "branco" ]} ;
+    :root {{
+        --azul-principal: {CORES["azul"]};
+        --azul-secundario: {CORES["azul_sec"]};
+        --verde-ipojuca: {CORES["verde"]};
+        --amarelo-ipojuca: {CORES["amarelo"]};
+        --cinza-claro: {CORES["cinza_claro"]};
+        --branco: {CORES["branco"]};
     }}
 
     /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
-    corpo, p, li, span, rótulo, .stMarkdown {{
-        cor: #000 !importante;
+    body, p, li, span, label, .stMarkdown {{
+        color: #000 !important;
     }}
 
     /* Títulos amarelos na área principal */
@@ -67,14 +67,14 @@ def  aplicar_css ():
     [data-testid="stAppViewContainer"] h2,
     [data-testid="stAppViewContainer"] h3,
     [data-testid="stAppViewContainer"] h4 {{
-        cor: var(--amarelo-ipojuca) !importante;
-        peso da fonte: 800 !importante;
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
     }}
 
     /* Parágrafos justificados */
     p, li {{
-        alinhamento de texto: justificado !importante;
-        cor: #000 !importante;
+        text-align: justify !important;
+        color: #000 !important;
     }}
 
     /* Fundo geral */
@@ -82,16 +82,16 @@ def  aplicar_css ():
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Barra lateral */
+    /* Sidebar */
     [data-testid="stSidebar"] {{
-        fundo: var(--azul-principal) !importante;
+        background: var(--azul-principal) !important;
     }}
     [data-testid="stSidebar"] * {{
-        cor: branco !importante;
+        color: white !important;
     }}
     [data-testid="stSidebar"] a {{
-        cor: var(--amarelo-ipojuca) !importante;
-        peso da fonte: 600;
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 600;
     }}
 
     /* ------------------------------
@@ -99,9 +99,9 @@ def  aplicar_css ():
        ------------------------------ */
 
     /* Texto dos inputs/selects: azul em tema claro */
-    entrada [data-testid="stSidebar"],
-    área de texto [data-testid="stSidebar"],
-    [data-testid="stSidebar"] selecione,
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea,
+    [data-testid="stSidebar"] select,
     [data-testid="stSidebar"] .stMultiSelect,
     [data-testid="stSidebar"] .stSelectbox,
     [data-testid="stSidebar"] .stNumberInput,
@@ -109,20 +109,20 @@ def  aplicar_css ():
     [data-testid="stSidebar"] .stDateInput,
     [data-testid="stSidebar"] .stTextInput,
     [data-testid="stSidebar"] .stMultiSelect * {{
-        cor: {CORES[ "azul" ]} !importante;
+        color: {CORES["azul"]} !important;
     }}
 
     /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
-        background-color: {CORES[ "verde" ]} !important;
-        cor: branco !importante;
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
     }}
 
     /* Algumas versões usam span para os "chips" selecionados */
     [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
-        background-color: {CORES[ "verde" ]} !important;
-        cor: branco !importante;
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
     }}
 
     /* Borda dos campos de filtro em azul */
@@ -131,17 +131,17 @@ def  aplicar_css ():
     [data-testid="stSidebar"] .stTextInput > div,
     [data-testid="stSidebar"] .stNumberInput > div,
     [data-testid="stSidebar"] .stDateInput > div {{
-        border-color: {CORES[ "azul_sec" ]} !important;
+        border-color: {CORES["azul_sec"]} !important;
     }}
 
     /* ------------------------------
        TEMA ESCURO DO NAVEGADOR
        ------------------------------ */
     @media (prefers-color-scheme: dark) {{
-        /* Texto dos filtros em branco quando o usuário está no modo escuro */
-        entrada [data-testid="stSidebar"],
-        área de texto [data-testid="stSidebar"],
-        [data-testid="stSidebar"] selecione,
+        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select,
         [data-testid="stSidebar"] .stMultiSelect,
         [data-testid="stSidebar"] .stSelectbox,
         [data-testid="stSidebar"] .stNumberInput,
@@ -149,26 +149,26 @@ def  aplicar_css ():
         [data-testid="stSidebar"] .stDateInput,
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
-            cor: branco !importante;
+            color: white !important;
         }}
     }}
 
     /* Métricas */
     .stMetric {{
-        cor de fundo: var(--amarelo-ipojuca) !importante;
-        preenchimento: 18px;
-        raio da borda: 10px;
-        borda esquerda: 6px var sólido (--azul-secundario);
+        background-color: var(--amarelo-ipojuca) !important;
+        padding: 18px;
+        border-radius: 10px;
+        border-left: 6px solid var(--azul-secundario);
         box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
     }}
 
     /* Botões */
-    botão, .stButton botão {{
-        cor: #000 !importante;
-        cor de fundo: var(--cinza-claro) !importante;
+    button, .stButton button {{
+        color: #000 !important;
+        background-color: var(--cinza-claro) !important;
     }}
     </style>
-    """ , unsafe_allow_html= True )
+    """, unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------
