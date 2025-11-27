@@ -26,15 +26,13 @@ CORES = {
     "verde": "#009D4A",      # verde institucional
     "amarelo": "#FFC20E",    # amarelo institucional
     "cinza_claro": "#F2F2F2",
-    "branco": "#FFFFFF",
-    "laranja": "#FF8C00"
+    "branco": "#FFFFFF"
 }
 
 PALETA = [
     CORES["azul"],
     CORES["verde"],
-    CORES["amarelo"],
-    CORES["laranja"]
+    CORES["amarelo"]
 ]
 
 # ==========================================================
@@ -335,7 +333,7 @@ def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
             x="ESCOLARIDADE",
             y="QTD",
             title="Escolaridade",
-            color_discrete_sequence=[CORES["laranja"]]
+            color_discrete_sequence=[CORES["azul"]]
         )
         st.plotly_chart(fig, use_container_width=True)
 
