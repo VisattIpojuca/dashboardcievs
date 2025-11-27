@@ -247,26 +247,26 @@ def aplicar_css():
 
 
 # =======================================================
-# TEMA DOS GRÁFICOS PLOTLY – FUNDO SEMPRE BRANCO
+# TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO + BORDA PRETA
 # =======================================================
 
 def aplicar_tema_plotly(fig):
-    """Tema fixo: fundo branco e texto preto, em qualquer modo."""
+    """Tema fixo: fundo branco, texto preto e borda preta fina em volta do gráfico."""
     fig.update_layout(
         paper_bgcolor="#FFFFFF",    # fundo externo branco
         plot_bgcolor="#FFFFFF",     # área do gráfico branca
-        font=dict(color="#000000"),
+        font=dict(color="#000000"), # texto sempre preto
         xaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
             zerolinecolor="rgba(0,0,0,0.4)",
-            color="#000000"
+            color="#000000"         # rótulos do eixo X pretos
         ),
         yaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
             zerolinecolor="rgba(0,0,0,0.4)",
-            color="#000000"
+            color="#000000"         # rótulos do eixo Y pretos
         ),
         legend=dict(
             bgcolor="rgba(255,255,255,0.8)",
@@ -274,8 +274,23 @@ def aplicar_tema_plotly(fig):
             borderwidth=1,
             font=dict(color="#000000")
         ),
-        title_font=dict(color="#000000")
+        title_font=dict(color="#000000"),
+        margin=dict(l=60, r=40, t=60, b=40)
     )
+
+    # Borda fina preta em volta de todo o gráfico
+    fig.update_layout(
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0, y0=0, x1=1, y1=1,
+                line=dict(color="black", width=1),
+                fillcolor="rgba(0,0,0,0)"  # sem preenchimento
+            )
+        ]
+    )
+
     return fig
 
 
