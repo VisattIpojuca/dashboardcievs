@@ -91,7 +91,7 @@ def aplicar_css():
     }}
 
     body, p, li, span, label, .stMarkdown {{
-        color: #000 !important;
+        color: #FFFFFF !important;
     }}
 
     [data-testid="stAppViewContainer"] h1,
