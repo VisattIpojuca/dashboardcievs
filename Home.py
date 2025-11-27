@@ -209,13 +209,7 @@ st.markdown("""
     <div class="hero-badge">Painel oficial da Vigilância em Saúde do Ipojuca</div>
     <h1 style="color:white; margin-top:10px; margin-bottom:4px;">
         🏥 Painel Integrado de Vigilância em Saúde – Ipojuca
-    </h1>
-    <p style="font-size:1.05rem; margin-top:6px; color:white;">
-        Monitoramento em tempo quase real de agravos, territórios e serviços,
-        apoiando uma gestão mais ágil, transparente e orientada por evidências,
-        desenvolvido com Python, Streamlit e CSS.
-    </p>
-</div>
+  </div>
 """, unsafe_allow_html=True)
 
 # ============================================================
