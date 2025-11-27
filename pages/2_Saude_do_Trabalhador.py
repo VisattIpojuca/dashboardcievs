@@ -244,7 +244,7 @@ def aplicar_css():
 
         [data-testid="stSidebar"] input::placeholder,
         [data-testid="stSidebar"] textarea::placeholder {{
-            color: #2f6bbd !important;
+            color: #FFFFFF !important;
         }}
 
         [data-testid="stSidebar"] div[role="listbox"],
