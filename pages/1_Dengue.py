@@ -247,7 +247,7 @@ def aplicar_css():
     }}
 
     button, .stButton button {{
-        color: #000 !important;
+        color: #FFFFFF !important;
         background-color: var(--cinza-claro) !important;
         border-radius: 6px !important;
     }}
