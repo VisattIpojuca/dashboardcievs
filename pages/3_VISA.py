@@ -142,16 +142,11 @@ def aplicar_css():
         color: {CORES["azul_sec"]} !important;
     }}
 
-    /* Campos de texto, número, select e multiselect: fundo branco */
+    /* Campos de texto, número, select e multiselect: fundo branco no modo claro */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
     [data-testid="stSidebar"] .stSelectbox > div > div,
-    [data-testid="stSidebar"] .stMultiSelect > div > div {{
-        background-color: var(--branco) !important;
-        border-radius: 6px !important;
-    }}
-
-    /* DateInput (Período) – fundo branco */
+    [data-testid="stSidebar"] .stMultiSelect > div > div,
     [data-testid="stSidebar"] .stDateInput > div > div {{
         background-color: var(--branco) !important;
         border-radius: 6px !important;
@@ -209,7 +204,7 @@ def aplicar_css():
         color: {CORES["azul_sec"]} !important;
     }}
 
-    /* Fundo dos selects de mês/ano */
+    /* Fundo dos selects de mês/ano no popup */
     [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select {{
         background-color: #393E46 !important;
     }}
@@ -220,7 +215,7 @@ def aplicar_css():
         color: #FFFFFF !important;
     }}
 
-    /* GRÁFICOS – se usar Plotly, garantir fundo branco (opcional aqui) */
+    /* GRÁFICOS – fundo branco, texto azul escuro */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
@@ -239,7 +234,7 @@ def aplicar_css():
         background-color: #FFFFFF !important;
     }}
 
-    /* MENU PÁGINAS NA SIDEBAR (caso tenha multipage) */
+    /* MENU PÁGINAS NA SIDEBAR (multipage) */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
@@ -257,6 +252,7 @@ def aplicar_css():
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
+        /* Texto dos campos em branco */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -270,7 +266,7 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* Rótulos dos filtros continuam azul claro */
+        /* Rótulos dos filtros em azul claro no modo escuro também */
         [data-testid="stSidebar"] div[class*="stMarkdown"] p,
         [data-testid="stSidebar"] label,
         [data-testid="stSidebar"] .stNumberInput label,
@@ -283,6 +279,17 @@ def aplicar_css():
             font-weight: 600 !important;
         }}
 
+        /* Fundo das caixas de seleção / texto / número em ESCURO no modo escuro */
+        [data-testid="stSidebar"] .stTextInput > div > div,
+        [data-testid="stSidebar"] .stNumberInput > div > div,
+        [data-testid="stSidebar"] .stSelectbox > div > div,
+        [data-testid="stSidebar"] .stMultiSelect > div > div,
+        [data-testid="stSidebar"] .stDateInput > div > div {{
+            background-color: #1F2933 !important;  /* fundo escuro */
+            border-radius: 6px !important;
+        }}
+
+        /* Texto do campo Período */
         [data-testid="stSidebar"] .stDateInput input {{
             color: #FFFFFF !important;
         }}
@@ -292,9 +299,10 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
+        /* Dropdown de opções (menus abertos) em fundo escuro */
         [data-testid="stSidebar"] div[role="listbox"],
         [data-testid="stSidebar"] ul[role="listbox"] {{
-            background-color: {CORES["azul_sec"]} !important;
+            background-color: #1F2933 !important;
         }}
 
         [data-testid="stSidebar"] div[role="listbox"] *,
@@ -618,3 +626,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
