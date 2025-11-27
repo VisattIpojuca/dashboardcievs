@@ -48,7 +48,7 @@ CORES = {
 }
 
 # --------------------------------------------------------
-# CSS — TEMA INSTITUCIONAL + MENU LATERAL PADRÃO
+# CSS — MESMO TEMA DOS OUTROS PAINÉIS
 # --------------------------------------------------------
 def aplicar_css():
     st.markdown(f"""
@@ -62,9 +62,14 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
-    body, p, li, span, label, .stMarkdown {{
-        color: #000 !important;
+    /* Texto principal da área central */
+    [data-testid="stAppViewContainer"] body,
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li,
+    [data-testid="stAppViewContainer"] span,
+    [data-testid="stAppViewContainer"] label,
+    [data-testid="stAppViewContainer"] .stMarkdown {{
+        color: #0073CF !important;
     }}
 
     /* Títulos amarelos na área principal */
@@ -77,9 +82,9 @@ def aplicar_css():
     }}
 
     /* Parágrafos justificados */
-    p, li {{
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stAppViewContainer"] li {{
         text-align: justify !important;
-        color: #000 !important;
     }}
 
     /* Fundo geral */
@@ -87,7 +92,7 @@ def aplicar_css():
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar – fundo azul institucional */
+    /* Sidebar */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -96,11 +101,29 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* ------------------------------
-       WIDGETS DE FILTRO NA SIDEBAR
-       ------------------------------ */
+    /* Título "Filtros" na sidebar */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4 {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
+    }}
 
-    /* Texto dos inputs/selects em TEMA CLARO: azul */
+    /* RÓTULOS DOS FILTROS (Período, Ano, Mês, etc.) – AZUL CLARO */
+    [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stDateInput label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stTextInput label {{
+        color: {CORES["azul_sec"]} !important;
+        font-weight: 600 !important;
+    }}
+
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro (padrão azul escuro) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -114,35 +137,126 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Chips / opções selecionadas: FUNDO VERDE + TEXTO BRANCO */
-    /* Base Web (utilizado por MultiSelect/Selectbox) */
+    /* Campo de período (DateInput) com texto azul claro no modo claro */
+    [data-testid="stSidebar"] .stDateInput input {{
+        color: {CORES["azul_sec"]} !important;
+    }}
+
+    /* Campos de texto, número, select e multiselect: fundo branco */
+    [data-testid="stSidebar"] .stTextInput > div > div,
+    [data-testid="stSidebar"] .stNumberInput > div > div,
+    [data-testid="stSidebar"] .stSelectbox > div > div,
+    [data-testid="stSidebar"] .stMultiSelect > div > div {{
+        background-color: var(--branco) !important;
+        border-radius: 6px !important;
+    }}
+
+    /* DateInput (Período) – fundo branco */
+    [data-testid="stSidebar"] .stDateInput > div > div {{
+        background-color: var(--branco) !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] input::placeholder,
+    [data-testid="stSidebar"] textarea::placeholder {{
+        color: #2f6bbd !important;
+    }}
+
+    /* OPÇÕES SELECIONADAS (chips) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
 
-    /* Tags de seleção (algumas versões usam span[data-baseweb="tag"]) */
     [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
     [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
 
-    /* Borda dos campos de filtro em azul secundário */
     [data-testid="stSidebar"] .stMultiSelect > div,
     [data-testid="stSidebar"] .stSelectbox > div,
     [data-testid="stSidebar"] .stTextInput > div,
     [data-testid="stSidebar"] .stNumberInput > div,
     [data-testid="stSidebar"] .stDateInput > div {{
-        border-color: {CORES["azul_sec"]} !important;
+        border-color: var(--azul-secundario) !important;
+        border-radius: 6px !important;
     }}
 
-    /* ------------------------------
-       TEMA ESCURO DO NAVEGADOR
-       ------------------------------ */
+    /* POPUP DO CALENDÁRIO (DateInput) – base: texto claro e fundo escuro */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"],
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] {{
+        background-color: #222831 !important;
+    }}
+
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] *,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] * {{
+        color: #FFFFFF !important;
+    }}
+
+    /* Dias e cabeçalhos de dia da semana */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] td,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="calendar"] th {{
+        color: #FFFFFF !important;
+    }}
+
+    /* Cabeçalho do calendário: mês, ano e setas em azul claro */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select,
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] [role="button"] {{
+        color: {CORES["azul_sec"]} !important;
+    }}
+
+    /* Fundo dos selects de mês/ano */
+    [data-testid="stSidebar"] .stDateInput [data-baseweb="datepicker"] select {{
+        background-color: #393E46 !important;
+    }}
+
+    /* Dia selecionado em destaque */
+    [data-testid="stSidebar"] .stDateInput [aria-selected="true"] {{
+        background-color: {CORES["azul_sec"]} !important;
+        color: #FFFFFF !important;
+    }}
+
+    /* GRÁFICOS – se usar Plotly, garantir fundo branco (opcional aqui) */
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+    .js-plotly-plot text {{
+        fill: {CORES["azul"]} !important;
+        color: {CORES["azul"]} !important;
+    }}
+    .element-container .js-plotly-plot {{
+        border: 1px solid #000000 !important;
+        border-radius: 4px !important;
+        padding: 4px !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* MENU PÁGINAS NA SIDEBAR (caso tenha multipage) */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
+
+    /* ===========================
+       MODO ESCURO
+       =========================== */
     @media (prefers-color-scheme: dark) {{
-        /* No dark mode: texto dos filtros em BRANCO */
+
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -153,7 +267,50 @@ def aplicar_css():
         [data-testid="stSidebar"] .stDateInput,
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
-            color: white !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* Rótulos dos filtros continuam azul claro */
+        [data-testid="stSidebar"] div[class*="stMarkdown"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stNumberInput label,
+        [data-testid="stSidebar"] .stSelectbox label,
+        [data-testid="stSidebar"] .stMultiSelect label,
+        [data-testid="stSidebar"] .stDateInput label,
+        [data-testid="stSidebar"] .stSlider label,
+        [data-testid="stSidebar"] .stTextInput label {{
+            color: {CORES["azul_sec"]} !important;
+            font-weight: 600 !important;
+        }}
+
+        [data-testid="stSidebar"] .stDateInput input {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"],
+        [data-testid="stSidebar"] ul[role="listbox"] {{
+            background-color: {CORES["azul_sec"]} !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="listbox"] *,
+        [data-testid="stSidebar"] ul[role="listbox"] * {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="option"],
+        [data-testid="stSidebar"] li[role="option"] {{
+            color: #FFFFFF !important;
+        }}
+
+        [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
+        [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
+            background-color: rgba(0,0,0,0.2) !important;
+            color: #FFFFFF !important;
         }}
     }}
 
@@ -168,8 +325,9 @@ def aplicar_css():
 
     /* Botões */
     button, .stButton button {{
-        color: #000 !important;
+        color: #FFFFFF !important;
         background-color: var(--cinza-claro) !important;
+        border-radius: 6px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -460,4 +618,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
