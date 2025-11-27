@@ -89,6 +89,7 @@ def aplicar_css():
     }}
 
     /* =============== ÁREA CENTRAL (fora da sidebar) =============== */
+    /* Repare que só estilizo o container central, NÃO o body inteiro */
     [data-testid="stAppViewContainer"] p,
     [data-testid="stAppViewContainer"] li,
     [data-testid="stAppViewContainer"] span,
@@ -114,7 +115,7 @@ def aplicar_css():
         background: var(--azul-principal) !important;
     }}
 
-    /* Título "Filtros" e demais headings na sidebar */
+    /* Título "Filtros" e headings */
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3,
@@ -123,9 +124,16 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* Títulos dos campos (labels nativos) na sidebar */
+    /* >>> TÍTULOS DOS CAMPOS (labels dos widgets) <<< */
+    /* Seletor bem específico, para ganhar de qualquer regra global */
+    [data-testid="stSidebar"] .stMultiSelect > label,
+    [data-testid="stSidebar"] .stSelectbox > label,
+    [data-testid="stSidebar"] .stDateInput > label,
+    [data-testid="stSidebar"] .stNumberInput > label,
+    [data-testid="stSidebar"] .stSlider > label,
+    [data-testid="stSidebar"] .stTextInput > label,
     [data-testid="stSidebar"] label {{
-        color: var(--azul-secundario) !important;   /* azul_secundario */
+        color: var(--azul-secundario) !important;
         font-weight: 600 !important;
     }}
 
