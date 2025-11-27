@@ -12,30 +12,33 @@ from datetime import datetime
 st.set_page_config(
     page_title="Saúde do Trabalhador",
     page_icon="👷",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-st.title("👷 Saúde do Trabalhador - Análise de Acidentes de Trabalho")
-
 # ==========================================================
-# PALETA DE CORES — MESMA DO 1_DENGUE.PY
+# PALETA DE CORES — PADRÃO INSTITUCIONAL
+# (ALINHADA COM O DASHBOARD DE DENGUE)
 # ==========================================================
-cores = {
-    "azul": "#0057B7",
-    "verde": "#1A944E",
-    "amarelo": "#FFC20E",
+CORES = {
+    "azul": "#004A8D",       # azul principal
+    "azul_sec": "#0073CF",   # azul secundário
+    "verde": "#009D4A",      # verde institucional
+    "amarelo": "#FFC20E",    # amarelo institucional
+    "cinza_claro": "#F2F2F2",
+    "branco": "#FFFFFF",
     "laranja": "#FF8C00"
 }
 
-paleta = [
-    cores["azul"],
-    cores["verde"],
-    cores["amarelo"],
-    cores["laranja"]
+PALETA = [
+    CORES["azul"],
+    CORES["verde"],
+    CORES["amarelo"],
+    CORES["laranja"]
 ]
 
 # ==========================================================
-# FIXAR TEMA PLOTLY CLARO
+# FIXAR TEMA PLOTLY CLARO (MANTENDO SUA IDEIA ORIGINAL)
 # ==========================================================
 pio.templates["ipojuca_tema"] = pio.templates["plotly_white"]
 pio.templates["ipojuca_tema"].layout.update(
@@ -44,7 +47,7 @@ pio.templates["ipojuca_tema"].layout.update(
     font=dict(color="#000000", size=14),
     title=dict(
         font=dict(
-            color=cores["azul"],
+            color=CORES["azul"],
             size=20,
             family="Arial"
         )
@@ -54,10 +57,11 @@ pio.templates.default = "ipojuca_tema"
 
 
 # ==========================================================
-# FUNÇÕES AUXILIARES
+# FUNÇÕES AUXILIARES DE TEXTO/COLUNAS
 # ==========================================================
 
 def normalize(text):
+    """Normaliza texto para comparação (sem acento, maiúsculo, com underscore)."""
     if pd.isna(text):
         return ""
     text = str(text)
@@ -66,36 +70,113 @@ def normalize(text):
     return text.replace(" ", "_").upper()
 
 
+def remover_acentos(texto: str) -> str:
+    """Remove acentos de um texto (útil para 'ÓBITO'/'OBITO')."""
+    return unicodedata.normalize("NFKD", str(texto)).encode("ascii", "ignore").decode("utf-8")
+
+
 def detectar_coluna(df, termos):
+    """Detecta coluna do DataFrame que contenha algum dos termos normalizados."""
     cols_norm = {normalize(c): c for c in df.columns}
     for alvo in termos:
+        alvo_norm = normalize(alvo)
         for col_norm, original in cols_norm.items():
-            if alvo in col_norm:
+            if alvo_norm in col_norm:
                 return original
     return None
 
 
 def contar_obitos(df, coluna):
-    if coluna not in df.columns:
+    """Conta óbitos a partir da coluna de evolução, usando vários padrões."""
+    if not coluna or coluna not in df.columns:
         return 0
-        
+
     padroes = [
-        "ÓBITO POR ACIDENTE DE TRABALHO GRAVE",
         "OBITO POR ACIDENTE DE TRABALHO GRAVE",
-        "ÓBITO",
         "OBITO",
         "MORTE",
         "FALEC"
     ]
-    
-    serie = df[coluna].astype(str).str.upper()
-    
+
+    serie = df[coluna].astype(str).str.upper().apply(remover_acentos)
+
     resultados = pd.DataFrame({
         p: serie.str.contains(p, case=False, na=False)
         for p in padroes
     })
-    
+
     return resultados.any(axis=1).sum()
+
+
+# ==========================================================
+# CSS — MESMO ESTILO DO DASHBOARD DE DENGUE
+# ==========================================================
+
+def aplicar_css():
+    st.markdown(f"""
+    <style>
+    :root {{
+        --azul-principal: {CORES["azul"]};
+        --azul-secundario: {CORES["azul_sec"]};
+        --verde-ipojuca: {CORES["verde"]};
+        --amarelo-ipojuca: {CORES["amarelo"]};
+        --cinza-claro: {CORES["cinza_claro"]};
+        --branco: {CORES["branco"]};
+    }}
+
+    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
+    body, p, li, span, label, .stMarkdown {{
+        color: #000 !important;
+    }}
+
+    /* Títulos amarelos na área principal */
+    [data-testid="stAppViewContainer"] h1,
+    [data-testid="stAppViewContainer"] h2,
+    [data-testid="stAppViewContainer"] h3,
+    [data-testid="stAppViewContainer"] h4 {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 800 !important;
+    }}
+
+    /* Parágrafos justificados */
+    p, li {{
+        text-align: justify !important;
+        color: #000 !important;
+    }}
+
+    /* Fundo geral */
+    [data-testid="stAppViewContainer"] {{
+        background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
+    }}
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {{
+        background: var(--azul-principal) !important;
+    }}
+    [data-testid="stSidebar"] * {{
+        color: white !important;
+    }}
+    [data-testid="stSidebar"] a {{
+        color: var(--amarelo-ipojuca) !important;
+        font-weight: 600;
+    }}
+
+    /* Métricas */
+    .stMetric {{
+        background-color: var(--amarelo-ipojuca) !important;
+        padding: 18px;
+        border-radius: 10px;
+        border-left: 6px solid var(--azul-secundario);
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+    }}
+
+    /* Botões */
+    button, .stButton button {{
+        color: #000 !important;
+        background-color: var(--cinza-claro) !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
 
 
 # ==========================================================
@@ -106,207 +187,241 @@ def contar_obitos(df, coluna):
 def carregar_dados():
     url = "https://docs.google.com/spreadsheets/d/1Guru662qCn9bX8iZhckcbRu2nG8my4Eu5l5JK5yTNik/export?format=csv"
     df = pd.read_csv(url, dtype=str)
-    
+
+    # Normaliza colunas (mantendo sua lógica original)
     df.columns = [normalize(c) for c in df.columns]
     df.columns = [c.replace("__", "_") for c in df.columns]
     df.columns = [c.replace("_", " ") for c in df.columns]
-    
+
     return df
-
-
-df = carregar_dados()
-
-if df.empty:
-    st.warning("Nenhum dado encontrado.")
-    st.stop()
-
-
-# ==========================================================
-# IDENTIFICAR COLUNAS IMPORTANTES
-# ==========================================================
-
-COL_DATA = detectar_coluna(df, ["DATA", "OCORR"])
-df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
-
-COL_SEXO = detectar_coluna(df, ["SEXO"])
-COL_IDADE = detectar_coluna(df, ["IDADE"])
-COL_RACA = detectar_coluna(df, ["RACA", "RAÇA", "COR"])
-COL_ESCOLARIDADE = detectar_coluna(df, ["ESCOLAR"])
-COL_BAIRRO = detectar_coluna(df, ["BAIRRO"])
-COL_OCUPACAO = detectar_coluna(df, ["OCUP"])
-COL_SITUACAO = detectar_coluna(df, ["SITUACAO", "MERCADO"])
-COL_EVOL = detectar_coluna(df, ["EVOL", "CASO", "DESFECHO"])
-
-COL_SEMANA = detectar_coluna(df, [
-    "SEMANA", "EPID", "SE", "SEMANA_EPIDEMIOLOGICA", "SEM EPID"
-])
 
 
 # ==========================================================
 # FILTROS
 # ==========================================================
 
-st.sidebar.header("🔎 Filtros")
-df_filtrado = df.copy()
+def aplicar_filtros(df, col_data, col_semana, col_sexo, col_idade,
+                    col_raca, col_escolaridade, col_bairro,
+                    col_ocupacao, col_situacao, col_evol):
 
-# Período
-min_d, max_d = df_filtrado[COL_DATA].min(), df_filtrado[COL_DATA].max()
+    st.sidebar.header("🔎 Filtros")
+    df_filtrado = df.copy()
 
-data_ini, data_fim = st.sidebar.date_input(
-    "Período",
-    value=[min_d, max_d],
-    min_value=min_d,
-    max_value=max_d
-)
+    # Período
+    min_d, max_d = df_filtrado[col_data].min(), df_filtrado[col_data].max()
 
-df_filtrado = df_filtrado[
-    (df_filtrado[COL_DATA] >= pd.to_datetime(data_ini)) &
-    (df_filtrado[COL_DATA] <= pd.to_datetime(data_fim))
-]
+    data_ini, data_fim = st.sidebar.date_input(
+        "Período",
+        value=[min_d, max_d],
+        min_value=min_d,
+        max_value=max_d
+    )
 
-# Semana epidemiológica
-if COL_SEMANA:
-    semanas = df[COL_SEMANA].dropna().astype(str).str.extract(r"(\d+)")[0]
-    semanas = semanas.dropna().astype(int).unique()
-    semanas = sorted(semanas)
+    df_filtrado = df_filtrado[
+        (df_filtrado[col_data] >= pd.to_datetime(data_ini)) &
+        (df_filtrado[col_data] <= pd.to_datetime(data_fim))
+    ]
 
-    semanas_sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
+    # Semana epidemiológica
+    if col_semana:
+        semanas = df[col_semana].dropna().astype(str).str.extract(r"(\\d+)")[0]
+        semanas = semanas.dropna().astype(int).unique()
+        semanas = sorted(semanas)
 
-    if semanas_sel:
-        semanas_df = df_filtrado[COL_SEMANA].astype(str).str.extract(r"(\d+)")[0].astype(float)
-        df_filtrado = df_filtrado[semanas_df.isin(semanas_sel)]
+        semanas_sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
 
-# Multiselect genérico
-def add_filtro(label, coluna):
-    global df_filtrado
-    if coluna:
-        opcoes = sorted(df[coluna].dropna().unique())
-        escolhidos = st.sidebar.multiselect(label, opcoes)
-        if escolhidos:
-            df_filtrado = df_filtrado[df_filtrado[coluna].isin(escolhidos)]
+        if semanas_sel:
+            semanas_df = df_filtrado[col_semana].astype(str).str.extract(r"(\\d+)")[0].astype(float)
+            df_filtrado = df_filtrado[semanas_df.isin(semanas_sel)]
 
-add_filtro("Sexo", COL_SEXO)
-add_filtro("Idade", COL_IDADE)
-add_filtro("Raça/Cor", COL_RACA)
-add_filtro("Escolaridade", COL_ESCOLARIDADE)
-add_filtro("Ocupação", COL_OCUPACAO)
-add_filtro("Situação no Mercado de Trabalho", COL_SITUACAO)
-add_filtro("Bairro de Ocorrência", COL_BAIRRO)
-add_filtro("Evolução do Caso", COL_EVOL)
+    # Multiselect genérico
+    def add_filtro(label, coluna):
+        nonlocal df_filtrado
+        if coluna:
+            opcoes = sorted(df[coluna].dropna().unique())
+            escolhidos = st.sidebar.multiselect(label, opcoes)
+            if escolhidos:
+                df_filtrado = df_filtrado[df_filtrado[coluna].isin(escolhidos)]
 
-if df_filtrado.empty:
-    st.warning("Nenhum dado encontrado com os filtros aplicados.")
-    st.stop()
+    add_filtro("Sexo", col_sexo)
+    add_filtro("Idade", col_idade)
+    add_filtro("Raça/Cor", col_raca)
+    add_filtro("Escolaridade", col_escolaridade)
+    add_filtro("Ocupação", col_ocupacao)
+    add_filtro("Situação no Mercado de Trabalho", col_situacao)
+    add_filtro("Bairro de Ocorrência", col_bairro)
+    add_filtro("Evolução do Caso", col_evol)
+
+    if df_filtrado.empty:
+        st.warning("Nenhum dado encontrado com os filtros aplicados.")
+        st.stop()
+
+    return df_filtrado
 
 
 # ==========================================================
 # INDICADORES
 # ==========================================================
 
-st.header("📊 Indicadores Principais")
+def mostrar_indicadores(df_filtrado, col_ocupacao, col_evol):
+    st.header("📊 Indicadores Principais")
 
-total = len(df_filtrado)
-obitos = contar_obitos(df_filtrado, COL_EVOL)
-top_ocup = df_filtrado[COL_OCUPACAO].value_counts().idxmax() if COL_OCUPACAO else "Indefinido"
+    total = len(df_filtrado)
+    obitos = contar_obitos(df_filtrado, col_evol)
+    if col_ocupacao and col_ocupacao in df_filtrado.columns and not df_filtrado[col_ocupacao].dropna().empty:
+        top_ocup = df_filtrado[col_ocupacao].value_counts().idxmax()
+    else:
+        top_ocup = "Indefinido"
 
-c1, c2, c3 = st.columns(3)
-c1.metric("Total de Acidentes", total)
-c2.metric("Óbitos", obitos)
-c3.metric("Ocupação mais afetada", top_ocup)
-
-
-# ==========================================================
-# GRÁFICOS — fundo branco e paleta idêntica ao 1_Dengue.py
-# ==========================================================
-
-st.header("📈 Distribuições")
-
-# Sexo
-if COL_SEXO:
-    ds = df_filtrado[COL_SEXO].value_counts().reset_index()
-    ds.columns = ["SEXO", "QTD"]
-    fig = px.pie(
-        ds,
-        names="SEXO",
-        values="QTD",
-        hole=0.3,
-        title="Distribuição por Sexo",
-        color_discrete_sequence=paleta
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# Raça × Sexo
-if COL_RACA and COL_SEXO:
-    d = df_filtrado[[COL_RACA, COL_SEXO]].dropna()
-    d = d.groupby([COL_RACA, COL_SEXO]).size().reset_index(name="QTD")
-    fig = px.bar(
-        d,
-        x=COL_RACA,
-        y="QTD",
-        color=COL_SEXO,
-        barmode="group",
-        title="Raça/Cor por Sexo",
-        color_discrete_sequence=paleta
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# Idade
-if COL_IDADE:
-    fig = px.histogram(
-        df_filtrado,
-        x=COL_IDADE,
-        title="Distribuição por Idade",
-        color_discrete_sequence=[cores["azul"]]
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# Escolaridade
-if COL_ESCOLARIDADE:
-    df_esc = df_filtrado[COL_ESCOLARIDADE].value_counts().reset_index()
-    df_esc.columns = ["ESCOLARIDADE", "QTD"]
-    fig = px.bar(
-        df_esc,
-        x="ESCOLARIDADE",
-        y="QTD",
-        title="Escolaridade",
-        color_discrete_sequence=[cores["laranja"]]
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# Bairro
-if COL_BAIRRO:
-    df_bairro = df_filtrado[COL_BAIRRO].value_counts().reset_index()
-    df_bairro.columns = ["BAIRRO", "QTD"]
-    fig = px.bar(
-        df_bairro.head(20),
-        x="BAIRRO",
-        y="QTD",
-        title="Top 20 Bairros",
-        color_discrete_sequence=[cores["verde"]]
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# Evolução
-if COL_EVOL:
-    df_ev = df_filtrado[COL_EVOL].value_counts().reset_index()
-    df_ev.columns = ["EVOLUCAO", "QTD"]
-    fig = px.bar(
-        df_ev,
-        x="EVOLUCAO",
-        y="QTD",
-        title="Evolução dos Casos",
-        color_discrete_sequence=[cores["amarelo"]]
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Total de Acidentes", total)
+    c2.metric("Óbitos", obitos)
+    c3.metric("Ocupação mais afetada", top_ocup)
 
 
 # ==========================================================
-# TABELA
+# GRÁFICOS
 # ==========================================================
 
-st.header("📋 Dados Filtrados")
-st.dataframe(df_filtrado, use_container_width=True)
+def mostrar_graficos(df_filtrado, col_sexo, col_raca, col_idade,
+                     col_escolaridade, col_bairro, col_evol):
+    st.header("📈 Distribuições")
 
-st.markdown("---")
-st.caption("Painel de Saúde do Trabalhador • Versão 1.0")
-st.caption("Desenvolvido por Maviael Barros.")
+    # Sexo
+    if col_sexo:
+        ds = df_filtrado[col_sexo].value_counts().reset_index()
+        ds.columns = ["SEXO", "QTD"]
+        fig = px.pie(
+            ds,
+            names="SEXO",
+            values="QTD",
+            hole=0.3,
+            title="Distribuição por Sexo",
+            color_discrete_sequence=PALETA
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Raça × Sexo
+    if col_raca and col_sexo:
+        d = df_filtrado[[col_raca, col_sexo]].dropna()
+        d = d.groupby([col_raca, col_sexo]).size().reset_index(name="QTD")
+        fig = px.bar(
+            d,
+            x=col_raca,
+            y="QTD",
+            color=col_sexo,
+            barmode="group",
+            title="Raça/Cor por Sexo",
+            color_discrete_sequence=PALETA
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Idade
+    if col_idade:
+        fig = px.histogram(
+            df_filtrado,
+            x=col_idade,
+            title="Distribuição por Idade",
+            color_discrete_sequence=[CORES["azul"]]
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Escolaridade
+    if col_escolaridade:
+        df_esc = df_filtrado[col_escolaridade].value_counts().reset_index()
+        df_esc.columns = ["ESCOLARIDADE", "QTD"]
+        fig = px.bar(
+            df_esc,
+            x="ESCOLARIDADE",
+            y="QTD",
+            title="Escolaridade",
+            color_discrete_sequence=[CORES["laranja"]]
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Bairro
+    if col_bairro:
+        df_bairro = df_filtrado[col_bairro].value_counts().reset_index()
+        df_bairro.columns = ["BAIRRO", "QTD"]
+        fig = px.bar(
+            df_bairro.head(20),
+            x="BAIRRO",
+            y="QTD",
+            title="Top 20 Bairros",
+            color_discrete_sequence=[CORES["verde"]]
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Evolução
+    if col_evol:
+        df_ev = df_filtrado[col_evol].value_counts().reset_index()
+        df_ev.columns = ["EVOLUCAO", "QTD"]
+        fig = px.bar(
+            df_ev,
+            x="EVOLUCAO",
+            y="QTD",
+            title="Evolução dos Casos",
+            color_discrete_sequence=[CORES["amarelo"]]
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+
+# ==========================================================
+# MAIN
+# ==========================================================
+
+def main():
+    aplicar_css()
+
+    st.title("👷 Saúde do Trabalhador - Análise de Acidentes de Trabalho")
+
+    # Carrega dados
+    df = carregar_dados()
+    if df.empty:
+        st.warning("Nenhum dado encontrado.")
+        st.stop()
+
+    # Identificar colunas importantes
+    COL_DATA = detectar_coluna(df, ["DATA", "OCORR"])
+    df[COL_DATA] = pd.to_datetime(df[COL_DATA], errors="coerce")
+
+    COL_SEXO = detectar_coluna(df, ["SEXO"])
+    COL_IDADE = detectar_coluna(df, ["IDADE"])
+    COL_RACA = detectar_coluna(df, ["RACA", "RAÇA", "COR"])
+    COL_ESCOLARIDADE = detectar_coluna(df, ["ESCOLAR"])
+    COL_BAIRRO = detectar_coluna(df, ["BAIRRO"])
+    COL_OCUPACAO = detectar_coluna(df, ["OCUP"])
+    COL_SITUACAO = detectar_coluna(df, ["SITUACAO", "MERCADO"])
+    COL_EVOL = detectar_coluna(df, ["EVOL", "CASO", "DESFECHO"])
+
+    COL_SEMANA = detectar_coluna(df, [
+        "SEMANA", "EPID", "SE", "SEMANA_EPIDEMIOLOGICA", "SEM EPID"
+    ])
+
+    # Aplica filtros
+    df_filtrado = aplicar_filtros(
+        df, COL_DATA, COL_SEMANA, COL_SEXO, COL_IDADE,
+        COL_RACA, COL_ESCOLARIDADE, COL_BAIRRO,
+        COL_OCUPACAO, COL_SITUACAO, COL_EVOL
+    )
+
+    # Indicadores
+    mostrar_indicadores(df_filtrado, COL_OCUPACAO, COL_EVOL)
+
+    # Gráficos
+    mostrar_graficos(
+        df_filtrado, COL_SEXO, COL_RACA, COL_IDADE,
+        COL_ESCOLARIDADE, COL_BAIRRO, COL_EVOL
+    )
+
+    # Tabela
+    st.header("📋 Dados Filtrados")
+    st.dataframe(df_filtrado, use_container_width=True)
+
+    st.markdown("---")
+    st.caption("Painel de Saúde do Trabalhador • Versão 1.0 (tema institucional)")
+    st.caption("Desenvolvido por Maviael Barros.")
+
+
+if __name__ == "__main__":
+    main()
