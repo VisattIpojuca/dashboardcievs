@@ -325,51 +325,93 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     st.sidebar.header("🔎 Filtros")
     df_filtrado = df.copy()
 
-    # CLASSIFICAÇÃO FINAL
+    # ====== Classificação Final ======
     if 'CLASSIFICACAO_FINAL' in df.columns:
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Classificação Final</p>",
+            unsafe_allow_html=True
+        )
         opcoes = sorted(df['CLASSIFICACAO_FINAL'].dropna().unique())
-        sel = st.sidebar.multiselect("Classificação Final", opcoes)
+        sel = st.sidebar.multiselect(label="", options=opcoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(sel)]
 
-    # SEMANA EPIDEMIOLÓGICA
+    # ====== Semana Epidemiológica ======
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Semana Epidemiológica</p>",
+            unsafe_allow_html=True
+        )
         semanas = sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique())
-        sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
+        sel = st.sidebar.multiselect(label="", options=semanas)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['SEMANA_EPIDEMIOLOGICA'].isin(sel)]
 
-    # SEXO
+    # ====== Sexo ======
     if 'SEXO' in df.columns:
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Sexo</p>",
+            unsafe_allow_html=True
+        )
         sexos = sorted(df['SEXO'].dropna().unique())
-        sel = st.sidebar.multiselect("Sexo", sexos)
+        sel = st.sidebar.multiselect(label="", options=sexos)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['SEXO'].isin(sel)]
 
-    # FAIXA ETÁRIA
+    # ====== Faixa Etária ======
     if 'FAIXA_ETARIA' in df.columns:
-        faixas = st.sidebar.multiselect("Faixa Etária", ORDEM_FAIXA_ETARIA)
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Faixa Etária</p>",
+            unsafe_allow_html=True
+        )
+        faixas = st.sidebar.multiselect(label="", options=ORDEM_FAIXA_ETARIA)
         if faixas:
             df_filtrado = df_filtrado[df_filtrado['FAIXA_ETARIA'].isin(faixas)]
 
-    # EVOLUÇÃO
+    # ====== Evolução do Caso ======
     if 'EVOLUCAO' in df.columns:
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Evolução do Caso</p>",
+            unsafe_allow_html=True
+        )
         evolucoes = sorted(df['EVOLUCAO'].dropna().unique())
-        sel = st.sidebar.multiselect("Evolução do Caso", evolucoes)
+        sel = st.sidebar.multiselect(label="", options=evolucoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['EVOLUCAO'].isin(sel)]
 
-    # ESCOLARIDADE
+    # ====== Escolaridade ======
     if 'ESCOLARIDADE' in df.columns:
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Escolaridade</p>",
+            unsafe_allow_html=True
+        )
         escs = sorted(df['ESCOLARIDADE'].dropna().unique())
-        sel = st.sidebar.multiselect("Escolaridade", escs)
+        sel = st.sidebar.multiselect(label="", options=escs)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(sel)]
 
-    # BAIRRO
+    # ====== Bairro ======
     if 'BAIRRO' in df.columns:
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_claro']}; font-weight:600; font-size:0.9rem;'>"
+            f"Bairro</p>",
+            unsafe_allow_html=True
+        )
         bairros = sorted(df['BAIRRO'].dropna().unique())
-        sel = st.sidebar.multiselect("Bairro", bairros)
+        sel = st.sidebar.multiselect(label="", options=bairros)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(sel)]
 
@@ -378,7 +420,6 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
         st.stop()
 
     return df_filtrado
-
 
 # =======================================================
 # INDICADORES
