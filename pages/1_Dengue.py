@@ -255,37 +255,62 @@ def aplicar_css():
 # =======================================================
 
 def aplicar_tema_plotly(fig):
-    """Tema fixo: fundo branco e todos os textos/linhas na cor preta."""
+    """Tema fixo: fundo branco e TODOS os textos/linhas em preto, bem visíveis."""
     fig.update_layout(
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
+
+        # Texto global
         font=dict(color="#000000"),
+
+        # Eixos
         xaxis=dict(
             showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
+            gridcolor="rgba(0,0,0,0.08)",   # grade suave, em tom de preto
             zerolinecolor="rgba(0,0,0,0.7)",
-            color="#000000"
+            color="#000000",
+            tickfont=dict(color="#000000"),
+            titlefont=dict(color="#000000")
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
+            gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.7)",
-            color="#000000"
+            color="#000000",
+            tickfont=dict(color="#000000"),
+            titlefont=dict(color="#000000")
         ),
+
+        # Título do gráfico
+        title_font=dict(color="#000000"),
+
+        # Legenda
         legend=dict(
-            bgcolor="rgba(255,255,255,0.8)",
+            bgcolor="rgba(255,255,255,0.9)",
             bordercolor="rgba(0,0,0,0.3)",
             borderwidth=1,
             font=dict(color="#000000")
         ),
-        title_font=dict(color="#000000"),
-        margin=dict(l=60, r=40, t=60, b=40)
+
+        margin=dict(l=60, r=40, t=60, b=60)
     )
 
-    # Linhas/traços pretos para tipos comuns
-    fig.update_traces(marker_line_color="#000000", selector=dict(type="bar"))
-    fig.update_traces(line=dict(color="#000000"), selector=dict(type="scatter"))
-    fig.update_traces(marker=dict(line=dict(color="#000000")), selector=dict(type="histogram"))
+    # Bordas/linhas pretas para os tipos mais usados
+    fig.update_traces(
+        marker_line_color="#000000",
+        selector=dict(type="bar")      # borda das barras
+    )
+    fig.update_traces(
+        line=dict(color="#000000"),
+        selector=dict(type="scatter")  # linhas de séries
+    )
+    fig.update_traces(
+        marker=dict(line=dict(color="#000000")),
+        selector=dict(type="histogram")
+    )
+
+    # Texto embutido em barras/pontos também preto (se houver)
+    fig.update_traces(textfont=dict(color="#000000"))
 
     return fig
 
@@ -307,17 +332,21 @@ def carregar_dados() -> pd.DataFrame:
         st.error("❌ Erro ao carregar os dados da planilha do Google Sheets.")
         st.stop()
 
+    # Normaliza nomes das colunas
     df.columns = [limpar_nome_coluna(c) for c in df.columns]
 
+    # Renomeia de acordo com o mapa final, apenas as que existirem
     rename_dict = {orig: dest for orig, dest in FINAL_RENAME_MAP.items() if orig in df.columns}
     df.rename(columns=rename_dict, inplace=True)
     df = df.loc[:, ~df.columns.duplicated()]
 
+    # Padroniza FAIXA_ETARIA
     if 'FAIXA_ETARIA' in df.columns:
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].astype(str).str.strip()
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].replace(MAPEAMENTO_FAIXA_ETARIA)
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].fillna("IGNORADO")
 
+    # Converte datas
     for col in ['DATA_NOTIFICACAO', 'DATA_SINTOMAS']:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], errors="coerce")
