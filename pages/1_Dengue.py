@@ -133,7 +133,7 @@ def aplicar_css():
     [data-testid="stSidebar"] rótulo .stDateInput,
     [data-testid="stSidebar"] rótulo .stSlider,
     [data-testid="stSidebar"] rótulo .stTextInput {{
-        cor: var(--azul-secundario) !importante; /* agora usa o azul_secundario */
+        cor: var(--amarelo-ipojuca) !importante; /* agora usa o amarelo-ipojuca */
         peso da fonte: 600 !importante;
     }}
 
