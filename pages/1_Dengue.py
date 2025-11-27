@@ -328,22 +328,20 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # CLASSIFICAÇÃO FINAL
     if 'CLASSIFICACAO_FINAL' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Classificação Final</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Classificação Final</span>",
             unsafe_allow_html=True
         )
         opcoes = sorted(df['CLASSIFICACAO_FINAL'].dropna().unique())
-        sel = st.sidebar.multiselect(label="", options=opcoes)
+        sel = st.sidebar.multiselect("", opcoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(sel)]
 
     # SEMANA EPIDEMIOLÓGICA
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Semana Epidemiológica</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Semana Epidemiológica</span>",
             unsafe_allow_html=True
         )
         semanas = sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique())
@@ -354,9 +352,8 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # SEXO
     if 'SEXO' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Sexo</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Sexo</span>",
             unsafe_allow_html=True
         )
         sexos = sorted(df['SEXO'].dropna().unique())
@@ -367,9 +364,8 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # FAIXA ETÁRIA
     if 'FAIXA_ETARIA' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Faixa Etária</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Faixa Etária</span>",
             unsafe_allow_html=True
         )
         faixas = st.sidebar.multiselect("", ORDEM_FAIXA_ETARIA)
@@ -379,9 +375,8 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # EVOLUÇÃO
     if 'EVOLUCAO' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Evolução do Caso</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Evolução do Caso</span>",
             unsafe_allow_html=True
         )
         evolucoes = sorted(df['EVOLUCAO'].dropna().unique())
@@ -392,9 +387,8 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # ESCOLARIDADE
     if 'ESCOLARIDADE' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Escolaridade</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Escolaridade</span>",
             unsafe_allow_html=True
         )
         escs = sorted(df['ESCOLARIDADE'].dropna().unique())
@@ -405,9 +399,8 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     # BAIRRO
     if 'BAIRRO' in df.columns:
         st.sidebar.markdown(
-            f"<div style='color:{CORES['azul_claro']}; "
-            f"font-weight:600; margin-top:10px; margin-bottom:0px;'>"
-            f"Bairro</div>",
+            f"<span class='filtro-titulo' style='color:{CORES['azul_claro']}; font-weight:600;'>"
+            f"Bairro</span>",
             unsafe_allow_html=True
         )
         bairros = sorted(df['BAIRRO'].dropna().unique())
