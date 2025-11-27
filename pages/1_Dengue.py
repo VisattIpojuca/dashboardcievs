@@ -162,7 +162,7 @@ def aplicar_css():
        OPÇÕES SELECIONADAS (chips)
        ------------------------------ */
 
-    /* Itens selecionados nas listas: FUNDO VERDE + TEXTO BRANCO */
+    /* Itens selecionados nas listas: FUNDO VERDE + TEXTO BRANCO (modo claro) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
@@ -211,7 +211,6 @@ def aplicar_css():
         color: #FFFFFF !important;
     }}
 
-    /* Opcional: destacar a página atual com leve fundo translúcido */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
         background-color: rgba(255, 255, 255, 0.12) !important;
@@ -219,11 +218,24 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* Fallback para versões antigas de sidebar-nav */
     [data-testid="stSidebar"] .css-1w0uvxj a,
     [data-testid="stSidebar"] .css-1w0uvxj span,
     [data-testid="stSidebar"] .css-1w0uvxj button {{
         color: #FFFFFF !important;
+    }}
+
+    /* ===========================
+       AJUSTES ESPECÍFICOS PARA MODO ESCURO
+       (só reforçando o texto BRANCO dentro das opções selecionadas)
+       =========================== */
+    @media (prefers-color-scheme: dark) {{
+        /* Chips e itens selecionados: garantir TEXTO BRANCO no dark mode */
+        [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
+        [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"],
+        [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+        [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
+            color: #FFFFFF !important;
+        }}
     }}
 
     /* Métricas */
