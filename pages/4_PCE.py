@@ -549,8 +549,8 @@ def main():
     st.markdown("---")
     st.caption("Dashboard por PCE • Vigilância em Saúde Ipojuca")
     st.markdown("---")
-    st.caption("Painel do Programa de Controle da Esquistossomose • Versão 1.0 (tema institucional)")
-    st.caption("Desenvolvido por Maviael Barros.")
+    st.caption("Painel do Programa de Controle da Esquistossomose • Versão 1.0")
+    st.caption("Desenvolvido por MB Technological Solutions®")
 
 
 if __name__ == "__main__":
