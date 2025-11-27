@@ -150,12 +150,18 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
+    /* Campos de texto, número, select e multiselect: fundo branco */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
-    [data-testid="stSidebar"] .stDateInput > div > div,
     [data-testid="stSidebar"] .stSelectbox > div > div,
     [data-testid="stSidebar"] .stMultiSelect > div > div {{
         background-color: var(--branco) !important;
+        border-radius: 6px !important;
+    }}
+
+    /* Campo de período (DateInput) com fundo azul claro */
+    [data-testid="stSidebar"] .stDateInput > div > div {{
+        background-color: {CORES["azul_sec"]} !important;
         border-radius: 6px !important;
     }}
 
