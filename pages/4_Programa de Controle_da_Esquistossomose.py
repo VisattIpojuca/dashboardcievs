@@ -357,21 +357,41 @@ def aplicar_filtros(df, col_localidade, col_data):
 
     df_filtrado = df.copy()
 
-    # Filtro de localidade
+    # ----------------- Localidade -----------------
     if col_localidade:
+        # Título manual em azul-secundário
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+            f"Localidade</p>",
+            unsafe_allow_html=True
+        )
+
         localidades = sorted(df[col_localidade].dropna().unique())
-        sel_loc = st.sidebar.multiselect("Localidade", localidades, default=localidades)
+        sel_loc = st.sidebar.multiselect(
+            label="",           # sem label nativo
+            options=localidades,
+            default=localidades
+        )
         if sel_loc:
             df_filtrado = df_filtrado[df_filtrado[col_localidade].isin(sel_loc)]
 
-    # Filtro temporal
+    # ----------------- Período (data) -----------------
     if col_data:
         df_filtrado[col_data] = pd.to_datetime(df_filtrado[col_data], errors="coerce")
         min_d = df_filtrado[col_data].min()
         max_d = df_filtrado[col_data].max()
 
+        # Título manual em azul-secundário
+        st.sidebar.markdown(
+            f"<p style='margin-bottom:0px; margin-top:8px; "
+            f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+            f"Período</p>",
+            unsafe_allow_html=True
+        )
+
         data_ini, data_fim = st.sidebar.date_input(
-            "Período",
+            label="",           # sem label nativo
             value=[min_d, max_d]
         )
 
