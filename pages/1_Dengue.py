@@ -166,6 +166,15 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
+    /* GRÁFICOS */
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+
     /* MENU PÁGINAS */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
@@ -184,7 +193,7 @@ def aplicar_css():
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
-        /* Texto dentro das caixas de filtro também branco */
+        /* Texto dentro das caixas de filtro também branco (para combinar) */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -244,39 +253,6 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
-
-
-# =======================================================
-# TEMA DOS GRÁFICOS PLOTLY
-# =======================================================
-
-def aplicar_tema_plotly(fig):
-    """Força tema institucional: fundo azul claro e texto preto."""
-    fig.update_layout(
-        paper_bgcolor=CORES["azul_claro"],   # fundo externo
-        plot_bgcolor=CORES["azul_claro"],    # área do gráfico
-        font=dict(color="#000000"),
-        xaxis=dict(
-            showgrid=True,
-            gridcolor="rgba(255,255,255,0.4)",
-            zerolinecolor="rgba(0,0,0,0.4)",
-            color="#000000"
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridcolor="rgba(255,255,255,0.4)",
-            zerolinecolor="rgba(0,0,0,0.4)",
-            color="#000000"
-        ),
-        legend=dict(
-            bgcolor="rgba(255,255,255,0.6)",
-            bordercolor="rgba(0,0,0,0.2)",
-            borderwidth=1,
-            font=dict(color="#000000")
-        ),
-        title_font=dict(color="#000000")
-    )
-    return fig
 
 
 # =======================================================
@@ -427,7 +403,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Casos por Semana Epidemiológica",
             color_discrete_sequence=[CORES["azul"]]
         )
-        fig = aplicar_tema_plotly(fig)
         colA.plotly_chart(fig, use_container_width=True)
 
     # Casos por distrito
@@ -441,7 +416,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Distribuição de Casos por Distrito",
             color_discrete_sequence=[CORES["verde"]]
         )
-        fig = aplicar_tema_plotly(fig)
         colB.plotly_chart(fig, use_container_width=True)
 
     # Casos por bairro
@@ -456,7 +430,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Top 15 Bairros",
             color_discrete_sequence=[CORES["azul_claro"]]
         )
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Perfil Social
@@ -472,7 +445,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Casos por Raça/Cor e Escolaridade",
             color_discrete_sequence=px.colors.qualitative.Safe
         )
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Sintomas e comorbidades
@@ -495,7 +467,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Frequência de Sintomas e Comorbidades",
             color_discrete_sequence=[CORES["amarelo"]]
         )
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Perfil Demográfico
@@ -511,7 +482,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             color_discrete_sequence=[CORES["azul"], CORES["verde"]]
         )
         fig.update_xaxes(categoryorder="array", categoryarray=ordem_plot)
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -535,18 +505,27 @@ def botao_download(df_filtrado: pd.DataFrame):
 def main():
     aplicar_css()
 
+    # Título da página
     st.title("🦟 Dashboard Vigilância das Arboviroses (Dengue)")
     st.caption("Fonte: Gerência de Promoção, Prevenção e Vigilância Epidemiológica 📊🗺️")
 
+    # Carrega dados
     df = carregar_dados()
+
     if df.empty:
         st.warning("Nenhum dado encontrado.")
         st.stop()
 
+    # Aplica filtros
     df_filtrado = aplicar_filtros(df)
 
+    # Indicadores
     mostrar_indicadores(df_filtrado)
+
+    # Gráficos
     mostrar_graficos(df_filtrado)
+
+    # Download
     botao_download(df_filtrado)
 
     st.markdown("---")
