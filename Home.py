@@ -206,8 +206,7 @@ st.markdown("""
     color: white;
     margin-bottom: 28px;
 ">
-    <div class="hero-badge"></div>
-    <h1 style="color:white; margin-top:10px; margin-bottom:4px;">
+       <h1 style="color:white; margin-top:10px; margin-bottom:4px;">
         🏥 Painel de Indicadores de Vigilância em Saúde – Ipojuca
   </div>
 """, unsafe_allow_html=True)
