@@ -136,7 +136,7 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro (padrão azul escuro) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -150,6 +150,11 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
+    /* Campo de período (DateInput) com texto azul claro */
+    [data-testid="stSidebar"] .stDateInput input {{
+        color: {CORES["azul_sec"]} !important;
+    }}
+
     /* Campos de texto, número, select e multiselect: fundo branco */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
@@ -159,9 +164,9 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* Campo de período (DateInput) com fundo azul claro */
+    /* DateInput (Período) mantém fundo branco, só mudamos a cor da fonte */
     [data-testid="stSidebar"] .stDateInput > div > div {{
-        background-color: {CORES["azul_sec"]} !important;
+        background-color: var(--branco) !important;
         border-radius: 6px !important;
     }}
 
@@ -245,6 +250,11 @@ def aplicar_css():
         [data-testid="stSidebar"] .stDateInput,
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
+            color: #FFFFFF !important;
+        }}
+
+        /* No modo escuro, o texto do Período também fica branco para contraste */
+        [data-testid="stSidebar"] .stDateInput input {{
             color: #FFFFFF !important;
         }}
 
