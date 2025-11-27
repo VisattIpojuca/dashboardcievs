@@ -166,12 +166,20 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* GRÁFICOS */
+    /* GRÁFICOS – garantir fundo branco */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
     .js-plotly-plot .plotly .plotbg {{
         fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* Borda preta externa em todos os gráficos Plotly */
+    .element-container .js-plotly-plot {{
+        border: 1px solid #000000 !important;
+        border-radius: 4px !important;
+        padding: 4px !important;
         background-color: #FFFFFF !important;
     }}
 
@@ -193,7 +201,6 @@ def aplicar_css():
        =========================== */
     @media (prefers-color-scheme: dark) {{
 
-        /* Texto dentro das caixas de filtro também branco (para combinar) */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -212,25 +219,21 @@ def aplicar_css():
             color: #FFFFFF !important;
         }}
 
-        /* FUNDO DO MENU SUSPENSO (DROPDOWN) EM AZUL CLARO */
         [data-testid="stSidebar"] div[role="listbox"],
         [data-testid="stSidebar"] ul[role="listbox"] {{
             background-color: {CORES["azul_claro"]} !important;
         }}
 
-        /* Todos os elementos dentro do dropdown com texto branco */
         [data-testid="stSidebar"] div[role="listbox"] *,
         [data-testid="stSidebar"] ul[role="listbox"] * {{
             color: #FFFFFF !important;
         }}
 
-        /* Itens de opção especificamente */
         [data-testid="stSidebar"] div[role="option"],
         [data-testid="stSidebar"] li[role="option"] {{
             color: #FFFFFF !important;
         }}
 
-        /* Opção focada/selecionada no menu */
         [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
         [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
             background-color: rgba(0,0,0,0.2) !important;
@@ -253,6 +256,52 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
+
+
+# =======================================================
+# TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS PRETOS
+# =======================================================
+
+def aplicar_tema_plotly(fig):
+    """
+    Deixa o gráfico com:
+    - fundo branco;
+    - textos (título, eixos, legenda) pretos;
+    - eixos/ticks/grade em tons de preto.
+    """
+    fig.update_layout(
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        font=dict(color="#000000"),
+        xaxis=dict(
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.08)",
+            zerolinecolor="rgba(0,0,0,0.6)",
+            color="#000000"
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.08)",
+            zerolinecolor="rgba(0,0,0,0.6)",
+            color="#000000"
+        ),
+        legend=dict(
+            bgcolor="rgba(255,255,255,0.9)",
+            bordercolor="rgba(0,0,0,0.3)",
+            borderwidth=1,
+            font=dict(color="#000000")
+        ),
+        title_font=dict(color="#000000"),
+        margin=dict(l=60, r=40, t=60, b=60)
+    )
+
+    # Garante textos internos em preto, quando houver
+    try:
+        fig.update_traces(textfont=dict(color="#000000"))
+    except Exception:
+        pass
+
+    return fig
 
 
 # =======================================================
@@ -403,6 +452,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Casos por Semana Epidemiológica",
             color_discrete_sequence=[CORES["azul"]]
         )
+        fig = aplicar_tema_plotly(fig)
         colA.plotly_chart(fig, use_container_width=True)
 
     # Casos por distrito
@@ -416,6 +466,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Distribuição de Casos por Distrito",
             color_discrete_sequence=[CORES["verde"]]
         )
+        fig = aplicar_tema_plotly(fig)
         colB.plotly_chart(fig, use_container_width=True)
 
     # Casos por bairro
@@ -430,6 +481,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Top 15 Bairros",
             color_discrete_sequence=[CORES["azul_claro"]]
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Perfil Social
@@ -445,6 +497,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Casos por Raça/Cor e Escolaridade",
             color_discrete_sequence=px.colors.qualitative.Safe
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Sintomas e comorbidades
@@ -459,6 +512,8 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
 
     if dados:
         df_s = pd.DataFrame(dados)
+        fig = pd.DataFrame(dados)
+        df_s = pd.DataFrame(dados)
         fig = px.bar(
             df_s.sort_values("Casos"),
             x="Casos",
@@ -467,6 +522,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             title="Frequência de Sintomas e Comorbidades",
             color_discrete_sequence=[CORES["amarelo"]]
         )
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Perfil Demográfico
@@ -482,6 +538,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             color_discrete_sequence=[CORES["azul"], CORES["verde"]]
         )
         fig.update_xaxes(categoryorder="array", categoryarray=ordem_plot)
+        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
 
