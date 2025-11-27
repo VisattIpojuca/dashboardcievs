@@ -182,22 +182,18 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* GRÁFICOS – fundo totalmente branco, textos em azul escuro */
+    /* GRÁFICOS – CSS de segurança (mas o branco é garantido via update_layout) */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
     .js-plotly-plot .plotly .plotbg {{
-        fill: #FFFFFF !important;             /* fundo SVG */
-        background-color: #FFFFFF !important; /* fundo do container */
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
     }}
-
-    /* Texto de títulos, eixos, ticks, legenda, rótulos dentro dos gráficos */
     .js-plotly-plot text {{
         fill: {CORES["azul"]} !important;
         color: {CORES["azul"]} !important;
     }}
-
-    /* Moldura do gráfico (card branco com borda preta fina) */
     .element-container .js-plotly-plot {{
         border: 1px solid #000000 !important;
         border-radius: 4px !important;
@@ -292,7 +288,6 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
-
 
 
 # ---------------------------------------------------------
@@ -421,7 +416,7 @@ def mostrar_graficos(df_filtrado, col_localidade, col_data):
         df_loc = df_filtrado[col_localidade].value_counts().reset_index()
         df_loc.columns = ["Localidade", "Quantidade"]
 
-        fig = px.bar(
+        fig_bar = px.bar(
             df_loc,
             x="Localidade",
             y="Quantidade",
@@ -429,23 +424,46 @@ def mostrar_graficos(df_filtrado, col_localidade, col_data):
             color="Quantidade",
             color_continuous_scale="Blues"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        fig_bar.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            xaxis=dict(
+                showgrid=False,
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#DDDDDD",
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            legend=dict(font=dict(color=CORES["azul"]))
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
 
         # Gráfico de pizza – Localidade
-        fig = px.pie(
+        fig_pie = px.pie(
             df_loc,
             names="Localidade",
             values="Quantidade",
             title="Proporção por Localidade",
             color_discrete_sequence=PALETA
         )
-        st.plotly_chart(fig, use_container_width=True)
+        fig_pie.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            legend=dict(font=dict(color=CORES["azul"]))
+        )
+        st.plotly_chart(fig_pie, use_container_width=True)
 
     # Linha temporal
     if col_data:
         df_temp = df_filtrado.groupby(col_data).size().reset_index(name="Quantidade")
 
-        fig = px.line(
+        fig_line = px.line(
             df_temp,
             x=col_data,
             y="Quantidade",
@@ -453,7 +471,24 @@ def mostrar_graficos(df_filtrado, col_localidade, col_data):
             title="Evolução temporal dos registros",
             color_discrete_sequence=[CORES["azul"]]
         )
-        st.plotly_chart(fig, use_container_width=True)
+        fig_line.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color=CORES["azul"]),
+            xaxis=dict(
+                showgrid=False,
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#DDDDDD",
+                linecolor="black",
+                tickfont=dict(color=CORES["azul"])
+            ),
+            legend=dict(font=dict(color=CORES["azul"]))
+        )
+        st.plotly_chart(fig_line, use_container_width=True)
 
 
 # ---------------------------------------------------------
