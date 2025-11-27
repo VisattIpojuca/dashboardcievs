@@ -424,13 +424,13 @@ def mostrar_indicadores(df_filtrado, col_localidade):
     total_a_tratar = soma_coluna(col_a_tratar)
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("População trabalhada (POP. TRAB)", int(total_pop) if pd.notna(total_pop) else "—")
+    c1.metric("População trabalhada ", int(total_pop) if pd.notna(total_pop) else "—")
     c2.metric("Exames realizados", int(total_exames) if pd.notna(total_exames) else "—")
-    c3.metric("Indivíduos POSITIVOS", int(total_positivos) if pd.notna(total_positivos) else "—")
+    c3.metric("POSITIVOS", int(total_positivos) if pd.notna(total_positivos) else "—")
 
     c4, c5, _ = st.columns(3)
-    c4.metric("Indivíduos TRATADOS", int(total_tratados) if pd.notna(total_tratados) else "—")
-    c5.metric("Indivíduos A TRATAR", int(total_a_tratar) if pd.notna(total_a_tratar) else "—")
+    c4.metric("TRATADOS", int(total_tratados) if pd.notna(total_tratados) else "—")
+    c5.metric("A TRATAR", int(total_a_tratar) if pd.notna(total_a_tratar) else "—")
 
 
 # ---------------------------------------------------------
