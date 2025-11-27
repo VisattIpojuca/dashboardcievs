@@ -175,6 +175,12 @@ def aplicar_css():
         background-color: #FFFFFF !important;
     }}
 
+    /* Textos dentro dos gráficos: forçar cor em azul escuro mesmo no modo escuro do navegador */
+    .js-plotly-plot text {{
+        fill: {CORES["azul"]} !important;
+        color: {CORES["azul"]} !important;
+    }}
+
     /* Borda preta externa em todos os gráficos Plotly */
     .element-container .js-plotly-plot {{
         border: 1px solid #000000 !important;
@@ -265,41 +271,52 @@ def aplicar_css():
 def aplicar_tema_plotly(fig):
     """
     - fundo branco;
-    - textos (título, eixos, legenda) em azul escuro;
-    - eixos/ticks/grade em tons de azul/preto.
+    - todos os textos em azul escuro (títulos, eixos, legenda, textos internos).
     """
     azul_escuro = CORES["azul"]
 
     fig.update_layout(
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
+
+        # Fonte padrão de tudo
         font=dict(color=azul_escuro),
 
         xaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.6)",
-            color=azul_escuro
+            color=azul_escuro,
+            title_font=dict(color=azul_escuro)
         ),
         yaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.6)",
-            color=azul_escuro
+            color=azul_escuro,
+            title_font=dict(color=azul_escuro)
         ),
+
         legend=dict(
             bgcolor="rgba(255,255,255,0.9)",
             bordercolor="rgba(0,0,0,0.3)",
             borderwidth=1,
             font=dict(color=azul_escuro)
         ),
+
         title_font=dict(color=azul_escuro),
         margin=dict(l=60, r=40, t=60, b=60)
     )
 
-    # Textos internos (quando existirem) também em azul escuro
+    # Textos internos das séries (quando existirem) também em azul escuro
     try:
         fig.update_traces(textfont=dict(color=azul_escuro))
+    except Exception:
+        pass
+
+    # Contornos suaves em barras/histogramas
+    try:
+        fig.update_traces(marker_line_color="rgba(0,0,0,0.3)")
     except Exception:
         pass
 
@@ -389,10 +406,10 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
             df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(sel)]
 
     if 'BAIRRO' in df.columns:
-        bairros = sorted(df['BAIRRO'].dropna().unique())
+        bairros = sorted(df['BAIRRO"].dropna().unique())
         sel = st.sidebar.multiselect("Bairro", bairros)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['BAIRRO"].isin(sel)]
 
     if df_filtrado.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
