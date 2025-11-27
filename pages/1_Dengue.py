@@ -90,12 +90,12 @@ def aplicar_css():
         --branco: #FFFFFF;
     }}
 
-    /* Texto principal em preto (evita usar * para não quebrar componentes internos) */
+    /* Texto principal em preto */
     body, p, li, span, label, .stMarkdown {{
         color: #000 !important;
     }}
 
-    /* Títulos amarelos na área principal */
+    /* Títulos na área principal */
     [data-testid="stAppViewContainer"] h1,
     [data-testid="stAppViewContainer"] h2,
     [data-testid="stAppViewContainer"] h3,
@@ -104,18 +104,12 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* Parágrafos justificados */
-    p, li {{
-        text-align: justify !important;
-        color: #000 !important;
-    }}
-
-    /* Fundo geral (sempre claro, independente do modo do navegador) */
+    /* Fundo geral claro */
     [data-testid="stAppViewContainer"] {{
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar: fundo azul institucional (fixo) */
+    /* Sidebar azul */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -124,11 +118,7 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* --------------------------------
-       TEXTO E CAMPOS DOS FILTROS (FIXO)
-       -------------------------------- */
-
-    /* Texto dentro dos campos dos filtros em AZUL */
+    /* TEXTO E CAMPOS DOS FILTROS – padrão (tema claro) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -142,7 +132,6 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Caixas de filtro com FUNDO BRANCO e bordas ARREDONDADAS */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
     [data-testid="stSidebar"] .stDateInput > div > div,
@@ -152,17 +141,12 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* Placeholder (texto antes de selecionar) em azul mais claro */
     [data-testid="stSidebar"] input::placeholder,
     [data-testid="stSidebar"] textarea::placeholder {{
         color: #2f6bbd !important;
     }}
 
-    /* ------------------------------
-       OPÇÕES SELECIONADAS (chips)
-       ------------------------------ */
-
-    /* Itens selecionados nas listas: FUNDO VERDE + TEXTO BRANCO (modo claro) */
+    /* OPÇÕES SELECIONADAS (chips) – fundo verde */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
@@ -170,7 +154,6 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* Tags visuais do multiselect */
     [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
     [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
@@ -178,7 +161,6 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* Borda dos campos de filtro em azul secundário */
     [data-testid="stSidebar"] .stMultiSelect > div,
     [data-testid="stSidebar"] .stSelectbox > div,
     [data-testid="stSidebar"] .stTextInput > div,
@@ -188,10 +170,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* ------------------------------
-       GRÁFICOS PLOTLY (FUNDO CLARO)
-       ------------------------------ */
-
+    /* GRÁFICOS – fundo claro */
     .js-plotly-plot .plotly .bg,
     .js-plotly-plot .plotly .plotly-background,
     .js-plotly-plot .plotly .paper,
@@ -200,11 +179,7 @@ def aplicar_css():
         background-color: #FFFFFF !important;
     }}
 
-    /* ===========================
-       MENU DE PÁGINAS (Home, Dengue, etc.)
-       Sempre com texto BRANCO
-       =========================== */
-
+    /* MENU DE PÁGINAS sempre branco */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
@@ -218,18 +193,32 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    [data-testid="stSidebar"] .css-1w0uvxj a,
-    [data-testid="stSidebar"] .css-1w0uvxj span,
-    [data-testid="stSidebar"] .css-1w0uvxj button {{
-        color: #FFFFFF !important;
-    }}
-
     /* ===========================
-       AJUSTES ESPECÍFICOS PARA MODO ESCURO
-       (só reforçando o texto BRANCO dentro das opções selecionadas)
+       MODO ESCURO: texto dos filtros em branco
        =========================== */
     @media (prefers-color-scheme: dark) {{
-        /* Chips e itens selecionados: garantir TEXTO BRANCO no dark mode */
+
+        /* Texto geral dentro das caixas de filtro passa de azul para BRANCO */
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select,
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stNumberInput,
+        [data-testid="stSidebar"] .stSlider,
+        [data-testid="stSidebar"] .stDateInput,
+        [data-testid="stSidebar"] .stTextInput,
+        [data-testid="stSidebar"] .stMultiSelect * {{
+            color: #FFFFFF !important;
+        }}
+
+        /* Placeholder também branco no dark mode */
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {{
+            color: #FFFFFF !important;
+        }}
+
+        /* Chips/opções selecionadas continuam com fundo verde e TEXTO BRANCO */
         [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
         [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"],
         [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
@@ -238,7 +227,6 @@ def aplicar_css():
         }}
     }}
 
-    /* Métricas */
     .stMetric {{
         background-color: var(--amarelo-ipojuca) !important;
         padding: 18px;
@@ -247,7 +235,6 @@ def aplicar_css():
         box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
     }}
 
-    /* Botões */
     button, .stButton button {{
         color: #000 !important;
         background-color: var(--cinza-claro) !important;
