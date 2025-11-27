@@ -142,13 +142,14 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Caixas de filtro com FUNDO BRANCO (sempre) */
+    /* Caixas de filtro com FUNDO BRANCO (sempre) e bordas ARREDONDADAS */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
     [data-testid="stSidebar"] .stDateInput > div > div,
     [data-testid="stSidebar"] .stSelectbox > div > div,
     [data-testid="stSidebar"] .stMultiSelect > div > div {{
         background-color: var(--branco) !important;
+        border-radius: 6px !important;   /* <<< aqui arredonda as arestas */
     }}
 
     /* Placeholder (texto antes de selecionar) em azul mais claro */
@@ -166,6 +167,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;   /* chips levemente arredondados */
     }}
 
     /* Tags visuais do multiselect */
@@ -173,6 +175,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
+        border-radius: 6px !important;
     }}
 
     /* Borda dos campos de filtro em azul secundário */
@@ -182,6 +185,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stNumberInput > div,
     [data-testid="stSidebar"] .stDateInput > div {{
         border-color: var(--azul-secundario) !important;
+        border-radius: 6px !important;   /* borda externa também arredondada */
     }}
 
     /* ------------------------------
@@ -209,6 +213,7 @@ def aplicar_css():
     button, .stButton button {{
         color: #000 !important;
         background-color: var(--cinza-claro) !important;
+        border-radius: 6px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
