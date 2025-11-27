@@ -279,7 +279,6 @@ def aplicar_tema_plotly(fig):
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
 
-        # Fonte padrão de tudo
         font=dict(color=azul_escuro),
 
         xaxis=dict(
@@ -308,13 +307,11 @@ def aplicar_tema_plotly(fig):
         margin=dict(l=60, r=40, t=60, b=60)
     )
 
-    # Textos internos das séries (quando existirem) também em azul escuro
     try:
         fig.update_traces(textfont=dict(color=azul_escuro))
     except Exception:
         pass
 
-    # Contornos suaves em barras/histogramas
     try:
         fig.update_traces(marker_line_color="rgba(0,0,0,0.3)")
     except Exception:
@@ -406,10 +403,10 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
             df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(sel)]
 
     if 'BAIRRO' in df.columns:
-        bairros = sorted(df['BAIRRO"].dropna().unique())
+        bairros = sorted(df['BAIRRO'].dropna().unique())
         sel = st.sidebar.multiselect("Bairro", bairros)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['BAIRRO"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(sel)]
 
     if df_filtrado.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
@@ -579,27 +576,19 @@ def botao_download(df_filtrado: pd.DataFrame):
 def main():
     aplicar_css()
 
-    # Título da página
     st.title("🦟 Dashboard Vigilância das Arboviroses (Dengue)")
     st.caption("Fonte: Gerência de Promoção, Prevenção e Vigilância Epidemiológica 📊🗺️")
 
-    # Carrega dados
     df = carregar_dados()
 
     if df.empty:
         st.warning("Nenhum dado encontrado.")
         st.stop()
 
-    # Aplica filtros
     df_filtrado = aplicar_filtros(df)
 
-    # Indicadores
     mostrar_indicadores(df_filtrado)
-
-    # Gráficos
     mostrar_graficos(df_filtrado)
-
-    # Download
     botao_download(df_filtrado)
 
     st.markdown("---")
