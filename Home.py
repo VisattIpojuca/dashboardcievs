@@ -128,7 +128,7 @@ st.markdown("""
     color: #004A8D !important;
 }
 
-/* Cards de links institucionais */
+/* Cards de links institucionais (sem ícones coloridos) */
 .link-card {
     background: #FFFFFF;
     border-radius: 10px;
@@ -140,6 +140,9 @@ st.markdown("""
     margin-top: 0;
     margin-bottom: 6px;
     color: var(--azul-principal) !important;
+}
+.link-card p, .link-card a {
+    color: #004A8D !important;
 }
 
 /* Botões */
@@ -207,9 +210,10 @@ st.markdown(f"""
     <h1 style="color:white; margin-top:10px; margin-bottom:4px;">
         🏥 Painel Integrado de Vigilância em Saúde – Ipojuca
     </h1>
-    <p style="font-size:1.05rem; margin-top:6px;">
+    <p style="font-size:1.05rem; margin-top:6px; color:white;">
         Monitoramento em tempo quase real de agravos, territórios e serviços,
-        apoiando uma gestão mais ágil, transparente e orientada por evidências.
+        apoiando uma gestão mais ágil, transparente e orientada por evidências,
+        desenvolvido com Python, Streamlit e CSS.
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -290,10 +294,26 @@ with c4:
     </div>
     """, unsafe_allow_html=True)
 
+# Linha seguinte com o PCE
+c5, _ = st.columns([1, 1])
+
+with c5:
+    st.markdown("""
+    <div class="modulo-card">
+        <h3>🧬 Programa de Controle da Esquistossomose (PCE)</h3>
+        <ul>
+            <li>Monitoramento de exames e casos</li>
+            <li>Distribuição espacial por área e localidade</li>
+            <li>Acompanhamento de ciclos de busca ativa</li>
+            <li>Indicadores para planejamento das ações de controle</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.markdown("---")
 
 # ============================================================
-# LINKS INSTITUCIONAIS
+# Canais INSTITUCIONAIS (mais sóbrios)
 # ============================================================
 st.subheader("🌐 Canais institucionais")
 
@@ -302,27 +322,27 @@ l1, l2, l3 = st.columns(3)
 with l1:
     st.markdown("""
     <div class="link-card">
-        <h3>🔵 CIEVS Ipojuca</h3>
-        <p>Informes, notas técnicas e documentos de referência.</p>
-        <p><a href="https://cievsipojuca.wordpress.com/" target="_blank">👉 Acessar site</a></p>
+        <h3>CIEVS Ipojuca</h3>
+        <p>Informes, notas técnicas e documentos de referência em vigilância.</p>
+        <p><a href="https://cievsipojuca.wordpress.com/" target="_blank">Acessar site institucional</a></p>
     </div>
     """, unsafe_allow_html=True)
 
 with l2:
     st.markdown("""
     <div class="link-card">
-        <h3>🟢 VISATT Ipojuca</h3>
-        <p>Informações sobre saúde do trabalhador e notificações.</p>
-        <p><a href="https://visattipojuca.com/" target="_blank">👉 Acessar site</a></p>
+        <h3>VISATT Ipojuca</h3>
+        <p>Informações sobre saúde do trabalhador, notificações e orientações.</p>
+        <p><a href="https://visattipojuca.com/" target="_blank">Acessar site institucional</a></p>
     </div>
     """, unsafe_allow_html=True)
 
 with l3:
     st.markdown("""
     <div class="link-card">
-        <h3>🟣 Prefeitura do Ipojuca</h3>
-        <p>Portal oficial da gestão municipal e notícias.</p>
-        <p><a href="https://ipojuca.pe.gov.br/" target="_blank">👉 Acessar site</a></p>
+        <h3>Prefeitura do Ipojuca</h3>
+        <p>Portal oficial da gestão municipal, notícias e serviços.</p>
+        <p><a href="https://ipojuca.pe.gov.br/" target="_blank">Acessar portal</a></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -344,7 +364,7 @@ st.markdown("---")
 
 st.subheader("ℹ️ Governança do painel")
 
-cA, cB, cC = st.columns(3)
+cA, cB, cC, cD = st.columns(4)
 
 with cA:
     st.metric("Versão do painel", "1.0")
@@ -355,10 +375,14 @@ with cB:
 with cC:
     st.metric("Gestão responsável", "Vigilância em Saúde – Ipojuca")
 
+with cD:
+    st.metric("Tecnologia", "MB Technological Solutions")
+
 st.markdown("""
 <div class="footer-text">
-Este painel foi desenvolvido com uso de <strong>Python</strong> e <strong>Streamlit</strong>,
-em parceria com as áreas técnicas da Vigilância em Saúde do município,
+Este painel foi desenvolvido com uso de <strong>Python</strong>, <strong>Streamlit</strong> e <strong>CSS</strong>,
+em parceria com as áreas técnicas da Vigilância em Saúde do município e
+<strong>MB Technological Solutions (Maviael Barros Soluções Tecnológicas)</strong>,
 com o objetivo de fortalecer a gestão da informação e a transparência em saúde pública.
 </div>
 """, unsafe_allow_html=True)
