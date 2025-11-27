@@ -259,45 +259,47 @@ def aplicar_css():
 
 
 # =======================================================
-# TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS PRETOS
+# TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS AZUL ESCURO
 # =======================================================
 
 def aplicar_tema_plotly(fig):
     """
-    Deixa o gráfico com:
     - fundo branco;
-    - textos (título, eixos, legenda) pretos;
-    - eixos/ticks/grade em tons de preto.
+    - textos (título, eixos, legenda) em azul escuro;
+    - eixos/ticks/grade em tons de azul/preto.
     """
+    azul_escuro = CORES["azul"]
+
     fig.update_layout(
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
-        font=dict(color="#000000"),
+        font=dict(color=azul_escuro),
+
         xaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.6)",
-            color="#000000"
+            color=azul_escuro
         ),
         yaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.6)",
-            color="#000000"
+            color=azul_escuro
         ),
         legend=dict(
             bgcolor="rgba(255,255,255,0.9)",
             bordercolor="rgba(0,0,0,0.3)",
             borderwidth=1,
-            font=dict(color="#000000")
+            font=dict(color=azul_escuro)
         ),
-        title_font=dict(color="#000000"),
+        title_font=dict(color=azul_escuro),
         margin=dict(l=60, r=40, t=60, b=60)
     )
 
-    # Garante textos internos em preto, quando houver
+    # Textos internos (quando existirem) também em azul escuro
     try:
-        fig.update_traces(textfont=dict(color="#000000"))
+        fig.update_traces(textfont=dict(color=azul_escuro))
     except Exception:
         pass
 
@@ -511,8 +513,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
                 dados.append({"Item": s.replace("_", " ").capitalize(), "Casos": ct})
 
     if dados:
-        df_s = pd.DataFrame(dados)
-        fig = pd.DataFrame(dados)
         df_s = pd.DataFrame(dados)
         fig = px.bar(
             df_s.sort_values("Casos"),
