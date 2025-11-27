@@ -110,12 +110,12 @@ def aplicar_css():
         color: #000 !important;
     }}
 
-    /* Fundo geral */
+    /* Fundo geral (sempre claro, independente do modo do navegador) */
     [data-testid="stAppViewContainer"] {{
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar: fundo azul institucional */
+    /* Sidebar: fundo azul institucional (fixo) */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -124,11 +124,11 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* ------------------------------
-       TEXTO DOS FILTROS - TEMA CLARO
-       ------------------------------ */
+    /* --------------------------------
+       TEXTO E CAMPOS DOS FILTROS (FIXO)
+       -------------------------------- */
 
-    /* Texto dentro dos campos de filtro (valor atual / placeholder) em AZUL no tema claro */
+    /* Texto dentro dos campos dos filtros em AZUL */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -142,7 +142,7 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Garante contraste: fundo dos campos um pouco mais claro que o texto */
+    /* Caixas de filtro com FUNDO BRANCO (sempre) */
     [data-testid="stSidebar"] .stTextInput > div > div,
     [data-testid="stSidebar"] .stNumberInput > div > div,
     [data-testid="stSidebar"] .stDateInput > div > div,
@@ -151,7 +151,7 @@ def aplicar_css():
         background-color: var(--branco) !important;
     }}
 
-    /* Placeholder (texto antes de selecionar) também azul, mas um pouco mais claro */
+    /* Placeholder (texto antes de selecionar) em azul mais claro */
     [data-testid="stSidebar"] input::placeholder,
     [data-testid="stSidebar"] textarea::placeholder {{
         color: #2f6bbd !important;
@@ -185,31 +185,15 @@ def aplicar_css():
     }}
 
     /* ------------------------------
-       TEMA ESCURO DO NAVEGADOR
+       GRÁFICOS PLOTLY (FUNDO CLARO)
        ------------------------------ */
-    @media (prefers-color-scheme: dark) {{
-        /* No dark mode: texto DOS FILTROS em BRANCO */
-        [data-testid="stSidebar"] input,
-        [data-testid="stSidebar"] textarea,
-        [data-testid="stSidebar"] select,
-        [data-testid="stSidebar"] .stMultiSelect,
-        [data-testid="stSidebar"] .stSelectbox,
-        [data-testid="stSidebar"] .stNumberInput,
-        [data-testid="stSidebar"] .stSlider,
-        [data-testid="stSidebar"] .stDateInput,
-        [data-testid="stSidebar"] .stTextInput,
-        [data-testid="stSidebar"] .stMultiSelect * {{
-            color: white !important;
-        }}
 
-        /* Fundo dos campos um pouco mais escuro para contraste */
-        [data-testid="stSidebar"] .stTextInput > div > div,
-        [data-testid="stSidebar"] .stNumberInput > div > div,
-        [data-testid="stSidebar"] .stDateInput > div > div,
-        [data-testid="stSidebar"] .stSelectbox > div > div,
-        [data-testid="stSidebar"] .stMultiSelect > div > div {{
-            background-color: #1f334a !important;
-        }}
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
     }}
 
     /* Métricas */
