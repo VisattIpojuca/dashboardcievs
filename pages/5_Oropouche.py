@@ -57,12 +57,10 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
     body, p, li, span, label, .stMarkdown {{
         color: #000 !important;
     }}
 
-    /* Títulos amarelos na área principal */
     [data-testid="stAppViewContainer"] h1,
     [data-testid="stAppViewContainer"] h2,
     [data-testid="stAppViewContainer"] h3,
@@ -71,18 +69,15 @@ def aplicar_css():
         font-weight: 800 !important;
     }}
 
-    /* Parágrafos justificados */
     p, li {{
         text-align: justify !important;
         color: #000 !important;
     }}
 
-    /* Fundo geral */
     [data-testid="stAppViewContainer"] {{
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
     }}
 
-    /* Sidebar */
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
@@ -94,7 +89,6 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* Métricas */
     .stMetric {{
         background-color: var(--amarelo-ipojuca) !important;
         padding: 18px;
@@ -103,7 +97,6 @@ def aplicar_css():
         box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
     }}
 
-    /* Botões */
     button, .stButton button {{
         color: #000 !important;
         background-color: var(--cinza-claro) !important;
@@ -122,10 +115,6 @@ GSHEET_URL = "https://docs.google.com/spreadsheets/d/1pk_X_h-tfpA53te1ViXcrY40Sq
 @st.cache_data(ttl=600)
 def carregar_dados(local_path: str | None = None,
                    gsheet_csv_url: str | None = None) -> pd.DataFrame:
-    """
-    Carrega dados: prioriza arquivo local (Excel/CSV), senão tenta o CSV do Google Sheets.
-    Retorna DataFrame com todas as colunas como strings inicialmente.
-    """
     df = pd.DataFrame()
 
     # 1) tenta arquivo local
@@ -173,7 +162,6 @@ def normalize(col_name: str) -> str:
 
 
 def detectar(df: pd.DataFrame, candidatos: list[str]) -> str | None:
-    """Retorna o nome normalizado da primeira coluna que casar com candidatos."""
     candidatos_norm = [normalize(x) for x in candidatos]
     for cand in candidatos_norm:
         if cand in df.columns:
@@ -221,7 +209,7 @@ def aplicar_filtros(df: pd.DataFrame,
     classificacoes = opcoes(df, col_classificacao)
     sexos = opcoes(df, col_sexo)
     racas = opcoes(df, col_raca)
-    semanas = opcoes(df, "SE_SEMANA")
+    semanas = opcoes(df, "SE_SEMANA")  # <- aqui garantimos que são VALORES da coluna SE_SEMANA
 
     f_localidade = st.sidebar.multiselect("Localidade", options=localidades, default=localidades)
     f_classificacao = st.sidebar.multiselect("Classificação", options=classificacoes, default=classificacoes)
@@ -249,19 +237,36 @@ def aplicar_filtros(df: pd.DataFrame,
 
 
 # ---------------------------------------------------------
-# Criação de colunas de data (MES_NOTIF, SE_SEMANA)
+# Criação de colunas de data/semana
 # ---------------------------------------------------------
-def tratar_data(df: pd.DataFrame, col_data: str | None) -> pd.DataFrame:
+def tratar_data(df: pd.DataFrame,
+                col_data: str | None,
+                col_semana_epid: str | None) -> pd.DataFrame:
+    # Data
     if col_data and col_data in df.columns:
         df[col_data] = pd.to_datetime(df[col_data], dayfirst=True, errors="coerce")
         df["MES_NOTIF"] = df[col_data].dt.to_period("M").astype(str)
+    else:
+        df["MES_NOTIF"] = "SEM_DATA"
+
+    # Semana epidemiológica:
+    # 1) se existir coluna própria (SEMANA_EPIDEMIOLOGICA etc.), usa ela
+    if col_semana_epid and col_semana_epid in df.columns:
+        df["SE_SEMANA"] = (
+            df[col_semana_epid]
+            .astype(str)
+            .str.extract(r"(\d+)", expand=False)  # pega só o número
+            .fillna("IGNORADO")
+        )
+    # 2) senão, deriva da data
+    elif col_data and col_data in df.columns:
         try:
             df["SE_SEMANA"] = df[col_data].dt.isocalendar().week.astype("Int64").astype(str)
         except Exception:
             df["SE_SEMANA"] = df[col_data].dt.week.astype(str)
     else:
-        df["MES_NOTIF"] = "SEM_DATA"
         df["SE_SEMANA"] = "SEM_SEMANA"
+
     return df
 
 
@@ -311,8 +316,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
         )
         fig_mes.update_layout(xaxis=dict(tickangle=-45))
         st.plotly_chart(fig_mes, use_container_width=True)
-    else:
-        st.warning("Coluna de mês (a partir da data de notificação) não encontrada.")
 
     # 2) Classificação por mês
     st.subheader("Classificação por Mês")
@@ -336,8 +339,6 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
         )
         fig_class.update_layout(xaxis=dict(tickangle=-45))
         st.plotly_chart(fig_class, use_container_width=True)
-    else:
-        st.warning("Não há dados suficientes para gerar 'Classificação por Mês'.")
 
     # 3) Localidade x Classificação
     if col_localidade and col_classificacao and col_localidade in df_filtrado.columns:
@@ -391,7 +392,7 @@ def mostrar_graficos(df_filtrado: pd.DataFrame,
 
 
 # ---------------------------------------------------------
-# Tabela final (sem MES_NOTIF / SE_SEMANA / nascimento)
+# Tabela final
 # ---------------------------------------------------------
 def mostrar_tabela(df_filtrado: pd.DataFrame):
     st.markdown("## 📋 Dados Filtrados")
@@ -441,8 +442,12 @@ def main():
         "DATA_NOTIFICACAO", "DATA_DE_NOTIFICACAO", "NOTIFICACAO", "DATA",
         "DATA_DO_CASO", "DATA_ENTRADA", "DATA_NOTIF", "DATE"
     ])
+    # coluna explícita de semana epidemiológica, se existir
+    col_semana_epid = detectar(df, [
+        "SEMANA_EPIDEMIOLOGICA", "SEMANA EPIDEMIOLOGICA", "SEMANA", "SEMANA_EP", "SE"
+    ])
 
-    # 🔹 Padronizar valores de sexo: F/M -> Feminino/Masculino
+    # Padronizar Sexo: F/M -> Feminino/Masculino
     if col_sexo and col_sexo in df.columns:
         df[col_sexo] = (
             df[col_sexo]
@@ -455,10 +460,10 @@ def main():
             })
         )
 
-    # Tratar data
-    df = tratar_data(df, col_data)
+    # Tratar data + semana epidemiológica
+    df = tratar_data(df, col_data, col_semana_epid)
 
-    # Remover dados sensíveis (para exibição/tabela)
+    # Remover sensíveis
     df = remover_sensiveis(df, col_localidade, col_data)
 
     # Filtros
