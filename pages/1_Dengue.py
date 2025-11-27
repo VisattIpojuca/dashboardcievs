@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from datetime import datetime
 import unicodedata
 
 # =======================================================
@@ -63,16 +64,18 @@ SINTOMAS_E_COMORBIDADES = [
 
 
 def limpar_nome_coluna(col: str) -> str:
+    """Normaliza nomes de colunas: remove acentos, espaços, hífens etc."""
     c = unicodedata.normalize('NFKD', str(col)).encode('ascii', 'ignore').decode()
     return c.strip().upper().replace(" ", "_").replace("-", "_").replace("/", "_")
 
 
 def remover_acentos(texto: str) -> str:
+    """Remove acentos de um texto (útil para padronizar 'ÓBITO'/'OBITO')."""
     return unicodedata.normalize("NFKD", str(texto)).encode("ascii", "ignore").decode("utf-8")
 
 
 # =======================================================
-# CSS
+# CSS — PALETA INSTITUCIONAL + MENU/FILTROS
 # =======================================================
 
 def aplicar_css():
@@ -106,18 +109,22 @@ def aplicar_css():
     [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
     }}
-
     [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
     }}
 
-    /* Filtros sidebar - resumo */
+    /* TEXTO E CAMPOS DOS FILTROS – tema claro */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
-    [data-testid="stSidebar"] .stMultiSelect *,
-    [data-testid="stSidebar"] .stSelectbox * {{
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stNumberInput,
+    [data-testid="stSidebar"] .stSlider,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stTextInput,
+    [data-testid="stSidebar"] .stMultiSelect * {{
         color: {CORES["azul"]} !important;
     }}
 
@@ -130,6 +137,12 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
+    [data-testid="stSidebar"] input::placeholder,
+    [data-testid="stSidebar"] textarea::placeholder {{
+        color: #2f6bbd !important;
+    }}
+
+    /* OPÇÕES SELECIONADAS (chips) */
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
@@ -137,23 +150,90 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* Modo escuro: texto branco e dropdown azul claro */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+        border-radius: 6px !important;
+    }}
+
+    [data-testid="stSidebar"] .stMultiSelect > div,
+    [data-testid="stSidebar"] .stSelectbox > div,
+    [data-testid="stSidebar"] .stTextInput > div,
+    [data-testid="stSidebar"] .stNumberInput > div,
+    [data-testid="stSidebar"] .stDateInput > div {{
+        border-color: var(--azul-secundario) !important;
+        border-radius: 6px !important;
+    }}
+
+    /* GRÁFICOS */
+    .js-plotly-plot .plotly .bg,
+    .js-plotly-plot .plotly .plotly-background,
+    .js-plotly-plot .plotly .paper,
+    .js-plotly-plot .plotly .plotbg {{
+        fill: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+    }}
+
+    /* MENU PÁGINAS */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
+
+    /* ===========================
+       MODO ESCURO: DROPDOWN azul claro + texto branco
+       =========================== */
     @media (prefers-color-scheme: dark) {{
+
+        /* Texto dentro das caixas de filtro também branco (para combinar) */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
-        [data-testid="stSidebar"] .stMultiSelect *,
-        [data-testid="stSidebar"] .stSelectbox * {{
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stNumberInput,
+        [data-testid="stSidebar"] .stSlider,
+        [data-testid="stSidebar"] .stDateInput,
+        [data-testid="stSidebar"] .stTextInput,
+        [data-testid="stSidebar"] .stMultiSelect * {{
             color: #FFFFFF !important;
         }}
 
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {{
+            color: #FFFFFF !important;
+        }}
+
+        /* FUNDO DO MENU SUSPENSO (DROPDOWN) EM AZUL CLARO */
         [data-testid="stSidebar"] div[role="listbox"],
         [data-testid="stSidebar"] ul[role="listbox"] {{
             background-color: {CORES["azul_claro"]} !important;
         }}
 
+        /* Todos os elementos dentro do dropdown com texto branco */
         [data-testid="stSidebar"] div[role="listbox"] *,
         [data-testid="stSidebar"] ul[role="listbox"] * {{
+            color: #FFFFFF !important;
+        }}
+
+        /* Itens de opção especificamente */
+        [data-testid="stSidebar"] div[role="option"],
+        [data-testid="stSidebar"] li[role="option"] {{
+            color: #FFFFFF !important;
+        }}
+
+        /* Opção focada/selecionada no menu */
+        [data-testid="stSidebar"] div[role="option"][aria-selected="true"],
+        [data-testid="stSidebar"] li[role="option"][aria-selected="true"] {{
+            background-color: rgba(0,0,0,0.2) !important;
             color: #FFFFFF !important;
         }}
     }}
@@ -171,78 +251,8 @@ def aplicar_css():
         background-color: var(--cinza-claro) !important;
         border-radius: 6px !important;
     }}
-
-    /* Borda preta fora do gráfico */
-    .element-container .js-plotly-plot {{
-        border: 1px solid #000000 !important;
-        border-radius: 4px !important;
-        padding: 4px !important;
-        background-color: #FFFFFF !important;
-    }}
     </style>
     """, unsafe_allow_html=True)
-
-
-# =======================================================
-# TEMA DOS GRÁFICOS PLOTLY – SIMPLES E COMPATÍVEL
-# =======================================================
-
-def aplicar_tema_plotly(fig):
-    """
-    Fundo branco e textos/linhas em preto, usando apenas parâmetros
-    amplamente compatíveis com o Plotly.
-    """
-    fig.update_layout(
-        paper_bgcolor="#FFFFFF",
-        plot_bgcolor="#FFFFFF",
-        font=dict(color="#000000"),  # tudo que herda do font, em preto
-
-        xaxis=dict(
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.08)",
-            zerolinecolor="rgba(0,0,0,0.6)",
-            color="#000000"           # rótulos/ticks X em preto
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.08)",
-            zerolinecolor="rgba(0,0,0,0.6)",
-            color="#000000"           # rótulos/ticks Y em preto
-        ),
-
-        legend=dict(
-            bgcolor="rgba(255,255,255,0.9)",
-            bordercolor="rgba(0,0,0,0.3)",
-            borderwidth=1,
-            font=dict(color="#000000")
-        ),
-
-        title_font=dict(color="#000000"),
-        margin=dict(l=60, r=40, t=60, b=60)
-    )
-
-    # Linhas de contorno pretas em tipos comuns de traço
-    try:
-        fig.update_traces(marker_line_color="#000000", selector=dict(type="bar"))
-    except Exception:
-        pass
-
-    try:
-        fig.update_traces(line=dict(color="#000000"), selector=dict(type="scatter"))
-    except Exception:
-        pass
-
-    try:
-        fig.update_traces(marker=dict(line=dict(color="#000000")), selector=dict(type="histogram"))
-    except Exception:
-        pass
-
-    try:
-        fig.update_traces(textfont=dict(color="#000000"))
-    except Exception:
-        pass
-
-    return fig
 
 
 # =======================================================
@@ -262,17 +272,21 @@ def carregar_dados() -> pd.DataFrame:
         st.error("❌ Erro ao carregar os dados da planilha do Google Sheets.")
         st.stop()
 
+    # Normaliza nomes das colunas
     df.columns = [limpar_nome_coluna(c) for c in df.columns]
 
+    # Renomeia de acordo com o mapa final, apenas as que existirem
     rename_dict = {orig: dest for orig, dest in FINAL_RENAME_MAP.items() if orig in df.columns}
     df.rename(columns=rename_dict, inplace=True)
     df = df.loc[:, ~df.columns.duplicated()]
 
+    # Padroniza FAIXA_ETARIA
     if 'FAIXA_ETARIA' in df.columns:
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].astype(str).str.strip()
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].replace(MAPEAMENTO_FAIXA_ETARIA)
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].fillna("IGNORADO")
 
+    # Converte datas
     for col in ['DATA_NOTIFICACAO', 'DATA_SINTOMAS']:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], errors="coerce")
@@ -292,42 +306,42 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
         opcoes = sorted(df['CLASSIFICACAO_FINAL'].dropna().unique())
         sel = st.sidebar.multiselect("Classificação Final", opcoes)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(sel)]
 
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
         semanas = sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique())
         sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['SEMANA_EPIDEMIOLOGICA"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['SEMANA_EPIDEMIOLOGICA'].isin(sel)]
 
     if 'SEXO' in df.columns:
         sexos = sorted(df['SEXO'].dropna().unique())
         sel = st.sidebar.multiselect("Sexo", sexos)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['SEXO"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['SEXO'].isin(sel)]
 
     if 'FAIXA_ETARIA' in df.columns:
         faixas = st.sidebar.multiselect("Faixa Etária", ORDEM_FAIXA_ETARIA)
         if faixas:
-            df_filtrado = df_filtrado[df_filtrado['FAIXA_ETARIA"].isin(faixas)]
+            df_filtrado = df_filtrado[df_filtrado['FAIXA_ETARIA'].isin(faixas)]
 
     if 'EVOLUCAO' in df.columns:
         evolucoes = sorted(df['EVOLUCAO'].dropna().unique())
         sel = st.sidebar.multiselect("Evolução do Caso", evolucoes)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['EVOLUCAO"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['EVOLUCAO'].isin(sel)]
 
     if 'ESCOLARIDADE' in df.columns:
         escs = sorted(df['ESCOLARIDADE'].dropna().unique())
         sel = st.sidebar.multiselect("Escolaridade", escs)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(sel)]
 
     if 'BAIRRO' in df.columns:
         bairros = sorted(df['BAIRRO'].dropna().unique())
         sel = st.sidebar.multiselect("Bairro", bairros)
         if sel:
-            df_filtrado = df_filtrado[df_filtrado['BAIRRO"].isin(sel)]
+            df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(sel)]
 
     if df_filtrado.empty:
         st.warning("Nenhum dado encontrado para os filtros selecionados.")
@@ -387,8 +401,8 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             y="Casos",
             markers=True,
             title="Casos por Semana Epidemiológica",
+            color_discrete_sequence=[CORES["azul"]]
         )
-        fig = aplicar_tema_plotly(fig)
         colA.plotly_chart(fig, use_container_width=True)
 
     # Casos por distrito
@@ -400,8 +414,8 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             x="Distrito",
             y="Casos",
             title="Distribuição de Casos por Distrito",
+            color_discrete_sequence=[CORES["verde"]]
         )
-        fig = aplicar_tema_plotly(fig)
         colB.plotly_chart(fig, use_container_width=True)
 
     # Casos por bairro
@@ -414,8 +428,8 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             x="Bairro",
             y="Casos",
             title="Top 15 Bairros",
+            color_discrete_sequence=[CORES["azul_claro"]]
         )
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Perfil Social
@@ -429,8 +443,8 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             color="ESCOLARIDADE",
             barmode="group",
             title="Casos por Raça/Cor e Escolaridade",
+            color_discrete_sequence=px.colors.qualitative.Safe
         )
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Sintomas e comorbidades
@@ -451,8 +465,8 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             y="Item",
             orientation='h',
             title="Frequência de Sintomas e Comorbidades",
+            color_discrete_sequence=[CORES["amarelo"]]
         )
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
     # Perfil Demográfico
@@ -465,9 +479,9 @@ def mostrar_graficos(df_filtrado: pd.DataFrame):
             color="SEXO",
             barmode="group",
             title="Casos por Faixa Etária e Sexo",
+            color_discrete_sequence=[CORES["azul"], CORES["verde"]]
         )
         fig.update_xaxes(categoryorder="array", categoryarray=ordem_plot)
-        fig = aplicar_tema_plotly(fig)
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -491,18 +505,27 @@ def botao_download(df_filtrado: pd.DataFrame):
 def main():
     aplicar_css()
 
+    # Título da página
     st.title("🦟 Dashboard Vigilância das Arboviroses (Dengue)")
     st.caption("Fonte: Gerência de Promoção, Prevenção e Vigilância Epidemiológica 📊🗺️")
 
+    # Carrega dados
     df = carregar_dados()
+
     if df.empty:
         st.warning("Nenhum dado encontrado.")
         st.stop()
 
+    # Aplica filtros
     df_filtrado = aplicar_filtros(df)
 
+    # Indicadores
     mostrar_indicadores(df_filtrado)
+
+    # Gráficos
     mostrar_graficos(df_filtrado)
+
+    # Download
     botao_download(df_filtrado)
 
     st.markdown("---")
