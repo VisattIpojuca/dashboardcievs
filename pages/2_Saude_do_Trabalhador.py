@@ -258,8 +258,8 @@ def aplicar_css():
 
     /* Dia selecionado em destaque */
     [data-testid="stSidebar"] .stDateInput [aria-selected="true"] {{
-        background-color: {CORES["azul_sec"]} !important;
-        color: #FFFFFF !important;
+        background-color: {CORES["azul"]} !important;
+        color: #0073cf !important;
     }}
 
     /* GRÁFICOS – garantir fundo branco */
