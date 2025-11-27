@@ -52,7 +52,7 @@ CORES = {
     "azul": "#004A8D",
     "verde": "#009D4A",
     "amarelo": "#FFC20E",
-    "azul_claro": "#0073CF"
+    "azul_claro": "#0073CF"   # azul secundário
 }
 
 SINTOMAS_E_COMORBIDADES = [
@@ -126,15 +126,15 @@ def aplicar_css():
     }}
 
     /* >>> TÍTULOS DOS CAMPOS (rótulos dos filtros) <<< */
-    rótulo [data-testid="stSidebar"],
-    [data-testid="stSidebar"] rótulo .stMultiSelect,
-    [data-testid="stSidebar"] rótulo .stSelectbox,
-    [data-testid="stSidebar"] rótulo .stNumberInput,
-    [data-testid="stSidebar"] rótulo .stDateInput,
-    [data-testid="stSidebar"] rótulo .stSlider,
-    [data-testid="stSidebar"] rótulo .stTextInput {{
-        cor: var(--amarelo-ipojuca) !importante; /* agora usa o amarelo-ipojuca */
-        peso da fonte: 600 !importante;
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stMultiSelect label,
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stDateInput label,
+    [data-testid="stSidebar"] .stSlider label,
+    [data-testid="stSidebar"] .stTextInput label {{
+        color: var(--azul-secundario) !important;  /* azul_secundário */
+        font-weight: 600 !important;
     }}
 
     /* Links do menu multipage */
@@ -150,7 +150,7 @@ def aplicar_css():
         border-radius: 6px !important;
     }}
 
-    /* VALORES DENTRO DOS CAMPOS (voltam a ser azul escuro) */
+    /* VALORES DENTRO DOS CAMPOS (texto azul escuro) */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -161,7 +161,7 @@ def aplicar_css():
     [data-testid="stSidebar"] .stDateInput,
     [data-testid="stSidebar"] .stTextInput,
     [data-testid="stSidebar"] .stMultiSelect * {{
-        color: {CORES["azul"]} !important;     /* texto interno igual antes */
+        color: {CORES["azul"]} !important;
     }}
 
     [data-testid="stSidebar"] .stTextInput > div > div,
@@ -231,22 +231,18 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
-    
+
+
 # =======================================================
 # TEMA DOS GRÁFICOS PLOTLY – FUNDO BRANCO, TEXTO/LINHAS AZUL ESCURO
 # =======================================================
 
 def aplicar_tema_plotly(fig):
-    """
-    - fundo branco;
-    - todos os textos em azul escuro (títulos, eixos, legenda, textos internos).
-    """
     azul_escuro = CORES["azul"]
 
     fig.update_layout(
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
-
         font=dict(color=azul_escuro),
 
         xaxis=dict(
@@ -263,14 +259,12 @@ def aplicar_tema_plotly(fig):
             color=azul_escuro,
             title_font=dict(color=azul_escuro)
         ),
-
         legend=dict(
             bgcolor="rgba(255,255,255,0.9)",
             bordercolor="rgba(0,0,0,0.3)",
             borderwidth=1,
             font=dict(color=azul_escuro)
         ),
-
         title_font=dict(color=azul_escuro),
         margin=dict(l=60, r=40, t=60, b=60)
     )
@@ -305,21 +299,17 @@ def carregar_dados() -> pd.DataFrame:
         st.error("❌ Erro ao carregar os dados da planilha do Google Sheets.")
         st.stop()
 
-    # Normaliza nomes das colunas
     df.columns = [limpar_nome_coluna(c) for c in df.columns]
 
-    # Renomeia de acordo com o mapa final, apenas as que existirem
     rename_dict = {orig: dest for orig, dest in FINAL_RENAME_MAP.items() if orig in df.columns}
     df.rename(columns=rename_dict, inplace=True)
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # Padroniza FAIXA_ETARIA
     if 'FAIXA_ETARIA' in df.columns:
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].astype(str).str.strip()
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].replace(MAPEAMENTO_FAIXA_ETARIA)
         df['FAIXA_ETARIA'] = df['FAIXA_ETARIA'].fillna("IGNORADO")
 
-    # Converte datas
     for col in ['DATA_NOTIFICACAO', 'DATA_SINTOMAS']:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], errors="coerce")
@@ -328,51 +318,86 @@ def carregar_dados() -> pd.DataFrame:
 
 
 # =======================================================
-# FILTROS — SIDEBAR
+# FILTROS — SIDEBAR (com títulos manuais)
 # =======================================================
 
 def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     st.sidebar.header("🔎 Filtros")
     df_filtrado = df.copy()
 
+    # CLASSIFICAÇÃO FINAL
     if 'CLASSIFICACAO_FINAL' in df.columns:
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Classificação Final</span>",
+            unsafe_allow_html=True
+        )
         opcoes = sorted(df['CLASSIFICACAO_FINAL'].dropna().unique())
-        sel = st.sidebar.multiselect("Classificação Final", opcoes)
+        sel = st.sidebar.multiselect("", opcoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['CLASSIFICACAO_FINAL'].isin(sel)]
 
+    # SEMANA EPIDEMIOLÓGICA
     if 'SEMANA_EPIDEMIOLOGICA' in df.columns:
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Semana Epidemiológica</span>",
+            unsafe_allow_html=True
+        )
         semanas = sorted(df['SEMANA_EPIDEMIOLOGICA'].dropna().unique())
-        sel = st.sidebar.multiselect("Semana Epidemiológica", semanas)
+        sel = st.sidebar.multiselect("", semanas)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['SEMANA_EPIDEMIOLOGICA'].isin(sel)]
 
+    # SEXO
     if 'SEXO' in df.columns:
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Sexo</span>",
+            unsafe_allow_html=True
+        )
         sexos = sorted(df['SEXO'].dropna().unique())
-        sel = st.sidebar.multiselect("Sexo", sexos)
+        sel = st.sidebar.multiselect("", sexos)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['SEXO'].isin(sel)]
 
+    # FAIXA ETÁRIA
     if 'FAIXA_ETARIA' in df.columns:
-        faixas = st.sidebar.multiselect("Faixa Etária", ORDEM_FAIXA_ETARIA)
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Faixa Etária</span>",
+            unsafe_allow_html=True
+        )
+        faixas = st.sidebar.multiselect("", ORDEM_FAIXA_ETARIA)
         if faixas:
             df_filtrado = df_filtrado[df_filtrado['FAIXA_ETARIA'].isin(faixas)]
 
+    # EVOLUÇÃO
     if 'EVOLUCAO' in df.columns:
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Evolução do Caso</span>",
+            unsafe_allow_html=True
+        )
         evolucoes = sorted(df['EVOLUCAO'].dropna().unique())
-        sel = st.sidebar.multiselect("Evolução do Caso", evolucoes)
+        sel = st.sidebar.multiselect("", evolucoes)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['EVOLUCAO'].isin(sel)]
 
+    # ESCOLARIDADE
     if 'ESCOLARIDADE' in df.columns:
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Escolaridade</span>",
+            unsafe_allow_html=True
+        )
         escs = sorted(df['ESCOLARIDADE'].dropna().unique())
-        sel = st.sidebar.multiselect("Escolaridade", escs)
+        sel = st.sidebar.multiselect("", escs)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['ESCOLARIDADE'].isin(sel)]
 
+    # BAIRRO
     if 'BAIRRO' in df.columns:
+        st.sidebar.markdown(
+            f"<span style='color:{CORES['azul_claro']}; font-weight:600;'>Bairro</span>",
+            unsafe_allow_html=True
+        )
         bairros = sorted(df['BAIRRO'].dropna().unique())
-        sel = st.sidebar.multiselect("Bairro", bairros)
+        sel = st.sidebar.multiselect("", bairros)
         if sel:
             df_filtrado = df_filtrado[df_filtrado['BAIRRO'].isin(sel)]
 
