@@ -322,7 +322,7 @@ def aplicar_filtros(df: pd.DataFrame) -> pd.DataFrame:
     if sel_risco and "CLASSIFICAÇÃO" in filtro_df.columns:
         filtro_df = filtro_df[filtro_df["CLASSIFICAÇÃO"].isin(sel_risco)]
 
-    # Filtro de Semana Epidemiológica (agora corrigido para usar SE_SEMANA)
+    # Filtro de Semana Epidemiológica
     if sel_se and "SE_SEMANA" in filtro_df.columns:
         filtro_df = filtro_df[filtro_df["SE_SEMANA"].isin(sel_se)]
 
