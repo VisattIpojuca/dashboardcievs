@@ -193,7 +193,7 @@ with st.sidebar:
     """)
 
     st.markdown("---")
-    st.caption("Prefeitura do Ipojuca • Secretaria Municipal de Saúde")
+    st.caption("Prefeitura do Ipojuca • Secretaria Municipal de Saúde • MB Technological Solutions")
 
 # ============================================================
 # HERO / CABEÇALHO PRINCIPAL
@@ -206,9 +206,9 @@ st.markdown("""
     color: white;
     margin-bottom: 28px;
 ">
-    <div class="hero-badge">Painel oficial da Vigilância em Saúde do Ipojuca</div>
+    <div class="hero-badge"></div>
     <h1 style="color:white; margin-top:10px; margin-bottom:4px;">
-        🏥 Painel Integrado de Vigilância em Saúde – Ipojuca
+        🏥 Painel de Indicadores de Vigilância em Saúde – Ipojuca
   </div>
 """, unsafe_allow_html=True)
 
@@ -216,8 +216,8 @@ st.markdown("""
 # TEXTO DE APRESENTAÇÃO
 # ============================================================
 st.markdown("""
-O painel integra informações de diversos eixos da Vigilância em Saúde municipal —  
-vigilância epidemiológica, saúde do trabalhador, vigilância sanitária e ambiental —  
+O painel integra informações de diversos eixos da Vigilância em Saúde municipal —  Cievs Ipojuca,
+vigilância epidemiológica, ambiental, sanitária e saúde do trabalhador e da trabalhadora,  —  
 oferecendo uma visão consolidada da situação de saúde no território.
 
 A partir dos módulos temáticos, é possível acompanhar tendências,
@@ -318,7 +318,7 @@ with l1:
     <div class="link-card">
         <h3>CIEVS Ipojuca</h3>
         <p>Informes, notas técnicas e documentos de referência em vigilância.</p>
-        <p><a href="https://cievsipojuca.wordpress.com/" target="_blank">Acessar site institucional</a></p>
+        <p><a href="https://cievsipojuca.wordpress.com/" target="_blank">Acesse</a></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -327,7 +327,7 @@ with l2:
     <div class="link-card">
         <h3>VISATT Ipojuca</h3>
         <p>Informações sobre saúde do trabalhador, notificações e orientações.</p>
-        <p><a href="https://visattipojuca.com/" target="_blank">Acessar site institucional</a></p>
+        <p><a href="https://visattipojuca.com/" target="_blank">Acesse</a></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -336,7 +336,7 @@ with l3:
     <div class="link-card">
         <h3>Prefeitura do Ipojuca</h3>
         <p>Portal oficial da gestão municipal, notícias e serviços.</p>
-        <p><a href="https://ipojuca.pe.gov.br/" target="_blank">Acessar portal</a></p>
+        <p><a href="https://ipojuca.pe.gov.br/" target="_blank">Acesse</a></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -367,16 +367,17 @@ with cB:
     st.metric("Ano de referência", "2025")
 
 with cC:
-    st.metric("Gestão responsável", "Vigilância em Saúde – Ipojuca")
+    st.metric("Gestão responsável", "Cievs Ipojuca")
 
 with cD:
     st.metric("Tecnologia", "MB Technological Solutions")
 
 st.markdown("""
 <div class="footer-text">
-Este painel foi desenvolvido com uso de <strong>Python</strong>, <strong>Streamlit</strong> e <strong>CSS</strong>,
-em parceria com as áreas técnicas da Vigilância em Saúde do município e
-<strong>MB Technological Solutions (Maviael Barros Soluções Tecnológicas)</strong>,
-com o objetivo de fortalecer a gestão da informação e a transparência em saúde pública.
+Esta aplicação foi desenvolvida em parceria com o Centro de Informações Estratégicas 
+em Vigilância em Saude de Ipojuca (Cievs Ipojuca) e as áreas técnicas da Vigilância 
+em Saúde do município e <strong>MB Technological Solutions® (Maviael Barros Soluções 
+Tecnológicas)</strong>, com o objetivo de fortalecer a gestão da informação e a 
+transparência em saúde pública.
 </div>
 """, unsafe_allow_html=True)
