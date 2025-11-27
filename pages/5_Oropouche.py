@@ -57,7 +57,7 @@ def aplicar_css():
         --branco: {CORES["branco"]};
     }}
 
-    /* Texto principal em preto (sem usar * para não quebrar componentes internos) */
+    /* Texto principal */
     body, p, li, span, label, .stMarkdown {{
         color: #000 !important;
     }}
@@ -98,7 +98,7 @@ def aplicar_css():
        WIDGETS DE FILTRO NA SIDEBAR
        ------------------------------ */
 
-    /* Texto dos inputs/selects: azul em tema claro */
+    /* Texto dos campos de filtro: azul em tema claro */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea,
     [data-testid="stSidebar"] select,
@@ -112,17 +112,21 @@ def aplicar_css():
         color: {CORES["azul"]} !important;
     }}
 
-    /* Chips/opções selecionadas em multiselect (fundo verde, texto branco) */
+    /* ESTILO PADRÃO DAS TAGS (opções exibidas, não selecionadas): fundo branco, texto azul */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+        background-color: {CORES["branco"]} !important;
+        color: {CORES["azul"]} !important;
+        border-radius: 12px !important;
+        border: 1px solid {CORES["azul_sec"]} !important;
+    }}
+
+    /* TAGS / OPÇÕES SELECIONADAS: fundo verde, texto branco */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"][aria-selected="true"],
     [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
     [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
         background-color: {CORES["verde"]} !important;
         color: white !important;
-    }}
-
-    /* Algumas versões usam span para os "chips" selecionados */
-    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
-        background-color: {CORES["verde"]} !important;
-        color: white !important;
+        border-color: {CORES["verde"]} !important;
     }}
 
     /* Borda dos campos de filtro em azul */
@@ -138,7 +142,7 @@ def aplicar_css():
        TEMA ESCURO DO NAVEGADOR
        ------------------------------ */
     @media (prefers-color-scheme: dark) {{
-        /* Texto dos filtros em branco quando o usuário está em modo escuro */
+        /* Texto dos filtros em branco no modo escuro */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] textarea,
         [data-testid="stSidebar"] select,
@@ -150,6 +154,12 @@ def aplicar_css():
         [data-testid="stSidebar"] .stTextInput,
         [data-testid="stSidebar"] .stMultiSelect * {{
             color: white !important;
+        }}
+
+        /* Tags não selecionadas: fundo branco ainda funciona, mas texto branco para contraste? */
+        [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] {{
+            background-color: {CORES["branco"]} !important;
+            color: {CORES["azul"]} !important;
         }}
     }}
 
