@@ -96,7 +96,7 @@ def aplicar_css():
         font-weight: 600;
     }}
 
-    /* MENU DE NAVEGAÇÃO (Home, Dengue, Saúde do Trabalhador, VISA, PCE, Oropouche) */
+    /* MENU DE NAVEGAÇÃO */
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
     [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
@@ -129,6 +129,22 @@ def aplicar_css():
     [data-testid="stSidebar"] .stTextInput label {{
         color: {CORES["azul_sec"]} !important;
         font-weight: 600 !important;
+    }}
+
+    /* Deixar os títulos colados às caixas de filtro */
+    [data-testid="stSidebar"] .stMarkdown p {{
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }}
+    [data-testid="stSidebar"] .stMarkdown + div,
+    [data-testid="stSidebar"] .stMarkdown + .stMultiSelect,
+    [data-testid="stSidebar"] .stMarkdown + .stSelectbox {{
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }}
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox {{
+        margin-bottom: 4px !important;
     }}
 
     /* TEXTO E CAMPOS DOS FILTROS – tema claro */
@@ -381,11 +397,72 @@ def aplicar_filtros(df: pd.DataFrame,
     racas = opcoes(df, col_raca)
     semanas = opcoes(df, "SE_SEMANA")
 
-    f_localidade = st.sidebar.multiselect("Localidade", options=localidades, default=localidades)
-    f_classificacao = st.sidebar.multiselect("Classificação", options=classificacoes, default=classificacoes)
-    f_sexo = st.sidebar.multiselect("Sexo", options=sexos, default=sexos)
-    f_raca = st.sidebar.multiselect("Raça/Cor", options=racas, default=racas)
-    f_semana = st.sidebar.multiselect("Semana Epidemiológica", options=semanas, default=semanas)
+    # Localidade
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Localidade</p>",
+        unsafe_allow_html=True
+    )
+    f_localidade = st.sidebar.multiselect(
+        label="",
+        options=localidades,
+        default=localidades
+    )
+
+    # Classificação
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Classificação</p>",
+        unsafe_allow_html=True
+    )
+    f_classificacao = st.sidebar.multiselect(
+        label="",
+        options=classificacoes,
+        default=classificacoes
+    )
+
+    # Sexo
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Sexo</p>",
+        unsafe_allow_html=True
+    )
+    f_sexo = st.sidebar.multiselect(
+        label="",
+        options=sexos,
+        default=sexos
+    )
+
+    # Raça/Cor
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Raça/Cor</p>",
+        unsafe_allow_html=True
+    )
+    f_raca = st.sidebar.multiselect(
+        label="",
+        options=racas,
+        default=racas
+    )
+
+    # Semana Epidemiológica
+    st.sidebar.markdown(
+        f"<p style='margin-bottom:0px; margin-top:8px; "
+        f"color:{CORES['azul_sec']}; font-weight:600; font-size:0.9rem;'>"
+        f"Semana Epidemiológica</p>",
+        unsafe_allow_html=True
+    )
+    # REMOVE 'IGNORADO' do options, se existir, e deixa só semanas reais
+    semanas_validas = [s for s in semanas if str(s).upper() not in ("IGNORADO", "SEM_SEMANA")]
+    f_semana = st.sidebar.multiselect(
+        label="",
+        options=semanas_validas,
+        default=semanas_validas
+    )
 
     df_filtrado = df.copy()
     if f_localidade and col_localidade in df_filtrado.columns:
@@ -423,11 +500,11 @@ def tratar_data(df: pd.DataFrame,
 
     # Semana epidemiológica
     if col_semana_epid and col_semana_epid in df.columns:
+        # Extrai apenas números, sem forçar default "IGNORADO"
         df["SE_SEMANA"] = (
             df[col_semana_epid]
             .astype(str)
-            .str.extract(r"(\\d+)", expand=False)
-            .fillna("IGNORADO")
+            .str.extract(r"(\d+)", expand=False)
         )
     elif col_data and col_data in df.columns and df[col_data].notna().any():
         try:
@@ -435,7 +512,7 @@ def tratar_data(df: pd.DataFrame,
         except Exception:
             df["SE_SEMANA"] = df[col_data].dt.week.astype(str)
     else:
-        df["SE_SEMANA"] = "SEM_SEMANA"
+        df["SE_SEMANA"] = np.nan
 
     return df
 
