@@ -91,6 +91,21 @@ def aplicar_css():
         font-weight: 600;
     }}
 
+    /* MENU DE NAVEGAÇÃO (Home, Dengue, Saúde do Trabalhador, VISA, PCE, Oropouche) */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] span {{
+        color: #FFFFFF !important;          /* texto branco para todos os itens */
+    }}
+
+    /* Item de página atual (selecionado) também branco, com leve destaque de fundo */
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] button[aria-current="page"],
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {{
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }}
+
     /* Título "Filtros" na sidebar */
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
@@ -273,6 +288,7 @@ def aplicar_css():
     }}
     </style>
     """, unsafe_allow_html=True)
+
 
 
 # ---------------------------------------------------------
