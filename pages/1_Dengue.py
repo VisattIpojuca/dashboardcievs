@@ -75,72 +75,157 @@ def remover_acentos(texto: str) -> str:
 
 
 # =======================================================
-# CSS — PALETA INSTITUCIONAL
+# CSS — PALETA INSTITUCIONAL + AJUSTES DE FILTROS
 # =======================================================
 
 def aplicar_css():
-    st.markdown("""
+    st.markdown(f"""
     <style>
-    :root {
-        --azul-principal: #004A8D;
-        --azul-secundario: #0073CF;
-        --verde-ipojuca: #009D4A;
-        --amarelo-ipojuca: #FFC20E;
+    :root {{
+        --azul-principal: {CORES["azul"]};
+        --azul-secundario: {CORES["azul_claro"]};
+        --verde-ipojuca: {CORES["verde"]};
+        --amarelo-ipojuca: {CORES["amarelo"]};
         --cinza-claro: #F2F2F2;
         --branco: #FFFFFF;
-    }
+    }}
 
     /* Texto principal em preto (evita usar * para não quebrar componentes internos) */
-    body, p, li, span, label, .stMarkdown {
+    body, p, li, span, label, .stMarkdown {{
         color: #000 !important;
-    }
+    }}
 
     /* Títulos amarelos na área principal */
     [data-testid="stAppViewContainer"] h1,
     [data-testid="stAppViewContainer"] h2,
     [data-testid="stAppViewContainer"] h3,
-    [data-testid="stAppViewContainer"] h4 {
+    [data-testid="stAppViewContainer"] h4 {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 800 !important;
-    }
+    }}
 
     /* Parágrafos justificados */
-    p, li {
+    p, li {{
         text-align: justify !important;
         color: #000 !important;
-    }
+    }}
 
     /* Fundo geral */
-    [data-testid="stAppViewContainer"] {
+    [data-testid="stAppViewContainer"] {{
         background: linear-gradient(to bottom right, #F6F9FC, #EAF3FF) !important;
-    }
+    }}
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {
+    /* Sidebar: fundo azul institucional */
+    [data-testid="stSidebar"] {{
         background: var(--azul-principal) !important;
-    }
-    [data-testid="stSidebar"] * {
-        color: white !important;
-    }
-    [data-testid="stSidebar"] a {
+    }}
+    [data-testid="stSidebar"] a {{
         color: var(--amarelo-ipojuca) !important;
         font-weight: 600;
-    }
+    }}
+
+    /* ------------------------------
+       TEXTO DOS FILTROS - TEMA CLARO
+       ------------------------------ */
+
+    /* Texto dentro dos campos de filtro (valor atual / placeholder) em AZUL no tema claro */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea,
+    [data-testid="stSidebar"] select,
+    [data-testid="stSidebar"] .stMultiSelect,
+    [data-testid="stSidebar"] .stSelectbox,
+    [data-testid="stSidebar"] .stNumberInput,
+    [data-testid="stSidebar"] .stSlider,
+    [data-testid="stSidebar"] .stDateInput,
+    [data-testid="stSidebar"] .stTextInput,
+    [data-testid="stSidebar"] .stMultiSelect * {{
+        color: {CORES["azul"]} !important;
+    }}
+
+    /* Garante contraste: fundo dos campos um pouco mais claro que o texto */
+    [data-testid="stSidebar"] .stTextInput > div > div,
+    [data-testid="stSidebar"] .stNumberInput > div > div,
+    [data-testid="stSidebar"] .stDateInput > div > div,
+    [data-testid="stSidebar"] .stSelectbox > div > div,
+    [data-testid="stSidebar"] .stMultiSelect > div > div {{
+        background-color: var(--branco) !important;
+    }}
+
+    /* Placeholder (texto antes de selecionar) também azul, mas um pouco mais claro */
+    [data-testid="stSidebar"] input::placeholder,
+    [data-testid="stSidebar"] textarea::placeholder {{
+        color: #2f6bbd !important;
+    }}
+
+    /* ------------------------------
+       OPÇÕES SELECIONADAS (chips)
+       ------------------------------ */
+
+    /* Itens selecionados nas listas: FUNDO VERDE + TEXTO BRANCO */
+    [data-testid="stSidebar"] .stMultiSelect div[aria-selected="true"],
+    [data-testid="stSidebar"] .stSelectbox div[aria-selected="true"] {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+    }}
+
+    /* Tags visuais do multiselect */
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"],
+    [data-testid="stSidebar"] .stMultiSelect span[data-baseweb="tag"] * {{
+        background-color: {CORES["verde"]} !important;
+        color: white !important;
+    }}
+
+    /* Borda dos campos de filtro em azul secundário */
+    [data-testid="stSidebar"] .stMultiSelect > div,
+    [data-testid="stSidebar"] .stSelectbox > div,
+    [data-testid="stSidebar"] .stTextInput > div,
+    [data-testid="stSidebar"] .stNumberInput > div,
+    [data-testid="stSidebar"] .stDateInput > div {{
+        border-color: var(--azul-secundario) !important;
+    }}
+
+    /* ------------------------------
+       TEMA ESCURO DO NAVEGADOR
+       ------------------------------ */
+    @media (prefers-color-scheme: dark) {{
+        /* No dark mode: texto DOS FILTROS em BRANCO */
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select,
+        [data-testid="stSidebar"] .stMultiSelect,
+        [data-testid="stSidebar"] .stSelectbox,
+        [data-testid="stSidebar"] .stNumberInput,
+        [data-testid="stSidebar"] .stSlider,
+        [data-testid="stSidebar"] .stDateInput,
+        [data-testid="stSidebar"] .stTextInput,
+        [data-testid="stSidebar"] .stMultiSelect * {{
+            color: white !important;
+        }}
+
+        /* Fundo dos campos um pouco mais escuro para contraste */
+        [data-testid="stSidebar"] .stTextInput > div > div,
+        [data-testid="stSidebar"] .stNumberInput > div > div,
+        [data-testid="stSidebar"] .stDateInput > div > div,
+        [data-testid="stSidebar"] .stSelectbox > div > div,
+        [data-testid="stSidebar"] .stMultiSelect > div > div {{
+            background-color: #1f334a !important;
+        }}
+    }}
 
     /* Métricas */
-    .stMetric {
+    .stMetric {{
         background-color: var(--amarelo-ipojuca) !important;
         padding: 18px;
         border-radius: 10px;
         border-left: 6px solid var(--azul-secundario);
         box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
-    }
+    }}
 
     /* Botões */
-    button, .stButton button {
+    button, .stButton button {{
         color: #000 !important;
         background-color: var(--cinza-claro) !important;
-    }
+    }}
     </style>
     """, unsafe_allow_html=True)
 
