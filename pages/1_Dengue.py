@@ -268,38 +268,38 @@ def aplicar_tema_plotly(fig):
     - textos (título, eixos, legenda) em azul escuro;
     - eixos/ticks/grade em tons de azul/preto.
     """
-    azul_escuro = CORES["azul"]
+    preto = CORES["preto"]
 
     fig.update_layout(
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#FFFFFF",
-        font=dict(color=azul_escuro),
+        font=dict(color=preto),
 
         xaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.6)",
-            color=azul_escuro
+            color=preto
         ),
         yaxis=dict(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.08)",
             zerolinecolor="rgba(0,0,0,0.6)",
-            color=azul_escuro
+            color=preto
         ),
         legend=dict(
             bgcolor="rgba(255,255,255,0.9)",
             bordercolor="rgba(0,0,0,0.3)",
             borderwidth=1,
-            font=dict(color=azul_escuro)
+            font=dict(color=preto)
         ),
-        title_font=dict(color=azul_escuro),
+        title_font=dict(color=preto),
         margin=dict(l=60, r=40, t=60, b=60)
     )
 
     # Textos internos (quando existirem) também em azul escuro
     try:
-        fig.update_traces(textfont=dict(color=azul_escuro))
+        fig.update_traces(textfont=dict(color=preto))
     except Exception:
         pass
 
