@@ -126,15 +126,15 @@ def aplicar_css():
     }}
 
     /* >>> TÍTULOS DOS CAMPOS (rótulos dos filtros) <<< */
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] .stMultiSelect label,
-    [data-testid="stSidebar"] .stSelectbox label,
-    [data-testid="stSidebar"] .stNumberInput label,
-    [data-testid="stSidebar"] .stDateInput label,
-    [data-testid="stSidebar"] .stSlider label,
-    [data-testid="stSidebar"] .stTextInput label {{
-        color: {CORES["azul_claro"]} !important;  /* só o título fica azul claro */
-        font-weight: 600 !important;
+    rótulo [data-testid="stSidebar"],
+    [data-testid="stSidebar"] rótulo .stMultiSelect,
+    [data-testid="stSidebar"] rótulo .stSelectbox,
+    [data-testid="stSidebar"] rótulo .stNumberInput,
+    [data-testid="stSidebar"] rótulo .stDateInput,
+    [data-testid="stSidebar"] rótulo .stSlider,
+    [data-testid="stSidebar"] rótulo .stTextInput {{
+        cor: var(--azul-secundario) !importante; /* agora usa o azul_secundario */
+        peso da fonte: 600 !importante;
     }}
 
     /* Links do menu multipage */
